@@ -5,22 +5,46 @@
   <title>Tree Service Hub</title>
   <link rel="stylesheet" href="assets/styles.css">
 </head>
-<body>
-  <header>
-    <h1>Tree Service Hub</h1>
-    <p>Modular Static OS for Tree Work</p>
+
+<body class="fade-in">
+
+  <!-- Loading Screen (optional, if you added it in styles.css) -->
+  <div id="loading-screen">
+    <div class="tree">
+      <div class="trunk"></div>
+
+      <div class="branch b1"></div>
+      <div class="branch b2"></div>
+      <div class="branch b3"></div>
+      <div class="branch b4"></div>
+
+      <div class="leaf l1"></div>
+      <div class="leaf l2"></div>
+      <div class="leaf l3"></div>
+      <div class="leaf l4"></div>
+      <div class="leaf l5"></div>
+      <div class="leaf l6"></div>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <h1 class="app-title">Tree Service Hub</h1>
+    <p class="app-subtitle">Modular Static OS for Tree Work</p>
   </header>
 
-  <nav class="nav-grid">
-    <a href="modules/customers/customers.html">Customers & Jobs</a>
-    <a href="modules/contracts/contracts.html">Contracts</a>
-    <a href="modules/calendar/calendar.html">Calendar</a>
-    <a href="modules/flyers/flyers.html">Cards & Flyers</a>
-    <a href="modules/measurement/measurement.html">Tree Measurement</a>
-  </nav>
+  <main>
+    <nav class="nav-grid">
+      <a href="modules/customers/customers.html" class="nav-card">Customers & Jobs</a>
+      <a href="modules/contracts/contracts.html" class="nav-card">Contracts</a>
+      <a href="modules/calendar/calendar.html" class="nav-card">Calendar</a>
+      <a href="modules/flyers/flyers.html" class="nav-card">Cards & Flyers</a>
+      <a href="modules/measurement/measurement.html" class="nav-card">Tree Measurement</a>
+    </nav>
+  </main>
 
-  <footer>
+  <footer class="main-footer">
     <p>Tree Service Hub • Modular Static App</p>
   </footer>
+
 </body>
 </html>
