@@ -1,0 +1,183 @@
+/* --------------------------------------------------
+   GLOBAL NATURE THEME
+-------------------------------------------------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Trebuchet MS", sans-serif;
+  background: linear-gradient(#0b2e13, #0f3d1a, #0b2e13);
+  color: #e8ffe8;
+  overflow-x: hidden;
+  animation: bgMove 20s ease-in-out infinite alternate;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 40px; }
+}
+
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
+
+header {
+  text-align: center;
+  padding: 30px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid #1f5f2b;
+  backdrop-filter: blur(4px);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #b8ffb8;
+  text-shadow: 0 0 10px #1f5f2b;
+}
+
+header p {
+  margin-top: 5px;
+  color: #d4ffd4;
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------
+   NAVIGATION GRID
+-------------------------------------------------- */
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 40px;
+}
+
+.nav-grid a {
+  display: block;
+  padding: 20px;
+  background: #1a3f1d;
+  border: 2px solid #2e6b33;
+  border-radius: 12px;
+  text-align: center;
+  color: #d8ffd8;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0, 50, 0, 0.4);
+}
+
+.nav-grid a:hover {
+  background: #245c29;
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(0, 80, 0, 0.6);
+}
+
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 2px solid #1f5f2b;
+  color: #caffca;
+  margin-top: 40px;
+}
+
+/* --------------------------------------------------
+   PAGE TRANSITION
+-------------------------------------------------- */
+
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* --------------------------------------------------
+   GROWING TREE LOADING SCREEN
+-------------------------------------------------- */
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: #0b2e13;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeOut 1s ease forwards;
+  animation-delay: 3.5s; /* how long the tree grows */
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* TREE CONTAINER */
+.tree {
+  width: 200px;
+  height: 300px;
+  position: relative;
+}
+
+/* TRUNK */
+.tree .trunk {
+  width: 20px;
+  height: 0;
+  background: #5a3b1e;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: growTrunk 2s ease forwards;
+}
+
+@keyframes growTrunk {
+  to { height: 150px; }
+}
+
+/* BRANCHES */
+.tree .branch {
+  width: 0;
+  height: 6px;
+  background: #5a3b1e;
+  position: absolute;
+  animation: growBranch 1.5s ease forwards;
+  transform-origin: left center;
+}
+
+.branch.b1 { bottom: 120px; left: 50%; transform: rotate(-25deg); animation-delay: 1.2s; }
+.branch.b2 { bottom: 100px; left: 50%; transform: rotate(25deg); animation-delay: 1.3s; }
+.branch.b3 { bottom: 80px; left: 50%; transform: rotate(-20deg); animation-delay: 1.4s; }
+.branch.b4 { bottom: 60px; left: 50%; transform: rotate(20deg); animation-delay: 1.5s; }
+
+@keyframes growBranch {
+  to { width: 80px; }
+}
+
+/* LEAVES */
+.tree .leaf {
+  width: 0;
+  height: 0;
+  background: #2e8b3c;
+  border-radius: 50%;
+  position: absolute;
+  animation: leafGrow 1s ease forwards;
+}
+
+.leaf.l1 { bottom: 120px; left: calc(50% - 80px); animation-delay: 2.2s; }
+.leaf.l2 { bottom: 120px; left: calc(50% + 60px); animation-delay: 2.25s; }
+.leaf.l3 { bottom: 100px; left: calc(50% - 70px); animation-delay: 2.3s; }
+.leaf.l4 { bottom: 100px; left: calc(50% + 50px); animation-delay: 2.35s; }
+.leaf.l5 { bottom: 80px; left: calc(50% - 60px); animation-delay: 2.4s; }
+.leaf.l6 { bottom: 80px; left: calc(50% + 40px); animation-delay: 2.45s; }
+
+@keyframes leafGrow {
+  to { width: 25px; height: 25px; }
+}
