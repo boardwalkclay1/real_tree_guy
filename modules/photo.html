@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Photo Measurement</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Photo Mode</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Upload Tree Photo</h3>
+    <input type="file" id="photoInput" accept="image/*">
+    <canvas id="canvas" width="300" height="400"></canvas>
+  </section>
+
+  <section class="card">
+    <h3>Tap Base & Top</h3>
+    <p>Tap the base of the tree, then the top.</p>
+
+    <label>Reference Height (feet)</label>
+    <input id="refHeight" type="number" value="6">
+
+    <p id="photoResult"></p>
+  </section>
+
+  <script src="photo.js"></script>
+</body>
+</html>
