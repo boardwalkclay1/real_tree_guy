@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Job Application</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Job Application</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Applicant Info</h3>
+
+    <label>Full Name</label>
+    <input id="name">
+
+    <label>Phone</label>
+    <input id="phone">
+
+    <label>Email</label>
+    <input id="email">
+
+    <label>Address</label>
+    <input id="address">
+
+    <label>Experience</label>
+    <textarea id="experience"></textarea>
+
+    <label>References</label>
+    <textarea id="references"></textarea>
+
+    <button id="save">Save Application</button>
+  </section>
+
+  <section class="card">
+    <h3>Saved Applications</h3>
+    <select id="appList"></select>
+    <div id="details"></div>
+    <button id="delete">Delete</button>
+  </section>
+
+  <script src="application.js"></script>
+</body>
+</html>
