@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customers & Jobs</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Customers & Jobs</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Add Customer</h3>
+
+    <label>Name</label>
+    <input id="custName">
+
+    <label>Phone</label>
+    <input id="custPhone">
+
+    <label>Address</label>
+    <input id="custAddress">
+
+    <label>Job Description</label>
+    <textarea id="custJob"></textarea>
+
+    <label>Quote</label>
+    <input id="custQuote">
+
+    <button id="saveCustomer">Save</button>
+  </section>
+
+  <section class="card">
+    <h3>Saved Customers</h3>
+    <select id="customerList"></select>
+    <div id="customerDetails"></div>
+    <button id="deleteCustomer">Delete</button>
+  </section>
+
+  <script src="customers.js"></script>
+</body>
+</html>
