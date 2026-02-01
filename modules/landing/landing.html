@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Landing Zone Visualizer</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+<header>
+  <h2>Landing Zone Visualizer</h2>
+  <a href="../../index.html">Back to Home</a>
+</header>
+
+<section class="card">
+  <h3>Tree Height Input</h3>
+  <label>Tree Height (ft)</label>
+  <input id="height" type="number" value="40">
+
+  <label>Fall Angle (degrees)</label>
+  <input id="angle" type="number" value="0">
+
+  <button id="calc">Visualize</button>
+</section>
+
+<section class="card">
+  <h3>Landing Zone</h3>
+  <canvas id="zone" width="400" height="300"></canvas>
+</section>
+
+<script src="landing.js"></script>
+</body>
+</html>
