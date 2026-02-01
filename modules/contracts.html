@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contracts</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Contracts</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Premade Contract</h3>
+    <textarea id="template" style="height:200px;">
+TREE WORK AGREEMENT
+
+Customer: [Customer Name]
+Address: [Customer Address]
+Phone: [Customer Phone]
+
+Scope:
+[Job Description]
+
+Price:
+[Quote Amount]
+    </textarea>
+  </section>
+
+  <section class="card">
+    <h3>Auto-Fill Contract</h3>
+
+    <label>Select Customer</label>
+    <select id="custSelect"></select>
+
+    <textarea id="contractBody" style="height:200px;"></textarea>
+
+    <label>Email</label>
+    <input id="email">
+
+    <button id="fill">Auto-Fill</button>
+    <button id="send">Send Email</button>
+  </section>
+
+  <script src="contracts.js"></script>
+</body>
+</html>
