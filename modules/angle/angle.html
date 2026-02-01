@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Angle Mode Measurement</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Angle Mode (Camera)</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Camera View</h3>
+    <video id="camera" autoplay playsinline style="width:100%; border-radius:8px;"></video>
+  </section>
+
+  <section class="card">
+    <h3>Measure Tree Height</h3>
+
+    <p>Point at the base → press button.  
+    Point at the top → press button.</p>
+
+    <button id="baseBtn">Mark Base Angle</button>
+    <button id="topBtn">Mark Top Angle</button>
+
+    <label>Distance to Tree (feet)</label>
+    <input id="distance" type="number" value="20">
+
+    <p id="result"></p>
+  </section>
+
+  <script src="angle.js"></script>
+</body>
+</html>
