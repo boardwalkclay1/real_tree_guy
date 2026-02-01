@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual Measurement</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body>
+  <header>
+    <h2>Manual Mode</h2>
+    <a href="../../index.html">Back to Home</a>
+  </header>
+
+  <section class="card">
+    <h3>Enter Known Values</h3>
+
+    <label>Distance to Tree (ft)</label>
+    <input id="dist" type="number" value="20">
+
+    <label>Angle to Top (degrees)</label>
+    <input id="angle" type="number" value="45">
+
+    <label>Lean Adjustment (degrees)</label>
+    <input id="lean" type="number" value="0">
+
+    <button id="calc">Calculate</button>
+
+    <p id="manualResult"></p>
+  </section>
+
+  <script src="manual.js"></script>
+</body>
+</html>
