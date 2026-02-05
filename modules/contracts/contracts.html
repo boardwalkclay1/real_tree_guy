@@ -4,7 +4,128 @@
   <meta charset="UTF-8">
   <title>Contracts</title>
   <link rel="stylesheet" href="../../assets/styles.css">
+
+  <style>
+    body {
+      background: #f4f7fa;
+      font-family: "Inter", sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    header {
+      background: #1a1f36;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 4px solid #4caf50;
+    }
+
+    header a {
+      color: #9ee6a8;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .card {
+      background: white;
+      width: 90%;
+      max-width: 800px;
+      margin: 25px auto;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    h3 {
+      margin-top: 0;
+      font-size: 22px;
+      color: #1a1f36;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #d0d7e2;
+      padding: 15px;
+      font-size: 15px;
+      background: #f9fbfd;
+      resize: vertical;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #4caf50;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #d0d7e2;
+      background: #f9fbfd;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+      margin-top: 5px;
+    }
+
+    select:focus, input:focus {
+      border-color: #4caf50;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+      width: 48%;
+    }
+
+    #fill {
+      background: #4caf50;
+      color: white;
+    }
+
+    #fill:hover {
+      background: #43a047;
+    }
+
+    #send {
+      background: #1a1f36;
+      color: white;
+    }
+
+    #send:hover {
+      background: #111626;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
+
 <body>
   <header>
     <h2>Contracts</h2>
@@ -34,13 +155,16 @@ Price:
     <label>Select Customer</label>
     <select id="custSelect"></select>
 
+    <label>Contract Body</label>
     <textarea id="contractBody" style="height:200px;"></textarea>
 
     <label>Email</label>
     <input id="email">
 
-    <button id="fill">Auto-Fill</button>
-    <button id="send">Send Email</button>
+    <div class="btn-row">
+      <button id="fill">Auto-Fill</button>
+      <button id="send">Send Email</button>
+    </div>
   </section>
 
   <script src="contracts.js"></script>
