@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Business Profile</title>
+  <link rel="stylesheet" href="../../assets/styles.css">
+
+  <style>
+    body { background:#f4f7fa; font-family:Inter; padding:20px; }
+    .card {
+      background:white;
+      max-width:700px;
+      margin:20px auto;
+      padding:25px;
+      border-radius:16px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    }
+    input, textarea {
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #ccc;
+      margin-bottom:15px;
+    }
+    button {
+      padding:14px 20px;
+      background:#4caf50;
+      color:white;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:16px;
+      width:100%;
+    }
+    #logoPreview {
+      width:120px;
+      height:120px;
+      border-radius:12px;
+      background:#eee;
+      background-size:cover;
+      background-position:center;
+      margin-bottom:15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="card">
+    <h2>Business Profile</h2>
+
+    <div id="logoPreview"></div>
+    <input type="file" id="logoFile">
+
+    <label>Business Name</label>
+    <input id="bizName">
+
+    <label>Owner Name</label>
+    <input id="owner">
+
+    <label>Phone</label>
+    <input id="phone">
+
+    <label>Email</label>
+    <input id="email">
+
+    <label>Address</label>
+    <input id="address">
+
+    <label>License Number</label>
+    <input id="license">
+
+    <label>Insurance Info</label>
+    <textarea id="insurance" style="height:100px;"></textarea>
+
+    <button id="save">Save Profile</button>
+  </section>
+
+  <script src="profile.js"></script>
+</body>
+</html>
