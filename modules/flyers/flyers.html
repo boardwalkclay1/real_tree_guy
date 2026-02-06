@@ -99,6 +99,7 @@
     #save { background:#4caf50; color:white; width:100%; }
     #printFlyer { background:#0ea5e9; color:white; }
     #emailFlyer { background:#6366f1; color:white; }
+    #shareFlyer { background:#22c55e; color:white; }
     #fullscreenFlyer { background:#f97316; color:white; }
 
     .actions-row {
@@ -106,6 +107,23 @@
       flex-wrap:wrap;
       gap:10px;
       margin-top:10px;
+    }
+
+    .mode-toggle {
+      display:flex;
+      gap:8px;
+      margin-bottom:10px;
+    }
+
+    .mode-toggle button {
+      flex:1;
+      background:#e5e7eb;
+      color:#111827;
+    }
+
+    .mode-toggle button.active {
+      background:#1a1f36;
+      color:white;
     }
 
     #previewWrapper {
@@ -130,6 +148,11 @@
       justify-content:space-between;
     }
 
+    #preview.card-mode {
+      aspect-ratio:3.5/2;
+      max-width:420px;
+    }
+
     #previewBgImage {
       position:absolute;
       inset:0;
@@ -137,6 +160,19 @@
       background-position:center;
       opacity:0.25;
       pointer-events:none;
+    }
+
+    #previewLogo {
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:60px;
+      height:60px;
+      border-radius:12px;
+      background-size:cover;
+      background-position:center;
+      background-color:rgba(255,255,255,0.7);
+      overflow:hidden;
     }
 
     .flyer-headline {
@@ -178,7 +214,12 @@
 
   <main class="layout">
     <section class="card card-left">
-      <h3>Flyer Studio</h3>
+      <h3>Design Studio</h3>
+
+      <div class="mode-toggle">
+        <button id="modeCards" class="active">Cards</button>
+        <button id="modeFlyers">Flyers</button>
+      </div>
 
       <label>Template</label>
       <select id="templateSelect">
@@ -196,8 +237,14 @@
       <label>Offer</label>
       <input id="offer">
 
-      <label>Upload Photo (background)</label>
+      <label>Upload Background Photo</label>
       <input type="file" id="photoInput" accept="image/*">
+
+      <label>Background Strength</label>
+      <input type="range" id="bgStrength" min="0" max="100" value="25">
+
+      <label>Upload Logo (override profile logo)</label>
+      <input type="file" id="logoUpload" accept="image/*">
 
       <div class="row">
         <div>
@@ -221,11 +268,12 @@
         </div>
       </div>
 
-      <button id="save">Save Flyer</button>
+      <button id="save">Save Design</button>
 
       <div class="actions-row">
         <button id="printFlyer">Print</button>
         <button id="emailFlyer">Email</button>
+        <button id="shareFlyer">Share</button>
         <button id="fullscreenFlyer">Open Fullscreen</button>
       </div>
     </section>
@@ -233,8 +281,9 @@
     <section class="card card-right">
       <h3>Preview</h3>
       <div id="previewWrapper">
-        <div id="preview">
+        <div id="preview" class="card-mode">
           <div id="previewBgImage"></div>
+          <div id="previewLogo"></div>
           <div>
             <div class="flyer-headline" id="previewHeadline"></div>
             <div class="flyer-body" id="previewBody"></div>
