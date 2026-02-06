@@ -4,35 +4,247 @@
   <meta charset="UTF-8">
   <title>Cards & Flyers</title>
   <link rel="stylesheet" href="../../assets/styles.css">
+  <style>
+    body {
+      background:#f4f7fa;
+      font-family:"Inter",sans-serif;
+      margin:0;
+      padding:0;
+      color:#111827;
+    }
+
+    header {
+      background:#1a1f36;
+      color:white;
+      padding:18px 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    header a {
+      color:#9ee6a8;
+      text-decoration:none;
+      font-size:14px;
+    }
+
+    .layout {
+      display:flex;
+      flex-wrap:wrap;
+      gap:20px;
+      padding:20px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .card {
+      background:white;
+      border-radius:18px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.06);
+      padding:20px;
+    }
+
+    .card-left { flex:1 1 360px; }
+    .card-right { flex:1 1 360px; }
+
+    h3 { margin-top:0; font-size:20px; }
+
+    label {
+      display:block;
+      margin-top:10px;
+      font-size:13px;
+      font-weight:600;
+      color:#374151;
+    }
+
+    input, textarea, select {
+      width:100%;
+      margin-top:4px;
+      padding:9px 11px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      background:#f9fafb;
+      font-size:13px;
+      outline:none;
+      transition:0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color:#4caf50;
+      background:white;
+      box-shadow:0 0 0 3px rgba(76,175,80,0.15);
+    }
+
+    textarea { resize:vertical; min-height:80px; }
+
+    .row {
+      display:flex;
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .row > div { flex:1; }
+
+    button {
+      margin-top:12px;
+      padding:10px 14px;
+      border:none;
+      border-radius:12px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.2s;
+    }
+
+    #save { background:#4caf50; color:white; width:100%; }
+    #printFlyer { background:#0ea5e9; color:white; }
+    #emailFlyer { background:#6366f1; color:white; }
+    #fullscreenFlyer { background:#f97316; color:white; }
+
+    .actions-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    #previewWrapper {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    #preview {
+      width:100%;
+      max-width:420px;
+      aspect-ratio:3/5;
+      border-radius:18px;
+      border:1px solid #e5e7eb;
+      background:#ffffff;
+      padding:18px;
+      box-sizing:border-box;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    #previewBgImage {
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:0.25;
+      pointer-events:none;
+    }
+
+    .flyer-headline {
+      position:relative;
+      font-size:24px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .flyer-body {
+      position:relative;
+      font-size:14px;
+      white-space:pre-wrap;
+      flex:1;
+    }
+
+    .flyer-offer {
+      position:relative;
+      font-size:16px;
+      font-weight:700;
+      margin-top:10px;
+    }
+
+    .flyer-contact {
+      position:relative;
+      font-size:12px;
+      margin-top:12px;
+      border-top:1px solid rgba(0,0,0,0.1);
+      padding-top:8px;
+    }
+  </style>
 </head>
+
 <body>
   <header>
     <h2>Cards & Flyers</h2>
     <a href="../../index.html">Back to Home</a>
   </header>
 
-  <section class="card">
-    <h3>Edit Flyer</h3>
+  <main class="layout">
+    <section class="card card-left">
+      <h3>Flyer Studio</h3>
 
-    <label>Headline</label>
-    <input id="headline">
+      <label>Template</label>
+      <select id="templateSelect">
+        <option value="classic">Classic Tree Service</option>
+        <option value="bold">Bold Offer</option>
+        <option value="minimal">Minimal Clean</option>
+      </select>
 
-    <label>Body</label>
-    <textarea id="body"></textarea>
+      <label>Headline</label>
+      <input id="headline">
 
-    <label>Offer</label>
-    <input id="offer">
+      <label>Body</label>
+      <textarea id="body"></textarea>
 
-    <label>Contact</label>
-    <input id="contact">
+      <label>Offer</label>
+      <input id="offer">
 
-    <button id="save">Save</button>
-  </section>
+      <label>Upload Photo (background)</label>
+      <input type="file" id="photoInput" accept="image/*">
 
-  <section class="card">
-    <h3>Preview</h3>
-    <div id="preview"></div>
-  </section>
+      <div class="row">
+        <div>
+          <label>Background Color</label>
+          <input type="color" id="bgColor" value="#ffffff">
+        </div>
+        <div>
+          <label>Text Color</label>
+          <input type="color" id="textColor" value="#111827">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Accent Color</label>
+          <input type="color" id="accentColor" value="#4caf50">
+        </div>
+        <div>
+          <label>Font</label>
+          <select id="fontSelect"></select>
+        </div>
+      </div>
+
+      <button id="save">Save Flyer</button>
+
+      <div class="actions-row">
+        <button id="printFlyer">Print</button>
+        <button id="emailFlyer">Email</button>
+        <button id="fullscreenFlyer">Open Fullscreen</button>
+      </div>
+    </section>
+
+    <section class="card card-right">
+      <h3>Preview</h3>
+      <div id="previewWrapper">
+        <div id="preview">
+          <div id="previewBgImage"></div>
+          <div>
+            <div class="flyer-headline" id="previewHeadline"></div>
+            <div class="flyer-body" id="previewBody"></div>
+            <div class="flyer-offer" id="previewOffer"></div>
+          </div>
+          <div class="flyer-contact" id="previewContact"></div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script src="flyers.js"></script>
 </body>
