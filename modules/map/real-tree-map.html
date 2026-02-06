@@ -3,28 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Real Tree Map</title>
-  <link rel="stylesheet" href="../../assets/styles.css">
-
-  <style>
-    body { background:#0b0f17; color:white; }
-    #map { height: calc(100vh - 180px); width:100%; margin-top:10px; border-radius:10px; }
-    .toolbar { display:flex; gap:10px; margin:10px 0; }
-    .toolbar input, .toolbar button { padding:10px; border-radius:8px; border:none; }
-    .filters { margin:10px 0; display:flex; gap:15px; }
-    #pjForm {
-      position:fixed; top:0; left:0; right:0; bottom:0;
-      background:rgba(0,0,0,0.8); display:none;
-      align-items:center; justify-content:center;
-    }
-    #pjFormInner {
-      background:#222; padding:20px; border-radius:10px; width:300px;
-    }
-    #mapStatus { margin-top:10px; opacity:0.7; }
-  </style>
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body { background:#0b0f17; color:white; font-family:sans-serif; margin:0; padding:20px; }
+    #map { height: calc(100vh - 220px); width:100%; margin-top:10px; border-radius:10px; }
+    .toolbar, .filters { display:flex; gap:10px; margin:10px 0; flex-wrap:wrap; }
+    #pjForm { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; }
+    #pjFormInner { background:#222; padding:20px; border-radius:10px; width:300px; }
+  </style>
 </head>
 
 <body>
@@ -32,34 +22,30 @@
   <h1>Real Tree Map</h1>
   <p id="mapStatus"></p>
 
-  <!-- SEARCH + LOCATION -->
   <div class="toolbar">
-    <input id="searchInput" placeholder="Search any place…">
+    <input id="searchInput" placeholder="Search any place…" style="flex:1;">
     <button id="btnSearch">Search</button>
     <button id="btnLocate">Use My Location</button>
   </div>
 
-  <!-- FILTERS -->
   <div class="filters">
-    <label><input type="checkbox" id="filterPJs" checked> PJs</label>
-    <label><input type="checkbox" id="filterHomeDepot" checked> Home Depot</label>
-    <label><input type="checkbox" id="filterLowes" checked> Lowe's</label>
-    <label><input type="checkbox" id="filterArborist" checked> Arborist / Tools</label>
+    <label><input type="checkbox" id="filterPJs"> PJs</label>
+    <label><input type="checkbox" id="filterHomeDepot"> Home Depot</label>
+    <label><input type="checkbox" id="filterLowes"> Lowe's</label>
+    <label><input type="checkbox" id="filterArborist"> Arborist / Tools</label>
     <button id="btnAllOn">All On</button>
     <button id="btnAllOff">All Off</button>
   </div>
 
-  <!-- MAP -->
   <div id="map"></div>
 
-  <!-- PJ FORM -->
   <div id="pjForm">
     <div id="pjFormInner">
       <h3>New PJ</h3>
       <p id="pjCoordsLabel"></p>
-      <input id="pjNickname" placeholder="Nickname"><br><br>
-      <textarea id="pjNotes" placeholder="Notes"></textarea><br><br>
-      <input id="pjReminder" type="datetime-local"><br><br>
+      <input id="pjNickname" placeholder="Nickname" style="width:100%;"><br><br>
+      <textarea id="pjNotes" placeholder="Notes" style="width:100%; height:80px;"></textarea><br><br>
+      <input id="pjReminder" type="datetime-local" style="width:100%;"><br><br>
       <button id="pjSave">Save</button>
       <button id="pjCancel">Cancel</button>
     </div>
