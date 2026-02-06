@@ -2,14 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tree Service Hub</title>
+  <title>Real Tree Guy</title>
   <link rel="stylesheet" href="assets/styles.css">
 
   <style>
-    /* NIGHT MODE */
+    /* 
+    ============================================================
+    NIGHT MODE THEME
+    ------------------------------------------------------------
+    When the body has the class "night-mode", the entire OS
+    switches to a dark, cinematic forest theme with stars,
+    moonlight, and tree silhouettes.
+    ============================================================
+    */
+
     body.night-mode {
-      background: #0b0f17;
-      color: #e0f7ff;
+      background: #0b0f17;   /* Deep night sky */
+      color: #e0f7ff;        /* Soft moonlit text */
     }
 
     body.night-mode .main-header {
@@ -23,7 +32,11 @@
       border: 1px solid rgba(255,255,255,0.15);
     }
 
-    /* Stars */
+    /* 
+    STARFIELD LAYER
+    A repeating PNG of stars that gently twinkles.
+    This sits behind all content and does not interfere with clicks.
+    */
     body.night-mode::before {
       content: "";
       position: fixed;
@@ -39,7 +52,10 @@
       to { opacity: 0.35; }
     }
 
-    /* Moon */
+    /* 
+    MOON LAYER
+    A glowing moon rendered with a radial gradient.
+    */
     body.night-mode::after {
       content: "";
       position: fixed;
@@ -53,7 +69,10 @@
       pointer-events: none;
     }
 
-    /* Tree silhouettes */
+    /* 
+    TREE SILHOUETTES
+    A repeating PNG of tree outlines at the bottom of the screen.
+    */
     .night-trees {
       display: none;
     }
@@ -70,7 +89,10 @@
       pointer-events: none;
     }
 
-    /* Toggle */
+    /* 
+    NIGHT MODE TOGGLE SWITCH
+    This sits in the top-right corner and flips the theme.
+    */
     .toggle-container {
       position: absolute;
       top: 20px;
@@ -87,8 +109,20 @@
 
 <body class="fade-in">
 
+  <!-- 
+  ============================================================
+  TREE SILHOUETTE LAYER (only visible in night mode)
+  ============================================================
+  -->
   <div class="night-trees"></div>
 
+  <!-- 
+  ============================================================
+  NIGHT MODE TOGGLE
+  This checkbox toggles the "night-mode" class on <body>.
+  The theme preference is saved in localStorage.
+  ============================================================
+  -->
   <div class="toggle-container">
     <label>
       <input type="checkbox" id="themeToggle">
@@ -96,42 +130,89 @@
     </label>
   </div>
 
+  <!-- 
+  ============================================================
+  HEADER
+  Displays the OS title and tagline.
+  ============================================================
+  -->
   <header class="main-header">
-    <h1 class="app-title">Tree Service Hub</h1>
+    <h1 class="app-title">Real Tree Guy</h1>
     <p class="app-subtitle">Modular Static OS for Tree Work</p>
   </header>
 
+  <!-- 
+  ============================================================
+  MAIN NAVIGATION GRID
+  Each module is a standalone page in /modules/.
+  Tree Measurement is intentionally centered using CSS order.
+  The new REAL TREE MAP module is added here.
+  ============================================================
+  -->
   <main>
     <nav class="nav-grid">
 
+      <!-- Business Profile Module -->
       <a href="modules/profile/profile.html" class="nav-card">Profile</a>
 
+      <!-- Customer CRM + Job Manager -->
       <a href="modules/customers/customers.html" class="nav-card">Customers & Jobs</a>
 
-      <!-- Tree Measurement moved to center -->
+      <!-- Tree Measurement moved visually to center -->
       <a href="modules/measurement/measurement.html" class="nav-card" style="order:-1;">Tree Measurement</a>
 
+      <!-- Contract Generator + Archive -->
       <a href="modules/contracts/contracts.html" class="nav-card">Contracts</a>
+
+      <!-- Unified Calendar (tasks, reminders, contracts, jobs) -->
       <a href="modules/calendar/calendar.html" class="nav-card">Calendar</a>
+
+      <!-- Cards & Flyers Studio -->
       <a href="modules/flyers/flyers.html" class="nav-card">Cards & Flyers</a>
+
+      <!-- 
+      ============================================================
+      NEW MODULE: REAL TREE MAP
+      This links to your custom mapping engine:
+      - Nationwide tree lookup
+      - Job locations
+      - Supply hubs
+      - Client addresses
+      - Directions
+      - Street view
+      ============================================================
+      -->
+      <a href="modules/map/real-tree-map.html" class="nav-card">Real Tree Map</a>
 
     </nav>
   </main>
 
+  <!-- 
+  ============================================================
+  FOOTER
+  ============================================================
+  -->
   <footer class="main-footer">
-    <p>Tree Service Hub • Modular Static App</p>
+    <p>Real Tree Guy • Modular Static App</p>
   </footer>
 
+  <!-- 
+  ============================================================
+  NIGHT MODE SCRIPT
+  Loads saved theme from localStorage and toggles the class.
+  ============================================================
+  -->
   <script>
     const toggle = document.getElementById("themeToggle");
     const body = document.body;
 
-    // Load saved theme
+    // Load saved theme on page load
     if (localStorage.getItem("tn_theme") === "night") {
       body.classList.add("night-mode");
       toggle.checked = true;
     }
 
+    // Toggle theme and save preference
     toggle.onchange = () => {
       if (toggle.checked) {
         body.classList.add("night-mode");
