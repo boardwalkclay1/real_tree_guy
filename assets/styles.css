@@ -1,37 +1,30 @@
 /* --------------------------------------------------
-   GLOBAL FOREST THEME (UPGRADED)
+   GLOBAL FOREST THEME — PURE CSS, NO IMAGES
 -------------------------------------------------- */
 
 body {
   margin: 0;
   padding: 0;
   font-family: "Trebuchet MS", sans-serif;
+
+  /* Layered gradients simulate wood + forest depth */
   background:
-    url('assets/wood/wood-texture-dark.jpg') repeat,
+    repeating-linear-gradient(
+      90deg,
+      #0d2a12 0px,
+      #0f3116 40px,
+      #0d2a12 80px
+    ),
     linear-gradient(#0b2e13, #0f3d1a, #0b2e13);
-  background-size: 600px, cover;
+
   color: #e8ffe8;
   overflow-x: hidden;
-  animation: bgMove 22s ease-in-out infinite alternate;
+  animation: bgMove 20s ease-in-out infinite alternate;
 }
 
 @keyframes bgMove {
   0% { background-position: 0 0, 0 0; }
-  100% { background-position: 0 40px, 0 0; }
-}
-
-/* --------------------------------------------------
-   FOREST CANOPY OVERLAY
--------------------------------------------------- */
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: url('assets/trees/canopy-silhouette.png') top center repeat-x;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
+  100% { background-position: 40px 0, 0 0; }
 }
 
 /* --------------------------------------------------
@@ -42,8 +35,10 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(#ffffff33 2px, transparent 2px);
-  background-size: 4px 4px;
+  background-image:
+    radial-gradient(#ffffff22 2px, transparent 2px),
+    radial-gradient(#ffffff11 1px, transparent 1px);
+  background-size: 4px 4px, 6px 6px;
   opacity: 0.15;
   animation: drift 18s linear infinite;
   pointer-events: none;
@@ -55,30 +50,56 @@ body::after {
 }
 
 /* --------------------------------------------------
+   TREE SILHOUETTE (PURE CSS)
+-------------------------------------------------- */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,0.4) 0%,
+      rgba(0,0,0,0.0) 40%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(0,0,0,0.25) 0px,
+      rgba(0,0,0,0.25) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --------------------------------------------------
    HEADER
 -------------------------------------------------- */
 
 header {
   text-align: center;
-  padding: 35px 10px;
-  background: rgba(0, 0, 0, 0.35);
-  border-bottom: 3px solid #1f5f2b;
-  backdrop-filter: blur(6px);
+  padding: 30px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid #1f5f2b;
+  backdrop-filter: blur(4px);
   position: relative;
   z-index: 2;
 }
 
 header h1 {
   margin: 0;
-  font-size: 2.8rem;
+  font-size: 2.5rem;
   color: #b8ffb8;
-  text-shadow: 0 0 12px #1f5f2b;
+  text-shadow: 0 0 10px #1f5f2b;
 }
 
 header p {
-  margin-top: 6px;
+  margin-top: 5px;
   color: #d4ffd4;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 /* --------------------------------------------------
@@ -87,8 +108,8 @@ header p {
 
 .nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
   padding: 40px;
   position: relative;
   z-index: 2;
@@ -96,35 +117,22 @@ header p {
 
 .nav-grid a {
   display: block;
-  padding: 25px;
+  padding: 20px;
   background: rgba(26, 63, 29, 0.9);
   border: 2px solid #2e6b33;
-  border-radius: 14px;
+  border-radius: 12px;
   text-align: center;
   color: #d8ffd8;
   text-decoration: none;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   transition: 0.3s;
-  box-shadow: 0 0 12px rgba(0, 50, 0, 0.45);
+  box-shadow: 0 0 10px rgba(0, 50, 0, 0.4);
 }
 
 .nav-grid a:hover {
-  background: #2a6f31;
-  transform: translateY(-5px);
-  box-shadow: 0 0 18px rgba(0, 80, 0, 0.7);
-}
-
-/* --------------------------------------------------
-   CARDS / PANELS
--------------------------------------------------- */
-
-.card {
-  background: rgba(20, 45, 22, 0.85);
-  border: 2px solid #2e6b33;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 0 12px rgba(0, 50, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: #245c29;
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(0, 80, 0, 0.6);
 }
 
 /* --------------------------------------------------
@@ -150,7 +158,7 @@ button:hover, .btn:hover {
 }
 
 /* --------------------------------------------------
-   INPUTS + TEXTAREAS
+   INPUTS
 -------------------------------------------------- */
 
 input, textarea, select {
@@ -170,7 +178,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* --------------------------------------------------
-   MODALS (PJ FORM, PROFILE EDIT, ETC.)
+   MODALS
 -------------------------------------------------- */
 
 .modal {
@@ -198,34 +206,29 @@ input:focus, textarea:focus, select:focus {
 
 footer {
   text-align: center;
-  padding: 25px;
-  background: rgba(0, 0, 0, 0.35);
-  border-top: 3px solid #1f5f2b;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 2px solid #1f5f2b;
   color: #caffca;
-  margin-top: 50px;
+  margin-top: 40px;
   position: relative;
   z-index: 2;
 }
 
 /* --------------------------------------------------
-   ALTERNATE THEME: DARK BARK MODE
+   ALTERNATE THEME (BARK MODE)
 -------------------------------------------------- */
 
 body.bark-mode {
   background:
-    url('assets/wood/bark-texture.jpg') repeat,
+    repeating-linear-gradient(
+      90deg,
+      #2a1b0f 0px,
+      #3a2615 40px,
+      #2a1b0f 80px
+    ),
     linear-gradient(#0a0a0a, #111, #0a0a0a);
   color: #f0f0f0;
-}
-
-body.bark-mode header h1 {
-  color: #ffe9b8;
-  text-shadow: 0 0 12px #6b4e1f;
-}
-
-body.bark-mode .nav-grid a {
-  background: rgba(40, 30, 20, 0.9);
-  border-color: #6b4e1f;
 }
 
 body.bark-mode button {
