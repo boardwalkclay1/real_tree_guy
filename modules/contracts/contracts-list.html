@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contract Archive</title>
+  <style>
+    body { font-family:Inter; background:#f4f7fa; padding:20px; }
+    table { width:100%; border-collapse:collapse; background:white; border-radius:12px; overflow:hidden; }
+    th, td { padding:14px; border-bottom:1px solid #ddd; }
+    th { background:#1a1f36; color:white; }
+    a { color:#4caf50; text-decoration:none; }
+  </style>
+</head>
+
+<body>
+  <h2>Contract Archive</h2>
+  <table id="table">
+    <tr>
+      <th>ID</th>
+      <th>Client</th>
+      <th>Date</th>
+      <th>View</th>
+    </tr>
+  </table>
+
+<script>
+  const table = document.getElementById("table");
+  const contracts = JSON.parse(localStorage.getItem("tn_contracts") || "[]");
+
+  contracts.forEach(c => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${c.id}</td>
+      <td>${c.name}</td>
+      <td>${c.timestamp}</td>
+      <td><a href="contract-view.html?id=${c.id}">Open</a></td>
+    `;
+    table.appendChild(row);
+  });
+</script>
+
+</body>
+</html>
