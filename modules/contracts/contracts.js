@@ -1,28 +1,33 @@
-// Load business profile
-let biz = JSON.parse(localStorage.getItem("business_profile") || "{}");
+// Business profile expected in localStorage.business_profile
+// {
+//   "name": "Your Tree Service",
+//   "owner": "Your Name",
+//   "phone": "555-555-5555",
+//   "email": "you@business.com",
+//   "address": "123 Street, City, ST"
+// }
 
-// Load existing contracts
+let biz = JSON.parse(localStorage.getItem("business_profile") || "{}");
 let contracts = JSON.parse(localStorage.getItem("tn_contracts") || "[]");
 
-// Generate next contract ID
 function generateContractId() {
   const year = new Date().getFullYear();
   const count = contracts.length + 1;
   return `TN-${year}-${String(count).padStart(5, "0")}`;
 }
 
-function generateContract() {
+function buildContractObject() {
   const id = generateContractId();
-  const name = document.getElementById("clientName").value;
-  const phone = document.getElementById("clientPhone").value;
-  const email = document.getElementById("clientEmail").value;
-  const address = document.getElementById("clientAddress").value;
-  const scope = document.getElementById("scope").value;
-  const price = document.getElementById("price").value;
+  const name = document.getElementById("clientName").value.trim();
+  const phone = document.getElementById("clientPhone").value.trim();
+  const email = document.getElementById("clientEmail").value.trim();
+  const address = document.getElementById("clientAddress").value.trim();
+  const scope = document.getElementById("scope").value.trim();
+  const price = document.getElementById("price").value.trim();
 
   const timestamp = new Date().toLocaleString();
 
-  const contract = `
+  const body = `
 TREE WORK AGREEMENT
 Contract ID: ${id}
 Generated: ${timestamp}
@@ -35,6 +40,7 @@ Address: ${address}
 
 Business Information:
 Company: ${biz.name || ""}
+Owner: ${biz.owner || ""}
 Phone: ${biz.phone || ""}
 Email: ${biz.email || ""}
 Address: ${biz.address || ""}
@@ -63,33 +69,54 @@ SIGNATURES
 Client Signature: _______________________
 
 Business Representative: ${biz.owner || ""}
-  `;
+`;
 
-  document.getElementById("previewBox").textContent = contract;
-
-  return { id, contract, name, email, timestamp, scope, price };
+  return {
+    id,
+    clientName: name,
+    clientEmail: email,
+    clientPhone: phone,
+    clientAddress: address,
+    scope,
+    price,
+    timestamp,
+    contract: body
+  };
 }
 
-document.getElementById("fill").onclick = () => generateContract();
+function renderPreview() {
+  const data = buildContractObject();
+  document.getElementById("previewBox").textContent = data.contract;
+  return data;
+}
+
+document.getElementById("fill").onclick = () => {
+  renderPreview();
+};
 
 document.getElementById("send").onclick = () => {
-  const data = generateContract();
-  const mailto = `mailto:${data.email}?subject=Tree Work Agreement ${data.id}&body=${encodeURIComponent(data.contract)}`;
+  const data = renderPreview();
+  if (!data.clientEmail) {
+    alert("Client email is required to send.");
+    return;
+  }
+  const mailto = `mailto:${encodeURIComponent(
+    data.clientEmail
+  )}?subject=${encodeURIComponent(
+    "Tree Work Agreement " + data.id
+  )}&body=${encodeURIComponent(data.contract)}`;
   window.location.href = mailto;
 };
 
-// SAVE CONTRACT TO ARCHIVE
 document.getElementById("save").onclick = () => {
-  const data = generateContract();
+  const data = renderPreview();
   contracts.push(data);
   localStorage.setItem("tn_contracts", JSON.stringify(contracts));
-  alert("Contract saved!");
+  alert("Contract saved to archive.");
 };
 
-// SEND TO CALENDAR
 document.getElementById("calendar").onclick = () => {
-  const data = generateContract();
-
+  const data = renderPreview();
   let events = JSON.parse(localStorage.getItem("tn_events") || "[]");
 
   events.push({
@@ -102,6 +129,5 @@ document.getElementById("calendar").onclick = () => {
   });
 
   localStorage.setItem("tn_events", JSON.stringify(events));
-
-  alert("Added to calendar!");
+  alert("Contract added to calendar.");
 };
