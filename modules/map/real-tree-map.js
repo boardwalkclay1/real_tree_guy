@@ -1,381 +1,284 @@
 // ====== CONFIG ======
 const PJ_STORAGE_KEY = "realTreeMapPJs";
 
+const OVERPASS_ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter?data=",
+  "https://overpass.kumi.systems/api/interpreter?data=",
+  "https://overpass.nchc.org.tw/api/interpreter?data="
+];
+
+const OVERPASS_RADIUS = 15000;
+const OVERPASS_RETRIES = 4;
+const OVERPASS_BACKOFF = 1000;
+
 // ====== STATE ======
-let potentialJobs = loadPJsFromStorage();
+let potentialJobs = loadPJs();
 let searchMarker = null;
+let endpointIndex = 0;
 
-// ====== MAP INIT ======
-const map = L.map('map', {
-  zoomControl: true,
-  scrollWheelZoom: true
-}).setView([33.75, -84.25], 11); // default Atlanta-ish
+// ====== MAP ======
+const map = L.map("map").setView([33.75, -84.25], 11);
 
-// CartoDB Light (Positron)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap &copy; CARTO'
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  maxZoom: 19
 }).addTo(map);
 
-// Layer groups
 const layerPJs = L.layerGroup().addTo(map);
-const layerHomeDepot = L.layerGroup().addTo(map);
+const layerHD = L.layerGroup().addTo(map);
 const layerLowes = L.layerGroup().addTo(map);
-const layerArborist = L.layerGroup().addTo(map);
+const layerArbor = L.layerGroup().addTo(map);
 
-// ====== STORAGE HELPERS ======
-function loadPJsFromStorage() {
+const statusEl = document.getElementById("mapStatus");
+
+// ====== STORAGE ======
+function loadPJs() {
   try {
-    const raw = localStorage.getItem(PJ_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    console.error("Failed to load PJs:", e);
+    return JSON.parse(localStorage.getItem(PJ_STORAGE_KEY)) || [];
+  } catch {
     return [];
   }
 }
 
-function savePJsToStorage() {
+function savePJs() {
   localStorage.setItem(PJ_STORAGE_KEY, JSON.stringify(potentialJobs));
 }
 
-// ====== LINK HELPERS ======
-function googleDirectionsLink(lat, lng) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`;
+// ====== HELPERS ======
+function setStatus(msg) {
+  if (statusEl) statusEl.textContent = msg;
 }
 
-function googleStreetViewLink(lat, lng) {
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+function gDir(lat, lng) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+}
+
+function gSV(lat, lng) {
   return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
 }
 
-// ====== ICS CALENDAR ======
-function createICSForPJ(pj) {
-  if (!pj.reminder) {
-    alert("No reminder date set for this PJ.");
-    return;
-  }
-
-  const dt = new Date(pj.reminder);
-  if (isNaN(dt.getTime())) {
-    alert("Invalid reminder date.");
-    return;
-  }
-
-  const pad = n => String(n).padStart(2, "0");
-  const y = dt.getUTCFullYear();
-  const m = pad(dt.getUTCMonth() + 1);
-  const d = pad(dt.getUTCDate());
-  const hh = pad(dt.getUTCHours());
-  const mm = pad(dt.getUTCMinutes());
-  const ss = "00";
-  const dtStart = `${y}${m}${d}T${hh}${mm}${ss}Z`;
-
-  const dtEndObj = new Date(dt.getTime() + 60 * 60 * 1000);
-  const y2 = dtEndObj.getUTCFullYear();
-  const m2 = pad(dtEndObj.getUTCMonth() + 1);
-  const d2 = pad(dtEndObj.getUTCDate());
-  const hh2 = pad(dtEndObj.getUTCHours());
-  const mm2 = pad(dtEndObj.getUTCMinutes());
-  const dtEnd = `${y2}${m2}${d2}T${hh2}${mm2}${ss}Z`;
-
-  const summary = `PJ: ${pj.nickname || "Tree Job"}`;
-  const description = (pj.notes || "").replace(/\r?\n/g, "\\n");
-  const location = `${pj.lat}, ${pj.lng}`;
-
-  const icsContent = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Real Tree Map//EN",
-    "BEGIN:VEVENT",
-    `UID:${pj.id}@realtreemap`,
-    `DTSTAMP:${dtStart}`,
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
-    `SUMMARY:${summary}`,
-    `DESCRIPTION:${description}`,
-    `LOCATION:${location}`,
-    "END:VEVENT",
-    "END:VCALENDAR"
-  ].join("\r\n");
-
-  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${summary.replace(/\s+/g, "_")}.ics`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// Expose for popup buttons
-window.realTreeMapCalendar = function (pjId) {
-  const pj = potentialJobs.find(p => String(p.id) === String(pjId));
-  if (!pj) return;
-  createICSForPJ(pj);
-};
-
-// ====== PJs LAYER ======
-function rebuildPJsLayer() {
+// ====== PJ LAYER ======
+function rebuildPJs() {
   layerPJs.clearLayers();
   potentialJobs.forEach(pj => {
-    const popupHtml = `
-      <strong>PJ: ${pj.nickname || "Untitled"}</strong><br>
-      ${pj.notes ? (pj.notes + "<br>") : ""}<br>
-      ${pj.reminder ? ("Reminder: " + pj.reminder + "<br><br>") : "<br>"}
-      <button onclick="window.open('${googleDirectionsLink(pj.lat, pj.lng)}','_blank')">Directions</button>
-      <button onclick="window.open('${googleStreetViewLink(pj.lat, pj.lng)}','_blank')">Street View</button>
-      <button onclick="window.realTreeMapCalendar('${pj.id}')">Add to Calendar</button>
+    const html = `
+      <strong>${pj.nickname}</strong><br>
+      ${pj.notes}<br><br>
+      <button onclick="window.open('${gDir(pj.lat,pj.lng)}')">Directions</button>
+      <button onclick="window.open('${gSV(pj.lat,pj.lng)}')">Street View</button>
     `;
     L.marker([pj.lat, pj.lng], {
-      icon: L.divIcon({ html: "📍", className: "pj-marker" })
-    }).bindPopup(popupHtml).addTo(layerPJs);
+      icon: L.divIcon({ html:"📍", className:"pj-marker" })
+    }).bindPopup(html).addTo(layerPJs);
   });
 }
+rebuildPJs();
 
-rebuildPJsLayer();
+// ====== OVERPASS ======
+async function fetchOverpassRaw(query) {
+  const url = OVERPASS_ENDPOINTS[endpointIndex] + encodeURIComponent(query);
+  endpointIndex = (endpointIndex + 1) % OVERPASS_ENDPOINTS.length;
 
-// ====== OVERPASS (REAL STORES) ======
-async function fetchOverpass(query) {
-  const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Overpass error");
+  if (!res.ok) throw new Error("HTTP " + res.status);
   return res.json();
 }
 
-async function loadStoresAround(lat, lng) {
-  layerHomeDepot.clearLayers();
-  layerLowes.clearLayers();
-  layerArborist.clearLayers();
+async function fetchOverpass(query) {
+  let err;
+  for (let i = 0; i < OVERPASS_RETRIES; i++) {
+    try {
+      return await fetchOverpassRaw(query);
+    } catch (e) {
+      err = e;
+      await sleep(OVERPASS_BACKOFF * (i + 1));
+    }
+  }
+  throw err;
+}
 
-  const radius = 15000; // 15km
-
-  const qHomeDepot = `
-    [out:json];
-    node["brand"="The Home Depot"](around:${radius},${lat},${lng});
-    out;
-  `;
-  const qLowes = `
-    [out:json];
-    node["brand"="Lowe's"](around:${radius},${lat},${lng});
-    out;
-  `;
-  const qArborist = `
+// ====== STORE QUERIES (FIXED) ======
+function qHomeDepot(lat, lng) {
+  return `
     [out:json];
     (
-      node["shop"="forestry"](around:${radius},${lat},${lng});
-      node["shop"="hardware"](around:${radius},${lat},${lng});
-      node["shop"="tools"](around:${radius},${lat},${lng});
-      node["shop"="agrarian"](around:${radius},${lat},${lng});
+      node["name"~"Home Depot",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["brand"~"Home Depot",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["operator"~"Home Depot",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["shop"="doityourself"](around:${OVERPASS_RADIUS},${lat},${lng});
     );
     out;
   `;
+}
+
+function qLowes(lat, lng) {
+  return `
+    [out:json];
+    (
+      node["name"~"Lowe",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["brand"~"Lowe",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["operator"~"Lowe",i](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["shop"="hardware"](around:${OVERPASS_RADIUS},${lat},${lng});
+    );
+    out;
+  `;
+}
+
+function qArborist(lat, lng) {
+  return `
+    [out:json];
+    (
+      node["shop"="forestry"](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["shop"="hardware"](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["shop"="tools"](around:${OVERPASS_RADIUS},${lat},${lng});
+      node["shop"="agrarian"](around:${OVERPASS_RADIUS},${lat},${lng});
+    );
+    out;
+  `;
+}
+
+// ====== LOAD STORES ======
+async function loadStores(lat, lng) {
+  setStatus("Loading stores…");
+
+  layerHD.clearLayers();
+  layerLowes.clearLayers();
+  layerArbor.clearLayers();
 
   try {
-    const [hdData, lowesData, arbData] = await Promise.all([
-      fetchOverpass(qHomeDepot),
-      fetchOverpass(qLowes),
-      fetchOverpass(qArborist)
-    ]);
+    const hd = await fetchOverpass(qHomeDepot(lat, lng));
+    await sleep(300);
+    const lw = await fetchOverpass(qLowes(lat, lng));
+    await sleep(300);
+    const arb = await fetchOverpass(qArborist(lat, lng));
 
-    // Home Depot
-    (hdData.elements || []).forEach(el => {
-      if (!el.lat || !el.lon) return;
-      const name = el.tags && (el.tags.name || "Home Depot");
-      const popupHtml = `
-        <strong>Home Depot</strong><br>${name}<br><br>
-        <button onclick="window.open('${googleDirectionsLink(el.lat, el.lon)}','_blank')">Directions</button>
-      `;
+    hd.elements?.forEach(el => {
+      if (!el.lat) return;
       L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html: "🧱", className: "hd-marker" })
-      }).bindPopup(popupHtml).addTo(layerHomeDepot);
+        icon: L.divIcon({ html:"🧱", className:"hd-marker" })
+      }).bindPopup(`<strong>Home Depot</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerHD);
     });
 
-    // Lowe's
-    (lowesData.elements || []).forEach(el => {
-      if (!el.lat || !el.lon) return;
-      const name = el.tags && (el.tags.name || "Lowe's");
-      const popupHtml = `
-        <strong>Lowe's</strong><br>${name}<br><br>
-        <button onclick="window.open('${googleDirectionsLink(el.lat, el.lon)}','_blank')">Directions</button>
-      `;
+    lw.elements?.forEach(el => {
+      if (!el.lat) return;
       L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html: "🔩", className: "lowes-marker" })
-      }).bindPopup(popupHtml).addTo(layerLowes);
+        icon: L.divIcon({ html:"🔩", className:"lowes-marker" })
+      }).bindPopup(`<strong>Lowe's</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerLowes);
     });
 
-    // Arborist / hardware / tools / agrarian
-    (arbData.elements || []).forEach(el => {
-      if (!el.lat || !el.lon) return;
-      const name = el.tags && (el.tags.name || "Tree / Tool Shop");
-      const popupHtml = `
-        <strong>Chainsaw / Arborist / Tools</strong><br>${name}<br><br>
-        <button onclick="window.open('${googleDirectionsLink(el.lat, el.lon)}','_blank')">Directions</button>
-      `;
+    arb.elements?.forEach(el => {
+      if (!el.lat) return;
       L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html: "🪚", className: "arb-marker" })
-      }).bindPopup(popupHtml).addTo(layerArborist);
+        icon: L.divIcon({ html:"🪚", className:"arb-marker" })
+      }).bindPopup(`<strong>Arborist / Tools</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerArbor);
     });
 
+    setStatus("");
   } catch (e) {
-    console.error("Error loading stores:", e);
+    console.error(e);
+    setStatus("Overpass busy — try again.");
   }
 }
 
-// Initial store load (default center)
-loadStoresAround(33.75, -84.25);
+loadStores(33.75, -84.25);
 
 // ====== FILTERS ======
-const chkPJs = document.getElementById('filterPJs');
-const chkHomeDepot = document.getElementById('filterHomeDepot');
-const chkLowes = document.getElementById('filterLowes');
-const chkArborist = document.getElementById('filterArborist');
-
 function applyFilters() {
-  chkPJs.checked ? map.addLayer(layerPJs) : map.removeLayer(layerPJs);
-  chkHomeDepot.checked ? map.addLayer(layerHomeDepot) : map.removeLayer(layerHomeDepot);
-  chkLowes.checked ? map.addLayer(layerLowes) : map.removeLayer(layerLowes);
-  chkArborist.checked ? map.addLayer(layerArborist) : map.removeLayer(layerArborist);
+  filterPJs.checked ? map.addLayer(layerPJs) : map.removeLayer(layerPJs);
+  filterHomeDepot.checked ? map.addLayer(layerHD) : map.removeLayer(layerHD);
+  filterLowes.checked ? map.addLayer(layerLowes) : map.removeLayer(layerLowes);
+  filterArborist.checked ? map.addLayer(layerArbor) : map.removeLayer(layerArbor);
 }
 
-[chkPJs, chkHomeDepot, chkLowes, chkArborist].forEach(chk => {
-  chk.addEventListener('change', applyFilters);
-});
-
-document.getElementById('btnAllOn').addEventListener('click', () => {
-  [chkPJs, chkHomeDepot, chkLowes, chkArborist].forEach(c => c.checked = true);
+document.getElementById("btnAllOn").onclick = () => {
+  filterPJs.checked = filterHomeDepot.checked = filterLowes.checked = filterArborist.checked = true;
   applyFilters();
-});
+};
 
-document.getElementById('btnAllOff').addEventListener('click', () => {
-  [chkPJs, chkHomeDepot, chkLowes, chkArborist].forEach(c => c.checked = false);
+document.getElementById("btnAllOff").onclick = () => {
+  filterPJs.checked = filterHomeDepot.checked = filterLowes.checked = filterArborist.checked = false;
   applyFilters();
-});
+};
 
 applyFilters();
 
-// ====== PJ CREATION UI ======
-const pjForm = document.getElementById('pjForm');
-const pjCoordsLabel = document.getElementById('pjCoordsLabel');
-const pjNicknameInput = document.getElementById('pjNickname');
-const pjNotesInput = document.getElementById('pjNotes');
-const pjReminderInput = document.getElementById('pjReminder');
-const pjCancelBtn = document.getElementById('pjCancel');
-const pjSaveBtn = document.getElementById('pjSave');
+// ====== PJ FORM ======
+const pjForm = document.getElementById("pjForm");
+let pendingCoords = null;
 
-let pendingPJCoords = null;
-
-function openPJForm(latlng) {
-  pendingPJCoords = latlng;
-  pjCoordsLabel.textContent = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
-  pjNicknameInput.value = "";
-  pjNotesInput.value = "";
-  pjReminderInput.value = "";
+map.on("click", e => {
+  pendingCoords = e.latlng;
+  pjCoordsLabel.textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
   pjForm.style.display = "flex";
-}
-
-function closePJForm() {
-  pjForm.style.display = "none";
-  pendingPJCoords = null;
-}
-
-map.on('click', (e) => {
-  openPJForm(e.latlng);
 });
 
-pjCancelBtn.addEventListener('click', () => {
-  closePJForm();
-});
+pjCancel.onclick = () => pjForm.style.display = "none";
 
-pjSaveBtn.addEventListener('click', () => {
-  if (!pendingPJCoords) return;
-
-  const nickname = pjNicknameInput.value.trim() || "PJ";
-  const notes = pjNotesInput.value.trim();
-  const reminder = pjReminderInput.value ? pjReminderInput.value : null;
-
-  const newPJ = {
+pjSave.onclick = () => {
+  potentialJobs.push({
     id: Date.now(),
-    nickname,
-    notes,
-    lat: pendingPJCoords.lat,
-    lng: pendingPJCoords.lng,
-    reminder
-  };
-
-  potentialJobs.push(newPJ);
-  savePJsToStorage();
-  rebuildPJsLayer();
-  closePJForm();
-});
-
-// ====== USE MY LOCATION ======
-const btnLocate = document.getElementById('btnLocate');
-btnLocate.addEventListener('click', () => {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported in this browser.");
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      map.setView([lat, lng], 12);
-      loadStoresAround(lat, lng);
-    },
-    err => {
-      console.error(err);
-      alert("Could not get your location.");
-    }
-  );
-});
-
-// ====== SEARCH ANY PLACE (Nominatim) ======
-const searchInput = document.getElementById('searchInput');
-const btnSearch = document.getElementById('btnSearch');
-
-async function searchPlace(query) {
-  if (!query.trim()) return;
-  const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(query);
-  const res = await fetch(url, {
-    headers: { "Accept-Language": "en" }
+    nickname: pjNickname.value || "PJ",
+    notes: pjNotes.value || "",
+    reminder: pjReminder.value || null,
+    lat: pendingCoords.lat,
+    lng: pendingCoords.lng
   });
-  if (!res.ok) {
-    alert("Search failed.");
+  savePJs();
+  rebuildPJs();
+  pjForm.style.display = "none";
+};
+
+// ====== SEARCH ======
+btnSearch.onclick = () => search(searchInput.value);
+
+searchInput.onkeydown = e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    search(searchInput.value);
+  }
+};
+
+async function search(q) {
+  if (!q.trim()) return;
+  setStatus("Searching…");
+
+  const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(q);
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if (!data.length) {
+    setStatus("No results.");
     return;
   }
-  const results = await res.json();
-  if (!results.length) {
-    alert("No results found.");
-    return;
-  }
-  const best = results[0];
-  const lat = parseFloat(best.lat);
-  const lng = parseFloat(best.lon);
+
+  const best = data[0];
+  const lat = +best.lat;
+  const lng = +best.lon;
 
   map.setView([lat, lng], 14);
 
-  if (searchMarker) {
-    map.removeLayer(searchMarker);
-  }
-  const popupHtml = `
-    <strong>${best.display_name}</strong><br><br>
-    <button onclick="window.open('${googleDirectionsLink(lat, lng)}','_blank')">Directions</button>
-  `;
+  if (searchMarker) map.removeLayer(searchMarker);
+
   searchMarker = L.marker([lat, lng], {
-    icon: L.divIcon({ html: "📌", className: "search-marker" })
-  }).bindPopup(popupHtml).addTo(map).openPopup();
+    icon: L.divIcon({ html:"📌", className:"search-marker" })
+  }).bindPopup(`<strong>${best.display_name}</strong><br><button onclick="window.open('${gDir(lat,lng)}')">Directions</button>`).addTo(map).openPopup();
+
+  setStatus("");
 }
 
-btnSearch.addEventListener('click', () => {
-  searchPlace(searchInput.value);
-});
+// ====== USE MY LOCATION ======
+btnLocate.onclick = () => {
+  if (!navigator.geolocation) return alert("Not supported.");
+  setStatus("Locating…");
 
-searchInput.addEventListener('keydown', (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    searchPlace(searchInput.value);
-  }
-});
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    map.setView([lat, lng], 12);
+    await loadStores(lat, lng);
+    setStatus("");
+  });
+};
