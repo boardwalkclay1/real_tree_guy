@@ -1,20 +1,16 @@
 // ====== CONFIG ======
 const PJ_STORAGE_KEY = "realTreeMapPJs";
 
-const OVERPASS_ENDPOINTS = [
-  "https://overpass-api.de/api/interpreter?data=",
-  "https://overpass.kumi.systems/api/interpreter?data=",
-  "https://overpass.nchc.org.tw/api/interpreter?data="
-];
+// Single, stable Overpass endpoint
+const OVERPASS_URL = "https://overpass-api.de/api/interpreter?data=";
 
 const OVERPASS_RADIUS = 15000;
-const OVERPASS_RETRIES = 3;
-const OVERPASS_BACKOFF = 800;
+const OVERPASS_RETRIES = 2;
+const OVERPASS_TIMEOUT_MS = 4000;
 
 // ====== STATE ======
 let potentialJobs = loadPJs();
 let searchMarker = null;
-let endpointIndex = 0;
 
 // ====== MAP ======
 const map = L.map("map").setView([33.75, -84.25], 11);
@@ -23,17 +19,44 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19
 }).addTo(map);
 
-const layerPJs = L.layerGroup();
+const layerPJs = L.layerGroup().addTo(map);
 const layerHD = L.layerGroup();
 const layerLowes = L.layerGroup();
 const layerArbor = L.layerGroup();
 
 const statusEl = document.getElementById("mapStatus");
 
+// FILTER ELEMENTS
+const filterPJs = document.getElementById("filterPJs");
+const filterHomeDepot = document.getElementById("filterHomeDepot");
+const filterLowes = document.getElementById("filterLowes");
+const filterArborist = document.getElementById("filterArborist");
+const btnAllOn = document.getElementById("btnAllOn");
+const btnAllOff = document.getElementById("btnAllOff");
+
+// PJ FORM ELEMENTS
+const pjForm = document.getElementById("pjForm");
+const pjCoordsLabel = document.getElementById("pjCoordsLabel");
+const pjNickname = document.getElementById("pjNickname");
+const pjNotes = document.getElementById("pjNotes");
+const pjReminder = document.getElementById("pjReminder");
+const pjSave = document.getElementById("pjSave");
+const pjCancel = document.getElementById("pjCancel");
+
+// SEARCH + LOCATE
+const searchInput = document.getElementById("searchInput");
+const btnSearch = document.getElementById("btnSearch");
+const btnLocate = document.getElementById("btnLocate");
+
+let pendingCoords = null;
+
 // ====== STORAGE ======
 function loadPJs() {
-  try { return JSON.parse(localStorage.getItem(PJ_STORAGE_KEY)) || []; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(PJ_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
 function savePJs() {
@@ -42,11 +65,7 @@ function savePJs() {
 
 // ====== HELPERS ======
 function setStatus(msg) {
-  if (statusEl) statusEl.textContent = msg;
-}
-
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
+  if (statusEl) statusEl.textContent = msg || "";
 }
 
 function gDir(lat, lng) {
@@ -57,51 +76,51 @@ function gSV(lat, lng) {
   return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
 }
 
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
 // ====== PJ LAYER ======
 function rebuildPJs() {
   layerPJs.clearLayers();
   potentialJobs.forEach(pj => {
     const html = `
       <strong>${pj.nickname}</strong><br>
-      ${pj.notes}<br><br>
+      ${pj.notes || ""}<br><br>
       <button onclick="window.open('${gDir(pj.lat,pj.lng)}')">Directions</button>
       <button onclick="window.open('${gSV(pj.lat,pj.lng)}')">Street View</button>
     `;
     L.marker([pj.lat, pj.lng], {
-      icon: L.divIcon({ html:"📍" })
+      icon: L.divIcon({ html: "📍" })
     }).bindPopup(html).addTo(layerPJs);
   });
 }
 rebuildPJs();
 
-// ====== OVERPASS WITH TIMEOUT ======
-async function fetchOverpassRaw(query) {
-  const endpoint = OVERPASS_ENDPOINTS[endpointIndex];
-  endpointIndex = (endpointIndex + 1) % OVERPASS_ENDPOINTS.length;
-
-  const url = endpoint + encodeURIComponent(query);
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 4000);
-
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.json();
-  } catch (e) {
-    clearTimeout(timeout);
-    throw e;
-  }
-}
-
+// ====== OVERPASS (TIMEOUT + RETRIES, SINGLE ENDPOINT) ======
 async function fetchOverpass(query) {
-  let err;
-  for (let i = 0; i < OVERPASS_RETRIES; i++) {
-    try { return await fetchOverpassRaw(query); }
-    catch (e) { err = e; await sleep(OVERPASS_BACKOFF * (i + 1)); }
+  let lastError = null;
+
+  for (let attempt = 0; attempt < OVERPASS_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), OVERPASS_TIMEOUT_MS);
+
+    try {
+      const res = await fetch(OVERPASS_URL + encodeURIComponent(query), {
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } catch (e) {
+      clearTimeout(timeout);
+      lastError = e;
+      await sleep(500 * (attempt + 1));
+    }
   }
-  throw err;
+
+  throw lastError || new Error("Overpass failed");
 }
 
 // ====== STORE QUERIES ======
@@ -144,11 +163,14 @@ function qArborist(lat, lng) {
   `;
 }
 
-// ====== LOAD STORES ONLY WHEN FILTERS TURN ON ======
+// ====== LOAD STORES ======
 async function loadStores(lat, lng) {
   if (!filterHomeDepot.checked &&
       !filterLowes.checked &&
-      !filterArborist.checked) return;
+      !filterArborist.checked) {
+    setStatus("");
+    return;
+  }
 
   setStatus("Loading stores…");
 
@@ -159,45 +181,68 @@ async function loadStores(lat, lng) {
   try {
     if (filterHomeDepot.checked) {
       const hd = await fetchOverpass(qHomeDepot(lat, lng));
-      hd.elements?.forEach(el => {
-        if (!el.lat) return;
-        L.marker([el.lat, el.lon], {
-          icon: L.divIcon({ html:"🧱" })
-        }).bindPopup(`<strong>Home Depot</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerHD);
-      });
+      if (hd.elements && hd.elements.length) {
+        hd.elements.forEach(el => {
+          if (!el.lat || !el.lon) return;
+          L.marker([el.lat, el.lon], {
+            icon: L.divIcon({ html: "🧱" })
+          }).bindPopup(
+            `<strong>Home Depot</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`
+          ).addTo(layerHD);
+        });
+      }
     }
 
     if (filterLowes.checked) {
       const lw = await fetchOverpass(qLowes(lat, lng));
-      lw.elements?.forEach(el => {
-        if (!el.lat) return;
-        L.marker([el.lat, el.lon], {
-          icon: L.divIcon({ html:"🔩" })
-        }).bindPopup(`<strong>Lowe's</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerLowes);
-      });
+      if (lw.elements && lw.elements.length) {
+        lw.elements.forEach(el => {
+          if (!el.lat || !el.lon) return;
+          L.marker([el.lat, el.lon], {
+            icon: L.divIcon({ html: "🔩" })
+          }).bindPopup(
+            `<strong>Lowe's</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`
+          ).addTo(layerLowes);
+        });
+      }
     }
 
     if (filterArborist.checked) {
       const arb = await fetchOverpass(qArborist(lat, lng));
-      arb.elements?.forEach(el => {
-        if (!el.lat) return;
-        L.marker([el.lat, el.lon], {
-          icon: L.divIcon({ html:"🪚" })
-        }).bindPopup(`<strong>Arborist / Tools</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerArbor);
-      });
+      if (arb.elements && arb.elements.length) {
+        arb.elements.forEach(el => {
+          if (!el.lat || !el.lon) return;
+          L.marker([el.lat, el.lon], {
+            icon: L.divIcon({ html: "🪚" })
+          }).bindPopup(
+            `<strong>Arborist / Tools</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`
+          ).addTo(layerArbor);
+        });
+      }
     }
+
+    // Attach layers only if they have content
+    if (layerHD.getLayers().length) map.addLayer(layerHD);
+    if (layerLowes.getLayers().length) map.addLayer(layerLowes);
+    if (layerArbor.getLayers().length) map.addLayer(layerArbor);
 
     setStatus("");
   } catch (e) {
-    console.error(e);
-    setStatus("Overpass busy — try again.");
+    console.error("Overpass failed:", e);
+    setStatus("Overpass busy or offline — try again.");
   }
 }
 
 // ====== FILTERS ======
 async function applyFilters() {
-  filterPJs.checked ? map.addLayer(layerPJs) : map.removeLayer(layerPJs);
+  // PJs
+  if (filterPJs.checked) {
+    map.addLayer(layerPJs);
+  } else {
+    map.removeLayer(layerPJs);
+  }
 
+  // Stores
   if (filterHomeDepot.checked ||
       filterLowes.checked ||
       filterArborist.checked) {
@@ -206,6 +251,7 @@ async function applyFilters() {
     map.removeLayer(layerHD);
     map.removeLayer(layerLowes);
     map.removeLayer(layerArbor);
+    setStatus("");
   }
 }
 
@@ -231,18 +277,19 @@ btnAllOff.onclick = () => {
 };
 
 // ====== PJ FORM ======
-const pjForm = document.getElementById("pjForm");
-let pendingCoords = null;
-
 map.on("click", e => {
   pendingCoords = e.latlng;
   pjCoordsLabel.textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
   pjForm.style.display = "flex";
 });
 
-pjCancel.onclick = () => pjForm.style.display = "none";
+pjCancel.onclick = () => {
+  pjForm.style.display = "none";
+  pendingCoords = null;
+};
 
 pjSave.onclick = () => {
+  if (!pendingCoords) return;
   potentialJobs.push({
     id: Date.now(),
     nickname: pjNickname.value || "PJ",
@@ -254,6 +301,7 @@ pjSave.onclick = () => {
   savePJs();
   rebuildPJs();
   pjForm.style.display = "none";
+  pendingCoords = null;
 };
 
 // ====== SEARCH ======
@@ -272,6 +320,10 @@ async function search(q) {
 
   const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(q);
   const res = await fetch(url);
+  if (!res.ok) {
+    setStatus("Search failed.");
+    return;
+  }
   const data = await res.json();
 
   if (!data.length) {
@@ -288,15 +340,20 @@ async function search(q) {
   if (searchMarker) map.removeLayer(searchMarker);
 
   searchMarker = L.marker([lat, lng], {
-    icon: L.divIcon({ html:"📌" })
-  }).bindPopup(`<strong>${best.display_name}</strong><br><button onclick="window.open('${gDir(lat,lng)}')">Directions</button>`).addTo(map).openPopup();
+    icon: L.divIcon({ html: "📌" })
+  }).bindPopup(
+    `<strong>${best.display_name}</strong><br><button onclick="window.open('${gDir(lat,lng)}')">Directions</button>`
+  ).addTo(map).openPopup();
 
   setStatus("");
 }
 
 // ====== USE MY LOCATION ======
 btnLocate.onclick = () => {
-  if (!navigator.geolocation) return alert("Not supported.");
+  if (!navigator.geolocation) {
+    alert("Geolocation not supported.");
+    return;
+  }
   setStatus("Locating…");
 
   navigator.geolocation.getCurrentPosition(async pos => {
@@ -305,5 +362,9 @@ btnLocate.onclick = () => {
     map.setView([lat, lng], 12);
     await loadStores(lat, lng);
     setStatus("");
+  }, err => {
+    console.error("Geolocation error:", err);
+    setStatus("");
+    alert("Could not get your location.");
   });
 };
