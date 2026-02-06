@@ -44,7 +44,7 @@
       color: #1a1f36;
     }
 
-    textarea, input, select {
+    textarea, input {
       width: 100%;
       border-radius: 14px;
       border: 1px solid #d0d7e2;
@@ -57,7 +57,7 @@
       margin-bottom: 15px;
     }
 
-    textarea:focus, input:focus, select:focus {
+    textarea:focus, input:focus {
       border-color: #4caf50;
       background: #ffffff;
       box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
@@ -76,12 +76,15 @@
 
     #fill { background: #4caf50; color: white; }
     #send { background: #1a1f36; color: white; }
+    #save { background: #16a34a; color: white; }
+    #calendar { background: #0f766e; color: white; }
 
     .btn-row {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       margin-top: 20px;
+      flex-wrap: wrap;
     }
 
     #previewBox {
@@ -94,13 +97,27 @@
       font-size: 15px;
       line-height: 1.5;
     }
+
+    .top-links {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .top-links a {
+      color: #9ee6a8;
+      margin: 0 6px;
+      text-decoration: none;
+    }
   </style>
 </head>
 
 <body>
   <header>
     <h2>Contracts</h2>
-    <a href="../../index.html">Back to Home</a>
+    <div class="top-links">
+      <a href="../../index.html">Back to Home</a> |
+      <a href="contracts-list.html">View Contract Archive</a>
+    </div>
   </header>
 
   <section class="card">
@@ -139,6 +156,10 @@
     <div class="btn-row">
       <button id="fill">Generate Contract</button>
       <button id="send">Send Email</button>
+    </div>
+    <div class="btn-row">
+      <button id="save">Save to Archive</button>
+      <button id="calendar">Send to Calendar</button>
     </div>
   </section>
 
