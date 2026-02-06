@@ -8,8 +8,8 @@ const OVERPASS_ENDPOINTS = [
 ];
 
 const OVERPASS_RADIUS = 15000;
-const OVERPASS_RETRIES = 4;
-const OVERPASS_BACKOFF = 1000;
+const OVERPASS_RETRIES = 3;
+const OVERPASS_BACKOFF = 800;
 
 // ====== STATE ======
 let potentialJobs = loadPJs();
@@ -23,20 +23,17 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
   maxZoom: 19
 }).addTo(map);
 
-const layerPJs = L.layerGroup().addTo(map);
-const layerHD = L.layerGroup().addTo(map);
-const layerLowes = L.layerGroup().addTo(map);
-const layerArbor = L.layerGroup().addTo(map);
+const layerPJs = L.layerGroup();
+const layerHD = L.layerGroup();
+const layerLowes = L.layerGroup();
+const layerArbor = L.layerGroup();
 
 const statusEl = document.getElementById("mapStatus");
 
 // ====== STORAGE ======
 function loadPJs() {
-  try {
-    return JSON.parse(localStorage.getItem(PJ_STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem(PJ_STORAGE_KEY)) || []; }
+  catch { return []; }
 }
 
 function savePJs() {
@@ -71,36 +68,43 @@ function rebuildPJs() {
       <button onclick="window.open('${gSV(pj.lat,pj.lng)}')">Street View</button>
     `;
     L.marker([pj.lat, pj.lng], {
-      icon: L.divIcon({ html:"📍", className:"pj-marker" })
+      icon: L.divIcon({ html:"📍" })
     }).bindPopup(html).addTo(layerPJs);
   });
 }
 rebuildPJs();
 
-// ====== OVERPASS ======
+// ====== OVERPASS WITH TIMEOUT ======
 async function fetchOverpassRaw(query) {
-  const url = OVERPASS_ENDPOINTS[endpointIndex] + encodeURIComponent(query);
+  const endpoint = OVERPASS_ENDPOINTS[endpointIndex];
   endpointIndex = (endpointIndex + 1) % OVERPASS_ENDPOINTS.length;
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
+  const url = endpoint + encodeURIComponent(query);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  } catch (e) {
+    clearTimeout(timeout);
+    throw e;
+  }
 }
 
 async function fetchOverpass(query) {
   let err;
   for (let i = 0; i < OVERPASS_RETRIES; i++) {
-    try {
-      return await fetchOverpassRaw(query);
-    } catch (e) {
-      err = e;
-      await sleep(OVERPASS_BACKOFF * (i + 1));
-    }
+    try { return await fetchOverpassRaw(query); }
+    catch (e) { err = e; await sleep(OVERPASS_BACKOFF * (i + 1)); }
   }
   throw err;
 }
 
-// ====== STORE QUERIES (FIXED) ======
+// ====== STORE QUERIES ======
 function qHomeDepot(lat, lng) {
   return `
     [out:json];
@@ -140,8 +144,12 @@ function qArborist(lat, lng) {
   `;
 }
 
-// ====== LOAD STORES ======
+// ====== LOAD STORES ONLY WHEN FILTERS TURN ON ======
 async function loadStores(lat, lng) {
+  if (!filterHomeDepot.checked &&
+      !filterLowes.checked &&
+      !filterArborist.checked) return;
+
   setStatus("Loading stores…");
 
   layerHD.clearLayers();
@@ -149,32 +157,35 @@ async function loadStores(lat, lng) {
   layerArbor.clearLayers();
 
   try {
-    const hd = await fetchOverpass(qHomeDepot(lat, lng));
-    await sleep(300);
-    const lw = await fetchOverpass(qLowes(lat, lng));
-    await sleep(300);
-    const arb = await fetchOverpass(qArborist(lat, lng));
+    if (filterHomeDepot.checked) {
+      const hd = await fetchOverpass(qHomeDepot(lat, lng));
+      hd.elements?.forEach(el => {
+        if (!el.lat) return;
+        L.marker([el.lat, el.lon], {
+          icon: L.divIcon({ html:"🧱" })
+        }).bindPopup(`<strong>Home Depot</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerHD);
+      });
+    }
 
-    hd.elements?.forEach(el => {
-      if (!el.lat) return;
-      L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html:"🧱", className:"hd-marker" })
-      }).bindPopup(`<strong>Home Depot</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerHD);
-    });
+    if (filterLowes.checked) {
+      const lw = await fetchOverpass(qLowes(lat, lng));
+      lw.elements?.forEach(el => {
+        if (!el.lat) return;
+        L.marker([el.lat, el.lon], {
+          icon: L.divIcon({ html:"🔩" })
+        }).bindPopup(`<strong>Lowe's</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerLowes);
+      });
+    }
 
-    lw.elements?.forEach(el => {
-      if (!el.lat) return;
-      L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html:"🔩", className:"lowes-marker" })
-      }).bindPopup(`<strong>Lowe's</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerLowes);
-    });
-
-    arb.elements?.forEach(el => {
-      if (!el.lat) return;
-      L.marker([el.lat, el.lon], {
-        icon: L.divIcon({ html:"🪚", className:"arb-marker" })
-      }).bindPopup(`<strong>Arborist / Tools</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerArbor);
-    });
+    if (filterArborist.checked) {
+      const arb = await fetchOverpass(qArborist(lat, lng));
+      arb.elements?.forEach(el => {
+        if (!el.lat) return;
+        L.marker([el.lat, el.lon], {
+          icon: L.divIcon({ html:"🪚" })
+        }).bindPopup(`<strong>Arborist / Tools</strong><br><button onclick="window.open('${gDir(el.lat,el.lon)}')">Directions</button>`).addTo(layerArbor);
+      });
+    }
 
     setStatus("");
   } catch (e) {
@@ -183,27 +194,41 @@ async function loadStores(lat, lng) {
   }
 }
 
-loadStores(33.75, -84.25);
-
 // ====== FILTERS ======
-function applyFilters() {
+async function applyFilters() {
   filterPJs.checked ? map.addLayer(layerPJs) : map.removeLayer(layerPJs);
-  filterHomeDepot.checked ? map.addLayer(layerHD) : map.removeLayer(layerHD);
-  filterLowes.checked ? map.addLayer(layerLowes) : map.removeLayer(layerLowes);
-  filterArborist.checked ? map.addLayer(layerArbor) : map.removeLayer(layerArbor);
+
+  if (filterHomeDepot.checked ||
+      filterLowes.checked ||
+      filterArborist.checked) {
+    await loadStores(map.getCenter().lat, map.getCenter().lng);
+  } else {
+    map.removeLayer(layerHD);
+    map.removeLayer(layerLowes);
+    map.removeLayer(layerArbor);
+  }
 }
 
-document.getElementById("btnAllOn").onclick = () => {
-  filterPJs.checked = filterHomeDepot.checked = filterLowes.checked = filterArborist.checked = true;
+filterPJs.onchange =
+filterHomeDepot.onchange =
+filterLowes.onchange =
+filterArborist.onchange = applyFilters;
+
+btnAllOn.onclick = () => {
+  filterPJs.checked =
+  filterHomeDepot.checked =
+  filterLowes.checked =
+  filterArborist.checked = true;
   applyFilters();
 };
 
-document.getElementById("btnAllOff").onclick = () => {
-  filterPJs.checked = filterHomeDepot.checked = filterLowes.checked = filterArborist.checked = false;
+btnAllOff.onclick = () => {
+  filterPJs.checked =
+  filterHomeDepot.checked =
+  filterLowes.checked =
+  filterArborist.checked = false;
   applyFilters();
 };
-
-applyFilters();
 
 // ====== PJ FORM ======
 const pjForm = document.getElementById("pjForm");
@@ -263,7 +288,7 @@ async function search(q) {
   if (searchMarker) map.removeLayer(searchMarker);
 
   searchMarker = L.marker([lat, lng], {
-    icon: L.divIcon({ html:"📌", className:"search-marker" })
+    icon: L.divIcon({ html:"📌" })
   }).bindPopup(`<strong>${best.display_name}</strong><br><button onclick="window.open('${gDir(lat,lng)}')">Directions</button>`).addTo(map).openPopup();
 
   setStatus("");
