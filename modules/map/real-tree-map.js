@@ -66,7 +66,6 @@ function gSV(lat, lng) {
   return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
 }
 
-// Escape quotes in query for Overpass regex
 function escapeOverpass(str) {
   return String(str).replace(/"/g, '\\"');
 }
@@ -88,16 +87,17 @@ function rebuildPJs() {
 }
 rebuildPJs();
 
-// ====== OVERPASS SEARCH (HARDENED) ======
+// ====== OVERPASS SEARCH (SAFE) ======
 async function overpassSearch(query, lat, lng) {
-  const safeQuery = escapeOverpass(query);
+  const safe = escapeOverpass(query);
+
   const q = `
     [out:json];
     (
-      node["name"~"${safeQuery}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
-      node["brand"~"${safeQuery}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
-      node["shop"~"${safeQuery}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
-      node["amenity"~"${safeQuery}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
+      node["name"~"${safe}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
+      node["brand"~"${safe}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
+      node["shop"~"${safe}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
+      node["amenity"~"${safe}", i](around:${SEARCH_RADIUS_METERS}, ${lat}, ${lng});
     );
     out center;
   `;
@@ -109,10 +109,7 @@ async function overpassSearch(query, lat, lng) {
       headers: { "Content-Type": "text/plain" }
     });
 
-    if (!res.ok) {
-      console.warn("Overpass not OK:", res.status);
-      return [];
-    }
+    if (!res.ok) return [];
 
     const data = await res.json();
     if (!data.elements) return [];
@@ -124,6 +121,7 @@ async function overpassSearch(query, lat, lng) {
         name: (e.tags && e.tags.name) || query
       }))
       .filter(r => r.lat && r.lon);
+
   } catch (err) {
     console.error("Overpass error:", err);
     return [];
@@ -139,41 +137,38 @@ async function loadStores(lat, lng) {
   layerArbor.clearLayers();
 
   try {
-    if (filterHomeDepot && filterHomeDepot.checked) {
+    if (filterHomeDepot.checked) {
       const hd = await overpassSearch("Home Depot", lat, lng);
       hd.forEach(r => {
         L.marker([r.lat, r.lon], {
           icon: L.divIcon({ html:"🧱" })
-        }).bindPopup(
-          `<strong>${r.name}</strong><br><br>` +
-          `<button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
+        }).bindPopup(`<strong>${r.name}</strong><br><br>
+          <button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
         ).addTo(layerHD);
       });
     }
 
-    if (filterLowes && filterLowes.checked) {
+    if (filterLowes.checked) {
       const lw = await overpassSearch("Lowe", lat, lng);
       lw.forEach(r => {
         L.marker([r.lat, r.lon], {
           icon: L.divIcon({ html:"🔩" })
-        }).bindPopup(
-          `<strong>${r.name}</strong><br><br>` +
-          `<button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
+        }).bindPopup(`<strong>${r.name}</strong><br><br>
+          <button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
         ).addTo(layerLowes);
       });
     }
 
-    if (filterArborist && filterArborist.checked) {
-      const arb = await overpassSearch("hardware", lat, lng);
-      const arb2 = await overpassSearch("tool", lat, lng);
-      const arb3 = await overpassSearch("chainsaw", lat, lng);
+    if (filterArborist.checked) {
+      const a1 = await overpassSearch("hardware", lat, lng);
+      const a2 = await overpassSearch("tool", lat, lng);
+      const a3 = await overpassSearch("chainsaw", lat, lng);
 
-      [...arb, ...arb2, ...arb3].forEach(r => {
+      [...a1, ...a2, ...a3].forEach(r => {
         L.marker([r.lat, r.lon], {
           icon: L.divIcon({ html:"🪚" })
-        }).bindPopup(
-          `<strong>${r.name}</strong><br><br>` +
-          `<button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
+        }).bindPopup(`<strong>${r.name}</strong><br><br>
+          <button onclick="window.open('${gDir(r.lat,r.lon)}')">Directions</button>`
         ).addTo(layerArbor);
       });
     }
@@ -183,20 +178,19 @@ async function loadStores(lat, lng) {
     if (layerArbor.getLayers().length) map.addLayer(layerArbor);
 
     setStatus("");
-  } catch (e) {
-    console.error(e);
+
+  } catch (err) {
+    console.error(err);
     setStatus("Store search failed.");
   }
 }
 
 // ====== FILTERS ======
 async function applyFilters() {
-  if (filterPJs && filterPJs.checked) map.addLayer(layerPJs);
+  if (filterPJs.checked) map.addLayer(layerPJs);
   else map.removeLayer(layerPJs);
 
-  if ((filterHomeDepot && filterHomeDepot.checked) ||
-      (filterLowes && filterLowes.checked) ||
-      (filterArborist && filterArborist.checked)) {
+  if (filterHomeDepot.checked || filterLowes.checked || filterArborist.checked) {
     const c = map.getCenter();
     await loadStores(c.lat, c.lng);
   } else {
@@ -207,61 +201,60 @@ async function applyFilters() {
   }
 }
 
-if (filterPJs) filterPJs.onchange = applyFilters;
-if (filterHomeDepot) filterHomeDepot.onchange = applyFilters;
-if (filterLowes) filterLowes.onchange = applyFilters;
-if (filterArborist) filterArborist.onchange = applyFilters;
+filterPJs.onchange =
+filterHomeDepot.onchange =
+filterLowes.onchange =
+filterArborist.onchange = applyFilters;
 
-if (btnAllOn) btnAllOn.onclick = () => {
-  if (filterPJs) filterPJs.checked = true;
-  if (filterHomeDepot) filterHomeDepot.checked = true;
-  if (filterLowes) filterLowes.checked = true;
-  if (filterArborist) filterArborist.checked = true;
+btnAllOn.onclick = () => {
+  filterPJs.checked =
+  filterHomeDepot.checked =
+  filterLowes.checked =
+  filterArborist.checked = true;
   applyFilters();
 };
 
-if (btnAllOff) btnAllOff.onclick = () => {
-  if (filterPJs) filterPJs.checked = false;
-  if (filterHomeDepot) filterHomeDepot.checked = false;
-  if (filterLowes) filterLowes.checked = false;
-  if (filterArborist) filterArborist.checked = false;
+btnAllOff.onclick = () => {
+  filterPJs.checked =
+  filterHomeDepot.checked =
+  filterLowes.checked =
+  filterArborist.checked = false;
   applyFilters();
 };
 
 // ====== PJ FORM ======
 map.on("click", e => {
-  if (!pjForm || !pjCoordsLabel) return;
   pendingCoords = e.latlng;
   pjCoordsLabel.textContent = `${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
   pjForm.style.display = "flex";
 });
 
-if (pjCancel) pjCancel.onclick = () => {
-  if (pjForm) pjForm.style.display = "none";
-};
+pjCancel.onclick = () => pjForm.style.display = "none";
 
-if (pjSave) pjSave.onclick = () => {
+pjSave.onclick = () => {
   if (!pendingCoords) return;
+
   potentialJobs.push({
     id: Date.now(),
-    nickname: (pjNickname && pjNickname.value) || "PJ",
-    notes: (pjNotes && pjNotes.value) || "",
-    reminder: (pjReminder && pjReminder.value) || null,
+    nickname: pjNickname.value || "PJ",
+    notes: pjNotes.value || "",
+    reminder: pjReminder.value || null,
     lat: pendingCoords.lat,
     lng: pendingCoords.lng
   });
+
   savePJs();
   rebuildPJs();
-  if (pjForm) pjForm.style.display = "none";
+  pjForm.style.display = "none";
 };
 
-// ====== SEARCH (OVERPASS) ======
+// ====== SEARCH ======
 async function search(q) {
-  if (!q || !q.trim()) return;
+  if (!q.trim()) return;
   setStatus("Searching…");
 
-  const center = map.getCenter();
-  const results = await overpassSearch(q, center.lat, center.lng);
+  const c = map.getCenter();
+  const results = await overpassSearch(q, c.lat, c.lng);
 
   if (!results.length) {
     setStatus("No results.");
@@ -269,44 +262,43 @@ async function search(q) {
   }
 
   const best = results[0];
-  const lat = best.lat;
-  const lng = best.lon;
 
-  map.setView([lat, lng], 14);
+  map.setView([best.lat, best.lon], 14);
 
   if (searchMarker) map.removeLayer(searchMarker);
 
-  searchMarker = L.marker([lat, lng], {
+  searchMarker = L.marker([best.lat, best.lon], {
     icon: L.divIcon({ html:"📌" })
   }).bindPopup(
-    `<strong>${best.name}</strong><br><button onclick="window.open('${gDir(lat,lng)}')">Directions</button>`
+    `<strong>${best.name}</strong><br>
+     <button onclick="window.open('${gDir(best.lat,best.lon)}')">Directions</button>`
   ).addTo(map).openPopup();
 
   setStatus("");
 }
 
-if (btnSearch) btnSearch.onclick = () => search(searchInput && searchInput.value || "");
+btnSearch.onclick = () => search(searchInput.value);
 
-if (searchInput) {
-  searchInput.onkeydown = e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      search(searchInput.value);
-    }
-  };
-}
+searchInput.onkeydown = e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    search(searchInput.value);
+  }
+};
 
 // ====== USE MY LOCATION ======
-if (btnLocate) btnLocate.onclick = () => {
+btnLocate.onclick = () => {
   if (!navigator.geolocation) return alert("Geolocation not supported.");
   setStatus("Locating…");
 
   navigator.geolocation.getCurrentPosition(async pos => {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
+
     map.setView([lat, lng], 12);
     await loadStores(lat, lng);
     setStatus("");
+
   }, err => {
     console.error(err);
     setStatus("");
