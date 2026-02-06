@@ -31,7 +31,7 @@
     .card {
       background: white;
       width: 90%;
-      max-width: 800px;
+      max-width: 900px;
       margin: 25px auto;
       padding: 25px;
       border-radius: 18px;
@@ -44,51 +44,26 @@
       color: #1a1f36;
     }
 
-    textarea {
+    textarea, input, select {
       width: 100%;
       border-radius: 14px;
       border: 1px solid #d0d7e2;
-      padding: 15px;
-      font-size: 15px;
-      background: #f9fbfd;
-      resize: vertical;
-      outline: none;
-      transition: 0.2s;
-    }
-
-    textarea:focus {
-      border-color: #4caf50;
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    select, input {
-      width: 100%;
       padding: 14px;
-      border-radius: 14px;
-      border: 1px solid #d0d7e2;
-      background: #f9fbfd;
       font-size: 15px;
+      background: #f9fbfd;
       outline: none;
       transition: 0.2s;
-      margin-top: 5px;
+      margin-top: 6px;
+      margin-bottom: 15px;
     }
 
-    select:focus, input:focus {
+    textarea:focus, input:focus, select:focus {
       border-color: #4caf50;
       background: #ffffff;
       box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
     }
 
     button {
-      margin-top: 18px;
       padding: 14px 20px;
       border: none;
       border-radius: 14px;
@@ -99,29 +74,25 @@
       width: 48%;
     }
 
-    #fill {
-      background: #4caf50;
-      color: white;
-    }
-
-    #fill:hover {
-      background: #43a047;
-    }
-
-    #send {
-      background: #1a1f36;
-      color: white;
-    }
-
-    #send:hover {
-      background: #111626;
-    }
+    #fill { background: #4caf50; color: white; }
+    #send { background: #1a1f36; color: white; }
 
     .btn-row {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       margin-top: 20px;
+    }
+
+    #previewBox {
+      white-space: pre-wrap;
+      background: #f9fbfd;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #d0d7e2;
+      font-family: "Courier New", monospace;
+      font-size: 15px;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -133,36 +104,40 @@
   </header>
 
   <section class="card">
-    <h3>Premade Contract</h3>
-    <textarea id="template" style="height:200px;">
-TREE WORK AGREEMENT
+    <h3>Client Information</h3>
 
-Customer: [Customer Name]
-Address: [Customer Address]
-Phone: [Customer Phone]
+    <label>Client Name</label>
+    <input id="clientName">
 
-Scope:
-[Job Description]
+    <label>Client Phone</label>
+    <input id="clientPhone">
 
-Price:
-[Quote Amount]
-    </textarea>
+    <label>Client Email</label>
+    <input id="clientEmail">
+
+    <label>Client Address</label>
+    <input id="clientAddress">
   </section>
 
   <section class="card">
-    <h3>Auto-Fill Contract</h3>
+    <h3>Job Details</h3>
 
-    <label>Select Customer</label>
-    <select id="custSelect"></select>
+    <label>Scope of Work</label>
+    <textarea id="scope" style="height:120px;"></textarea>
 
-    <label>Contract Body</label>
-    <textarea id="contractBody" style="height:200px;"></textarea>
+    <label>Price</label>
+    <input id="price">
+  </section>
 
-    <label>Email</label>
-    <input id="email">
+  <section class="card">
+    <h3>Contract Preview</h3>
+    <div id="previewBox"></div>
+  </section>
 
+  <section class="card">
+    <h3>Actions</h3>
     <div class="btn-row">
-      <button id="fill">Auto-Fill</button>
+      <button id="fill">Generate Contract</button>
       <button id="send">Send Email</button>
     </div>
   </section>
