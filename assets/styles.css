@@ -50,7 +50,7 @@ body::after {
 }
 
 /* --------------------------------------------------
-   TREE SILHOUETTE (PURE CSS)
+   TREE SHADOW LAYER (NO DIAGONAL LINES)
 -------------------------------------------------- */
 
 body::before {
@@ -62,13 +62,6 @@ body::before {
       to top,
       rgba(0,0,0,0.4) 0%,
       rgba(0,0,0,0.0) 40%
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(0,0,0,0.25) 0px,
-      rgba(0,0,0,0.25) 6px,
-      transparent 6px,
-      transparent 12px
     );
   opacity: 0.25;
   pointer-events: none;
