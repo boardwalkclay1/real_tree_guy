@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="../../assets/styles.css">
 
   <style>
-    /* REMOVE WHITE BACKGROUND */
     body { 
       font-family: Inter, sans-serif; 
       padding: 20px; 
@@ -56,7 +55,7 @@
       background: #3f8b44;
     }
 
-    #logoPreview {
+    #logoPreview, #insurancePreview {
       width: 120px;
       height: 120px;
       border-radius: 12px;
@@ -74,6 +73,8 @@
   <section class="card">
     <h2>Business Profile</h2>
 
+    <!-- BUSINESS LOGO -->
+    <label>Business Logo</label>
     <div id="logoPreview"></div>
     <input type="file" id="logoFile">
 
@@ -98,9 +99,39 @@
     <label>Insurance Info</label>
     <textarea id="insurance" style="height:100px;"></textarea>
 
+    <!-- NEW: INSURANCE PHOTO UPLOAD -->
+    <label>Upload Insurance Photo</label>
+    <div id="insurancePreview"></div>
+    <input type="file" id="insuranceFile">
+
     <button id="save">Save Profile</button>
   </section>
 
   <script src="profile.js"></script>
+
+  <script>
+    // LOGO PREVIEW
+    document.getElementById("logoFile").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("logoPreview").style.backgroundImage = `url('${reader.result}')`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // INSURANCE PHOTO PREVIEW
+    document.getElementById("insuranceFile").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("insurancePreview").style.backgroundImage = `url('${reader.result}')`;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+
 </body>
 </html>
