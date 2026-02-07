@@ -1,62 +1,237 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Real Tree App</title>
+/* --------------------------------------------------
+   GLOBAL FOREST THEME — PURE CSS, NO IMAGES
+-------------------------------------------------- */
 
-  <!-- AUTO-INJECT GLOBAL STYLESHEET -->
-  <script>
-  (function() {
-    const paths = [
-      "styles.css",
-      "../styles.css",
-      "../../styles.css",
-      "/styles.css"
-    ];
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Trebuchet MS", sans-serif;
 
-    const head = document.head;
-    const found = [...document.styleSheets].some(s => s.href && s.href.includes("styles.css"));
+  /* Layered gradients simulate wood + forest depth */
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #0d2a12 0px,
+      #0f3116 40px,
+      #0d2a12 80px
+    ),
+    linear-gradient(#0b2e13, #0f3d1a, #0b2e13);
 
-    if (!found) {
-      for (const path of paths) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = path + "?v=1";
+  color: #e8ffe8;
+  overflow-x: hidden;
+  animation: bgMove 20s ease-in-out infinite alternate;
+}
 
-        link.onload = () => console.log("Loaded theme:", path);
-        link.onerror = () => link.remove();
+@keyframes bgMove {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 40px 0, 0 0; }
+}
 
-        head.appendChild(link);
-      }
-    }
-  })();
-  </script>
-</head>
+/* --------------------------------------------------
+   FLOATING PARTICLES (POLLEN / DUST)
+-------------------------------------------------- */
 
-<body class="fade-in">
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(#ffffff22 2px, transparent 2px),
+    radial-gradient(#ffffff11 1px, transparent 1px);
+  background-size: 4px 4px, 6px 6px;
+  opacity: 0.15;
+  animation: drift 18s linear infinite;
+  pointer-events: none;
+}
 
-  <header>
-    <h1>Real Tree App</h1>
-    <p>Forest‑themed UI applied globally</p>
-  </header>
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-40px); }
+}
 
-  <div class="nav-grid">
-    <a href="index.html">Home</a>
-    <a href="map.html">Map</a>
-    <a href="profile.html">Profile</a>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="settings.html">Settings</a>
-  </div>
+/* --------------------------------------------------
+   TREE SILHOUETTE (PURE CSS)
+-------------------------------------------------- */
 
-  <div class="card" style="margin:40px;">
-    <h2>Welcome</h2>
-    <p>This page is fully styled by the global forest theme.</p>
-    <button>Test Button</button>
-  </div>
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,0.4) 0%,
+      rgba(0,0,0,0.0) 40%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(0,0,0,0.25) 0px,
+      rgba(0,0,0,0.25) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
 
-  <footer>
-    Real Tree App — All Rights Reserved
-  </footer>
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
 
-</body>
-</html>
+header {
+  text-align: center;
+  padding: 30px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid #1f5f2b;
+  backdrop-filter: blur(4px);
+  position: relative;
+  z-index: 2;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #b8ffb8;
+  text-shadow: 0 0 10px #1f5f2b;
+}
+
+header p {
+  margin-top: 5px;
+  color: #d4ffd4;
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------
+   NAVIGATION GRID
+-------------------------------------------------- */
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-grid a {
+  display: block;
+  padding: 20px;
+  background: rgba(26, 63, 29, 0.9);
+  border: 2px solid #2e6b33;
+  border-radius: 12px;
+  text-align: center;
+  color: #d8ffd8;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(0, 50, 0, 0.4);
+}
+
+.nav-grid a:hover {
+  background: #245c29;
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(0, 80, 0, 0.6);
+}
+
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+
+button, .btn {
+  background: #2e6b33;
+  color: #e8ffe8;
+  border: 2px solid #3f8b44;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+  box-shadow: 0 0 8px rgba(0, 50, 0, 0.4);
+}
+
+button:hover, .btn:hover {
+  background: #3f8b44;
+  transform: translateY(-3px);
+  box-shadow: 0 0 14px rgba(0, 80, 0, 0.6);
+}
+
+/* --------------------------------------------------
+   INPUTS
+-------------------------------------------------- */
+
+input, textarea, select {
+  background: rgba(15, 35, 17, 0.9);
+  border: 2px solid #2e6b33;
+  color: #d8ffd8;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: inset 0 0 6px rgba(0, 50, 0, 0.4);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #4fbf5a;
+  box-shadow: 0 0 10px #4fbf5a;
+}
+
+/* --------------------------------------------------
+   MODALS
+-------------------------------------------------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-inner {
+  background: rgba(20, 45, 22, 0.95);
+  border: 2px solid #2e6b33;
+  border-radius: 14px;
+  padding: 25px;
+  width: 320px;
+  box-shadow: 0 0 20px rgba(0, 80, 0, 0.6);
+}
+
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 2px solid #1f5f2b;
+  color: #caffca;
+  margin-top: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* --------------------------------------------------
+   ALTERNATE THEME (BARK MODE)
+-------------------------------------------------- */
+
+body.bark-mode {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #2a1b0f 0px,
+      #3a2615 40px,
+      #2a1b0f 80px
+    ),
+    linear-gradient(#0a0a0a, #111, #0a0a0a);
+  color: #f0f0f0;
+}
+
+body.bark-mode button {
+  background: #6b4e1f;
+  border-color: #8b6b33;
+}
