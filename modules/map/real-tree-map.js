@@ -1,5 +1,9 @@
-// Define your locations here.
-// You can add/remove items without touching any other logic.
+// ===============================
+// REAL TREE MAP (NO LEAFLET, NO API KEYS)
+// ===============================
+
+// Add or remove locations here.
+// This is the ONLY place you edit data.
 const locations = [
   {
     id: "yard-oak",
@@ -27,6 +31,7 @@ const locations = [
   }
 ];
 
+// DOM elements
 const mapList = document.getElementById("mapList");
 const mapFrame = document.getElementById("mapFrame");
 const selectedLabel = document.getElementById("selectedLabel");
@@ -34,6 +39,7 @@ const openInMaps = document.getElementById("openInMaps");
 
 let activeId = null;
 
+// Build the left-side list
 function buildList() {
   mapList.innerHTML = "";
 
@@ -54,13 +60,14 @@ function buildList() {
   });
 }
 
+// Select a location and update the map
 function selectLocation(id) {
   const loc = locations.find((l) => l.id === id);
   if (!loc) return;
 
   activeId = id;
 
-  // Update active styling
+  // Highlight active item
   [...mapList.querySelectorAll(".map-item")].forEach((el) => {
     el.classList.toggle("active", el.dataset.id === id);
   });
@@ -77,10 +84,10 @@ function selectLocation(id) {
   selectedLabel.textContent = loc.label;
 }
 
-// Init
+// Initialize
 buildList();
 
-// Optionally auto-select the first location
+// Auto-select first location
 if (locations.length > 0) {
   selectLocation(locations[0].id);
 }
