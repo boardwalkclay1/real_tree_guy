@@ -3,59 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <title>Real Tree Map</title>
-
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="../../assets/styles.css">
 
   <style>
-    body { background:#0b0f17; color:white; font-family:sans-serif; margin:0; padding:20px; }
-    #map { height: calc(100vh - 220px); width:100%; margin-top:10px; border-radius:10px; }
-    .toolbar, .filters { display:flex; gap:10px; margin:10px 0; flex-wrap:wrap; }
-    #pjForm { position:fixed; inset:0; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; }
-    #pjFormInner { background:#222; padding:20px; border-radius:10px; width:300px; }
+    body { font-family: Inter, sans-serif; padding: 20px; }
+    .map-shell {
+      max-width: 1100px;
+      margin: 20px auto;
+      background: rgba(0,0,0,0.35);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      color: #e8ffe8;
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: 16px;
+    }
+    .map-list {
+      max-height: 520px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 2px solid #2e6b33;
+      background: rgba(10, 30, 12, 0.9);
+      padding: 10px;
+    }
+    .map-item {
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid #2e6b33;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .map-item:hover {
+      background: #245c29;
+    }
+    .map-item.active {
+      border-color: #4fbf5a;
+      box-shadow: 0 0 10px rgba(79,191,90,0.6);
+    }
+    .map-item-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .map-item-meta {
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+    .map-frame-wrap {
+      border-radius: 12px;
+      border: 2px solid #2e6b33;
+      overflow: hidden;
+      box-shadow: 0 0 18px rgba(0,0,0,0.6);
+      min-height: 420px;
+    }
+    #mapFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .map-actions {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+    .map-actions a {
+      color: #b8ffb8;
+      text-decoration: underline;
+    }
   </style>
 </head>
 
 <body>
+  <section class="map-shell">
+    <div>
+      <h2>Real Tree Locations</h2>
+      <p style="font-size:0.85rem; opacity:0.85;">
+        Tap a location to preview it on the map. “Open in Google Maps” will launch the native app or web view.
+      </p>
 
-  <h1>Real Tree Map</h1>
-  <p id="mapStatus"></p>
-
-  <!-- SEARCH + LOCATION -->
-  <div class="toolbar">
-    <input id="searchInput" placeholder="Search any place…" style="flex:1;">
-    <button id="btnSearch">Search</button>
-    <button id="btnLocate">Use My Location</button>
-  </div>
-
-  <!-- FILTERS -->
-  <div class="filters">
-    <label><input type="checkbox" id="filterPJs"> PJs</label>
-    <label><input type="checkbox" id="filterHomeDepot"> Home Depot</label>
-    <label><input type="checkbox" id="filterLowes"> Lowe's</label>
-    <label><input type="checkbox" id="filterArborist"> Arborist / Tools</label>
-    <button id="btnAllOn">All On</button>
-    <button id="btnAllOff">All Off</button>
-  </div>
-
-  <!-- MAP -->
-  <div id="map"></div>
-
-  <!-- PJ FORM -->
-  <div id="pjForm">
-    <div id="pjFormInner">
-      <h3>New PJ</h3>
-      <p id="pjCoordsLabel"></p>
-      <input id="pjNickname" placeholder="Nickname" style="width:100%;"><br><br>
-      <textarea id="pjNotes" placeholder="Notes" style="width:100%; height:80px;"></textarea><br><br>
-      <input id="pjReminder" type="datetime-local" style="width:100%;"><br><br>
-      <button id="pjSave">Save</button>
-      <button id="pjCancel">Cancel</button>
+      <div id="mapList" class="map-list"></div>
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="real-tree-map.js"></script>
+    <div>
+      <div class="map-frame-wrap">
+        <iframe
+          id="mapFrame"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed?pb="
+        ></iframe>
+      </div>
+
+      <div class="map-actions">
+        <div>Selected: <span id="selectedLabel">None</span></div>
+        <div><a id="openInMaps" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="real-tree-map.js" type="module"></script>
 </body>
 </html>
