@@ -2,31 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Photo Measurement</title>
+  <title>Photo Mode</title>
   <link rel="stylesheet" href="../../assets/styles.css">
+
+  <style>
+    body { font-family: Inter, sans-serif; padding: 20px; }
+    .card {
+      background: rgba(0,0,0,0.35);
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 16px;
+      backdrop-filter: blur(6px);
+      color: #e8ffe8;
+    }
+    #photoCanvas {
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid #2e6b33;
+      margin-top: 10px;
+      cursor: crosshair;
+    }
+  </style>
 </head>
+
 <body>
-  <header>
+  <section class="card">
     <h2>Photo Mode</h2>
-    <a href="../../index.html">Back to Home</a>
-  </header>
 
-  <section class="card">
-    <h3>Upload Tree Photo</h3>
-    <input type="file" id="photoInput" accept="image/*">
-    <canvas id="canvas" width="300" height="400"></canvas>
+    <label>Upload Photo</label>
+    <input type="file" id="photoFile" accept="image/*">
+
+    <canvas id="photoCanvas"></canvas>
+
+    <label>Reference Height (m)</label>
+    <input type="number" id="refHeight" value="1.8" step="0.01">
+
+    <label>Click Mode</label>
+    <select id="photoClickMode">
+      <option value="ref">Reference (2 clicks)</option>
+      <option value="tree">Tree Height (2 clicks)</option>
+      <option value="thickness">Trunk Thickness (2 clicks)</option>
+    </select>
+
+    <button id="resetPhotoBtn" style="margin-top:10px;">Reset</button>
+
+    <h3>Scale: <span id="pixelScaleOut">–</span></h3>
+    <h3>Tree Height: <span id="photoHeightOut">–</span></h3>
+    <h3>Trunk Thickness: <span id="photoThicknessOut">–</span></h3>
   </section>
 
-  <section class="card">
-    <h3>Tap Base & Top</h3>
-    <p>Tap the base of the tree, then the top.</p>
-
-    <label>Reference Height (feet)</label>
-    <input id="refHeight" type="number" value="6">
-
-    <p id="photoResult"></p>
-  </section>
-
-  <script src="photo.js"></script>
+  <script src="photo.js" type="module"></script>
 </body>
 </html>
