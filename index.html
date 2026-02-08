@@ -1,207 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Real Tree Guy</title>
+<main class="tree-menu">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="assets/styles.css">
-
-  <!-- Manifest (required for install button + icon) -->
-  <link rel="manifest" href="manifest.json">
-
-  <style>
-    /* NIGHT MODE THEME */
-    body.night-mode {
-      background: #0b0f17;
-      color: #e0f7ff;
-    }
-    body.night-mode .nav-card {
-      background: rgba(255,255,255,0.08);
-      color: #e0f7ff;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-
-    /* Stars */
-    body.night-mode::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: url('assets/stars.png') repeat;
-      opacity: 0.25;
-      pointer-events: none;
-      animation: twinkle 8s infinite linear;
-    }
-    @keyframes twinkle {
-      from { opacity: 0.2; }
-      to { opacity: 0.35; }
-    }
-
-    /* Moon */
-    body.night-mode::after {
-      content: "";
-      position: fixed;
-      top: 40px;
-      right: 60px;
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle, #fff 40%, #ddd 60%, #bbb 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 40px rgba(255,255,255,0.4);
-      pointer-events: none;
-    }
-
-    /* Tree silhouettes */
-    .night-trees {
-      display: none;
-    }
-    body.night-mode .night-trees {
-      display: block;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 180px;
-      background: url('assets/trees-silhouette.png') repeat-x bottom;
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
-    /* Install Button */
-    #installBtn {
-      display: none;
-      margin: 20px auto;
-      padding: 12px 20px;
-      background: #1a7f2e;
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      width: 200px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-  </style>
-</head>
-
-<body class="fade-in">
-
-  <div class="night-trees"></div>
-
-  <!-- NIGHT MODE TOGGLE -->
-  <div class="toggle-container">
-    <label>
-      <input type="checkbox" id="themeToggle">
-      🌙 Night Mode
-    </label>
+  <!-- Realistic Tree -->
+  <div class="rtg-tree">
+    <img src="assets/rtg-tree.png" alt="RTG Tree" class="tree-image">
   </div>
 
-  <!-- HEADER -->
-  <header class="main-header">
-    <h1 class="app-title">Real Tree Guy</h1>
-    <p class="app-subtitle">Modular Static OS for Tree Work</p>
-  </header>
+  <!-- Branch Buttons -->
+  <div class="branch branch-1">
+    <a href="modules/profile/profile.html" class="branch-btn">Profile</a>
+  </div>
 
-  <!-- INSTALL BUTTON -->
-  <div id="installBtn">📲 Install App</div>
+  <div class="branch branch-2">
+    <a href="modules/customers/customers.html" class="branch-btn">Customers & Jobs</a>
+  </div>
 
-  <!-- EXPLANATION SECTION -->
-  <section class="explanation">
-    <h2>How This App Works</h2>
-    <p>This OS is built for tree service professionals. Every button below opens a full module with its own tools, logic, and workflow. Everything runs offline once installed.</p>
-  </section>
+  <div class="branch branch-3">
+    <a href="modules/measurement/measurement.html" class="branch-btn">Tree Measurement</a>
+  </div>
 
-  <!-- MAIN NAVIGATION -->
-  <main>
-    <nav class="nav-grid">
+  <div class="branch branch-4">
+    <a href="modules/contracts/contracts.html" class="branch-btn">Contracts</a>
+  </div>
 
-      <a href="modules/profile/profile.html" class="nav-card">
-        <strong>Profile</strong><br>
-        <small>Set up your business info, logo, and contact details.</small>
-      </a>
+  <div class="branch branch-5">
+    <a href="modules/calendar/calendar.html" class="branch-btn">Calendar</a>
+  </div>
 
-      <a href="modules/customers/customers.html" class="nav-card">
-        <strong>Customers & Jobs</strong><br>
-        <small>Manage clients, job notes, estimates, and job history.</small>
-      </a>
+  <div class="branch branch-6">
+    <a href="modules/flyers/flyers.html" class="branch-btn">Cards & Flyers</a>
+  </div>
 
-      <a href="modules/measurement/measurement.html" class="nav-card" style="order:-1;">
-        <strong>Tree Measurement</strong><br>
-        <small>Calculate height, angle, fall zone, and safe cutting distance.</small>
-      </a>
+  <div class="branch branch-7">
+    <a href="modules/map/real-tree-map.html" class="branch-btn">Real Tree Map</a>
+  </div>
 
-      <a href="modules/contracts/contracts.html" class="nav-card">
-        <strong>Contracts</strong><br>
-        <small>Create, sign, and store digital contracts for every job.</small>
-      </a>
-
-      <a href="modules/calendar/calendar.html" class="nav-card">
-        <strong>Calendar</strong><br>
-        <small>Track jobs, reminders, deadlines, and scheduled work.</small>
-      </a>
-
-      <a href="modules/flyers/flyers.html" class="nav-card">
-        <strong>Cards & Flyers</strong><br>
-        <small>Design business cards, flyers, and promotional materials.</small>
-      </a>
-
-      <a href="modules/map/real-tree-map.html" class="nav-card">
-        <strong>Real Tree Map</strong><br>
-        <small>View job locations, supply hubs, and navigation routes.</small>
-      </a>
-
-    </nav>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="main-footer">
-    <p>Real Tree Guy • Modular Static App</p>
-  </footer>
-
-  <!-- NIGHT MODE SCRIPT -->
-  <script>
-    const toggle = document.getElementById("themeToggle");
-    const body = document.body;
-
-    if (localStorage.getItem("tn_theme") === "night") {
-      body.classList.add("night-mode");
-      toggle.checked = true;
-    }
-
-    toggle.onchange = () => {
-      if (toggle.checked) {
-        body.classList.add("night-mode");
-        localStorage.setItem("tn_theme", "night");
-      } else {
-        body.classList.remove("night-mode");
-        localStorage.setItem("tn_theme", "day");
-      }
-    };
-  </script>
-
-  <!-- INSTALL BUTTON LOGIC -->
-  <script>
-    let deferredPrompt;
-    const installBtn = document.getElementById("installBtn");
-
-    window.addEventListener("beforeinstallprompt", e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = "block";
-    });
-
-    installBtn.addEventListener("click", () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-      }
-    });
-  </script>
-
-  <!-- SERVICE WORKER -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-  </script>
-
-</body>
-</html>
+</main>
