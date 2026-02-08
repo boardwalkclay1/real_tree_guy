@@ -1,24 +1,21 @@
 // ===============================
-// REAL TREE MAP – USER LOCATION + FILTERS + DIRECTIONS
+// REAL TREE MAP – OPEN GOOGLE MAPS DIRECTLY
 // ===============================
 
 // DOM
 const filterRow = document.getElementById("filterRow");
-const mapFrame = document.getElementById("mapFrame");
-const locationStatus = document.getElementById("locationStatus");
-const activeFilterLabel = document.getElementById("activeFilterLabel");
-const openInMaps = document.getElementById("openInMaps");
 const clientAddressInput = document.getElementById("clientAddress");
 const directionsFromUserBtn = document.getElementById("directionsFromUser");
 const directionsFromClientBtn = document.getElementById("directionsFromClient");
-const hintText = document.getElementById("hintText");
+const locationStatus = document.getElementById("locationStatus");
+const activeFilterLabel = document.getElementById("activeFilterLabel");
 
 // State
 let userLat = null;
 let userLng = null;
 let currentFilter = null;
 
-// Search phrases for each filter
+// Search phrases
 const FILTER_QUERIES = {
   home_depot: "Home Depot",
   lowes: "Lowe's",
@@ -45,11 +42,9 @@ function initLocation() {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
       locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
-
-      if (currentFilter) updateMapEmbed();
     },
     () => {
-      locationStatus.textContent = "Could not get your location. Using fallback search.";
+      locationStatus.textContent = "Could not get your location.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
   );
@@ -72,18 +67,14 @@ filterRow.addEventListener("click", (e) => {
   currentFilter = type;
   activeFilterLabel.textContent = FILTER_QUERIES[type];
 
-  updateMapEmbed();
+  openSearch();
 });
 
 // ===============================
-// MAP EMBED BUILDER (FIXED VERSION)
+// OPEN GOOGLE MAPS SEARCH
 // ===============================
-function updateMapEmbed() {
-  if (!currentFilter) {
-    mapFrame.src = "https://www.google.com/maps?q=&output=embed";
-    openInMaps.href = "https://www.google.com/maps";
-    return;
-  }
+function openSearch() {
+  if (!currentFilter) return;
 
   const queryBase = FILTER_QUERIES[currentFilter];
 
@@ -95,16 +86,9 @@ function updateMapEmbed() {
   }
 
   const encoded = encodeURIComponent(q);
+  const url = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
-  // ⭐ FIXED EMBED URL (this is the correct working format)
-  const embedSrc = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
-  mapFrame.src = embedSrc;
-
-  // External link
-  const externalUrl = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
-  openInMaps.href = externalUrl;
-
-  hintText.textContent = "Use the map or choose directions.";
+  window.open(url, "_blank", "noopener");
 }
 
 // ===============================
@@ -141,4 +125,3 @@ directionsFromClientBtn.addEventListener("click", () => {
 // INIT
 // ===============================
 initLocation();
-updateMapEmbed();
