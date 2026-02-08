@@ -1,17 +1,14 @@
 // ===============================
-// REAL TREE MAP – WORKING EMBED VERSION
+// REAL TREE MAP – OPEN GOOGLE MAPS DIRECTLY
 // ===============================
 
 // DOM
 const filterRow = document.getElementById("filterRow");
-const mapFrame = document.getElementById("mapFrame");
-const locationStatus = document.getElementById("locationStatus");
-const activeFilterLabel = document.getElementById("activeFilterLabel");
-const openInMaps = document.getElementById("openInMaps");
 const clientAddressInput = document.getElementById("clientAddress");
 const directionsFromUserBtn = document.getElementById("directionsFromUser");
 const directionsFromClientBtn = document.getElementById("directionsFromClient");
-const hintText = document.getElementById("hintText");
+const locationStatus = document.getElementById("locationStatus");
+const activeFilterLabel = document.getElementById("activeFilterLabel");
 
 // State
 let userLat = null;
@@ -45,25 +42,12 @@ function initLocation() {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
       locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
-
-      if (currentFilter) updateMapEmbed();
-      else centerOnUser();
     },
     () => {
       locationStatus.textContent = "Could not get your location.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
   );
-}
-
-// ===============================
-// CENTER MAP ON USER
-// ===============================
-function centerOnUser() {
-  if (!userLat || !userLng) return;
-
-  mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
-  openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
 }
 
 // ===============================
@@ -83,32 +67,28 @@ filterRow.addEventListener("click", (e) => {
   currentFilter = type;
   activeFilterLabel.textContent = FILTER_QUERIES[type];
 
-  updateMapEmbed();
+  openSearch();
 });
 
 // ===============================
-// UPDATE EMBED MAP
+// OPEN GOOGLE MAPS SEARCH
 // ===============================
-function updateMapEmbed() {
+function openSearch() {
   if (!currentFilter) return;
 
   const queryBase = FILTER_QUERIES[currentFilter];
 
   let q;
-  if (userLat && userLng) {
+  if (userLat != null && userLng != null) {
     q = `${queryBase} near ${userLat},${userLng}`;
   } else {
     q = `${queryBase} near me`;
   }
 
   const encoded = encodeURIComponent(q);
+  const url = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
-  // ⭐ This is the correct dynamic embed format
-  mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
-
-  openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
-
-  hintText.textContent = "Showing closest locations.";
+  window.open(url, "_blank", "noopener");
 }
 
 // ===============================
@@ -123,7 +103,7 @@ function buildDirectionsUrl(origin, queryBase) {
 // Directions: Me → Supply
 directionsFromUserBtn.addEventListener("click", () => {
   if (!currentFilter) return alert("Select a supply filter first.");
-  if (!userLat || !userLng) return alert("Your location is not available yet.");
+  if (userLat == null || userLng == null) return alert("Your location is not available yet.");
 
   const origin = `${userLat},${userLng}`;
   const queryBase = FILTER_QUERIES[currentFilter];
@@ -132,7 +112,7 @@ directionsFromUserBtn.addEventListener("click", () => {
 
 // Directions: Client → Supply
 directionsFromClientBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a filter first.");
+  if (!currentFilter) return alert("Select a supply filter first.");
 
   const clientAddress = clientAddressInput.value.trim();
   if (!clientAddress) return alert("Enter a client address first.");
