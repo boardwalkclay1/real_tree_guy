@@ -1,14 +1,16 @@
 // ===============================
-// REAL TREE MAP – OPEN GOOGLE MAPS DIRECTLY
+// REAL TREE MAP – EMBED + GOOGLE MAPS LAUNCHER
 // ===============================
 
 // DOM
 const filterRow = document.getElementById("filterRow");
+const mapFrame = document.getElementById("mapFrame");
+const locationStatus = document.getElementById("locationStatus");
+const activeFilterLabel = document.getElementById("activeFilterLabel");
+const openInMaps = document.getElementById("openInMaps");
 const clientAddressInput = document.getElementById("clientAddress");
 const directionsFromUserBtn = document.getElementById("directionsFromUser");
 const directionsFromClientBtn = document.getElementById("directionsFromClient");
-const locationStatus = document.getElementById("locationStatus");
-const activeFilterLabel = document.getElementById("activeFilterLabel");
 
 // State
 let userLat = null;
@@ -35,13 +37,18 @@ function initLocation() {
     return;
   }
 
-  locationStatus.textContent = "Requesting your location…";
+  locationStatus.textContent = "Requesting location…";
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
       locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+
+      if (!currentFilter) {
+        mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
+        openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
+      }
     },
     () => {
       locationStatus.textContent = "Could not get your location.";
@@ -67,58 +74,57 @@ filterRow.addEventListener("click", (e) => {
   currentFilter = type;
   activeFilterLabel.textContent = FILTER_QUERIES[type];
 
-  openSearch();
+  updateMapEmbed();
 });
 
 // ===============================
-// OPEN GOOGLE MAPS SEARCH
+// UPDATE EMBED MAP
 // ===============================
-function openSearch() {
+function updateMapEmbed() {
   if (!currentFilter) return;
 
   const queryBase = FILTER_QUERIES[currentFilter];
 
   let q;
-  if (userLat != null && userLng != null) {
+  if (userLat && userLng) {
     q = `${queryBase} near ${userLat},${userLng}`;
   } else {
     q = `${queryBase} near me`;
   }
 
   const encoded = encodeURIComponent(q);
-  const url = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 
-  window.open(url, "_blank", "noopener");
+  // ⭐ Dynamic embed that works
+  mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
+
+  // External link
+  openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 }
 
 // ===============================
-// DIRECTIONS HELPERS
+// DIRECTIONS
 // ===============================
 function buildDirectionsUrl(origin, queryBase) {
-  const dest = encodeURIComponent(queryBase);
-  const orig = encodeURIComponent(origin);
-  return `https://www.google.com/maps/dir/?api=1&origin=${orig}&destination=${dest}`;
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(queryBase)}`;
 }
 
-// Directions: Me → Supply
 directionsFromUserBtn.addEventListener("click", () => {
   if (!currentFilter) return alert("Select a supply filter first.");
-  if (userLat == null || userLng == null) return alert("Your location is not available yet.");
+  if (!userLat || !userLng) return alert("Your location is not available yet.");
 
   const origin = `${userLat},${userLng}`;
-  const queryBase = FILTER_QUERIES[currentFilter];
-  window.open(buildDirectionsUrl(origin, queryBase), "_blank", "noopener");
+  const dest = FILTER_QUERIES[currentFilter];
+  window.open(buildDirectionsUrl(origin, dest), "_blank");
 });
 
-// Directions: Client → Supply
 directionsFromClientBtn.addEventListener("click", () => {
   if (!currentFilter) return alert("Select a supply filter first.");
 
   const clientAddress = clientAddressInput.value.trim();
   if (!clientAddress) return alert("Enter a client address first.");
 
-  const queryBase = FILTER_QUERIES[currentFilter];
-  window.open(buildDirectionsUrl(clientAddress, queryBase), "_blank", "noopener");
+  const dest = FILTER_QUERIES[currentFilter];
+  window.open(buildDirectionsUrl(clientAddress, dest), "_blank");
 });
 
 // ===============================
