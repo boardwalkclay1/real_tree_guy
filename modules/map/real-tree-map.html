@@ -2,144 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Real Tree Map – Supply Finder</title>
-
-  <style>
-    body {
-      font-family: "Inter", sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f4f7fa;
-      color: #111827;
-    }
-
-    .shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 18px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-      padding: 20px;
-      display: grid;
-      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-      gap: 16px;
-    }
-
-    h2 { margin: 0 0 8px; }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0 14px;
-    }
-
-    .pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-
-    .pill.active {
-      background: #4caf50;
-      color: white;
-      border-color: #43a047;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-    }
-
-    input {
-      width: 100%;
-      margin-top: 4px;
-      padding: 9px 11px;
-      border-radius: 12px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      font-size: 13px;
-      outline: none;
-      transition: 0.15s;
-    }
-
-    input:focus {
-      border-color: #4caf50;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 9px 11px;
-      border-radius: 12px;
-      border: none;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-
-    .btn-primary { background: #4caf50; color: white; }
-    .btn-primary:hover { background: #43a047; }
-
-    .btn-ghost { background: #f3f4f6; color: #111827; }
-    .btn-ghost:hover { background: #e5e7eb; }
-
-    .status {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .map-wrap {
-      border-radius: 14px;
-      border: 2px solid #d1d5db;
-      overflow: hidden;
-      min-height: 420px;
-      box-shadow: 0 0 18px rgba(0,0,0,0.06);
-    }
-
-    #mapFrame {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    .map-footer {
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .map-footer a {
-      color: #2563eb;
-      text-decoration: underline;
-    }
-  </style>
+  <title>Real Tree Map</title>
+  <link rel="stylesheet" href="real-tree-map.css">
 </head>
 
 <body>
   <section class="shell">
+
     <!-- LEFT SIDE -->
-    <div>
+    <div class="left-panel">
       <h2>Supply Finder</h2>
-      <p style="font-size:12px; color:#6b7280;">
-        Uses your location to find nearby supply spots. Filters update the map instantly.
-      </p>
+
+      <div id="locationStatus" class="status">Requesting location…</div>
 
       <label>Supply Filters</label>
-      <div class="pill-row" id="filterRow">
+      <div id="filterRow" class="pill-row">
         <button class="pill" data-type="home_depot">Home Depot</button>
         <button class="pill" data-type="lowes">Lowe's</button>
         <button class="pill" data-type="ace">Ace Hardware</button>
@@ -149,41 +26,36 @@
         <button class="pill" data-type="sawmill">Sawmills</button>
       </div>
 
-      <label>Your Location Status</label>
-      <div id="locationStatus" class="status">Requesting location…</div>
-
       <label>Client Address (optional)</label>
       <input id="clientAddress" placeholder="123 Oak St, Yulee, FL">
 
       <button id="directionsFromUser" class="btn-primary">
-        Directions: Me → Selected Supply Type
+        Directions: Me → Supply
       </button>
 
       <button id="directionsFromClient" class="btn-ghost">
-        Directions: Client → Selected Supply Type
+        Directions: Client → Supply
       </button>
 
-      <div class="status" id="hintText">
-        Select a filter, then choose directions from you or from the client.
+      <div class="status">
+        Filter: <span id="activeFilterLabel">None</span>
       </div>
     </div>
 
-    <!-- RIGHT SIDE -->
-    <div>
-      <div class="map-wrap">
-        <iframe
-          id="mapFrame"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          src="https://www.google.com/maps/embed?pb=&q=home+depot&z=12">
-        </iframe>
-      </div>
+    <!-- RIGHT SIDE MAP -->
+    <div class="map-wrap">
+      <iframe
+        id="mapFrame"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps?q=Yulee,FL&z=12&output=embed">
+      </iframe>
 
       <div class="map-footer">
-        <div>Filter: <span id="activeFilterLabel">None</span></div>
-        <div><a id="openInMaps" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps</a></div>
+        <a id="openInMaps" href="https://www.google.com/maps" target="_blank">Open in Google Maps</a>
       </div>
     </div>
+
   </section>
 
   <script src="real-tree-map.js" type="module"></script>
