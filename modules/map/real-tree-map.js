@@ -1,5 +1,5 @@
 // ===============================
-// REAL TREE MAP – FIXED LOCATION VERSION
+// REAL TREE MAP – NEW WORKING VERSION
 // ===============================
 
 // DOM
@@ -16,6 +16,7 @@ const directionsFromClientBtn = document.getElementById("directionsFromClient");
 let userLat = null;
 let userLng = null;
 let currentFilter = null;
+let locationReady = false;
 
 // Search phrases
 const FILTER_QUERIES = {
@@ -43,28 +44,20 @@ function initLocation() {
     (pos) => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
+      locationReady = true;
 
       locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
 
-      // NOW we update the map
-      if (currentFilter) updateMapEmbed();
-      else centerOnUser();
+      // Center map on user immediately
+      mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
+      openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
     },
-    () => {
-      locationStatus.textContent = "Could not get your location.";
+    (err) => {
+      locationStatus.textContent = "Location denied. Enable it in browser settings.";
+      console.log(err);
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
   );
-}
-
-// ===============================
-// CENTER MAP ON USER
-// ===============================
-function centerOnUser() {
-  if (!userLat || !userLng) return;
-
-  mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
-  openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
 }
 
 // ===============================
@@ -76,6 +69,12 @@ filterRow.addEventListener("click", (e) => {
 
   const type = btn.dataset.type;
   if (!FILTER_QUERIES[type]) return;
+
+  // ⭐ Prevent Washington fallback
+  if (!locationReady) {
+    alert("Still getting your location… try again in a moment.");
+    return;
+  }
 
   [...filterRow.querySelectorAll(".pill")].forEach((el) =>
     el.classList.toggle("active", el === btn)
@@ -92,19 +91,16 @@ filterRow.addEventListener("click", (e) => {
 // ===============================
 function updateMapEmbed() {
   if (!currentFilter) return;
+  if (!locationReady) return;
 
   const queryBase = FILTER_QUERIES[currentFilter];
-
-  let q;
-  if (userLat && userLng) {
-    q = `${queryBase} near ${userLat},${userLng}`;
-  } else {
-    q = `${queryBase} near me`;
-  }
-
+  const q = `${queryBase} near ${userLat},${userLng}`;
   const encoded = encodeURIComponent(q);
 
+  // ⭐ Correct dynamic embed
   mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
+
+  // External link
   openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 }
 
@@ -117,7 +113,7 @@ function buildDirectionsUrl(origin, queryBase) {
 
 directionsFromUserBtn.addEventListener("click", () => {
   if (!currentFilter) return alert("Select a supply filter first.");
-  if (!userLat || !userLng) return alert("Your location is not available yet.");
+  if (!locationReady) return alert("Your location is not available yet.");
 
   const origin = `${userLat},${userLng}`;
   const dest = FILTER_QUERIES[currentFilter];
@@ -125,7 +121,7 @@ directionsFromUserBtn.addEventListener("click", () => {
 });
 
 directionsFromClientBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a supply filter first.");
+  if (!currentFilter) return alert("Select a filter first.");
 
   const clientAddress = clientAddressInput.value.trim();
   if (!clientAddress) return alert("Enter a client address first.");
