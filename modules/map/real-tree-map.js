@@ -1,5 +1,5 @@
 // ===============================
-// REAL TREE MAP – EMBED + GOOGLE MAPS LAUNCHER
+// REAL TREE MAP – FIXED LOCATION VERSION
 // ===============================
 
 // DOM
@@ -43,18 +43,28 @@ function initLocation() {
     (pos) => {
       userLat = pos.coords.latitude;
       userLng = pos.coords.longitude;
+
       locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
 
-      if (!currentFilter) {
-        mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
-        openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
-      }
+      // NOW we update the map
+      if (currentFilter) updateMapEmbed();
+      else centerOnUser();
     },
     () => {
       locationStatus.textContent = "Could not get your location.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
   );
+}
+
+// ===============================
+// CENTER MAP ON USER
+// ===============================
+function centerOnUser() {
+  if (!userLat || !userLng) return;
+
+  mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=14&output=embed`;
+  openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${userLat},${userLng}`;
 }
 
 // ===============================
@@ -94,10 +104,7 @@ function updateMapEmbed() {
 
   const encoded = encodeURIComponent(q);
 
-  // ⭐ Dynamic embed that works
   mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
-
-  // External link
   openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
 }
 
