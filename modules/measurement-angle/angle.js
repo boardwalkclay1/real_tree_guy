@@ -1,30 +1,71 @@
-const video = document.getElementById("camera");
-const result = document.getElementById("result");
+const angleDistanceInput = document.getElementById("angleDistance");
+const angleDisplay = document.getElementById("angleDisplay");
+const horizonDisplay = document.getElementById("horizonDisplay");
+const stabilityDisplay = document.getElementById("stabilityDisplay");
+const angleHeightOut = document.getElementById("angleHeightOut");
 
-let baseAngle = null;
-let topAngle = null;
+const calibrateBtn = document.getElementById("calibrateBtn");
+const lockAngleBtn = document.getElementById("lockAngleBtn");
+const resetAngleBtn = document.getElementById("resetAngleBtn");
+const cameraPreview = document.getElementById("cameraPreview");
 
-navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-  .then(stream => video.srcObject = stream);
+let currentAngleDeg = 0;
+let horizonOffset = 0;
+let lastAngles = [];
 
-function getAngle() {
-  return window.orientation || 0; // fallback
+// Camera
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }
+    });
+    cameraPreview.srcObject = stream;
+  } catch (err) {
+    alert("Camera unavailable.");
+  }
 }
+initCamera();
 
-document.getElementById("baseBtn").onclick = () => {
-  baseAngle = getAngle();
-  result.textContent = "Base angle recorded.";
+// Orientation
+window.addEventListener("deviceorientation", (e) => {
+  const beta = e.beta;
+  if (typeof beta !== "number") return;
+
+  currentAngleDeg = beta;
+  angleDisplay.textContent = currentAngleDeg.toFixed(1);
+
+  lastAngles.push(currentAngleDeg);
+  if (lastAngles.length > 20) lastAngles.shift();
+
+  const spread = Math.max(...lastAngles) - Math.min(...lastAngles);
+  stabilityDisplay.textContent =
+    spread < 1 ? "Stable" :
+    spread < 3 ? "OK" : "Unsteady";
+});
+
+// Calibrate
+calibrateBtn.onclick = () => {
+  horizonOffset = currentAngleDeg;
+  horizonDisplay.textContent = horizonOffset.toFixed(1);
 };
 
-document.getElementById("topBtn").onclick = () => {
-  topAngle = getAngle();
-  if (baseAngle === null) return;
+// Lock
+lockAngleBtn.onclick = () => {
+  const dist = parseFloat(angleDistanceInput.value);
+  if (!dist || dist <= 0) return alert("Enter distance.");
 
-  const diff = Math.abs(topAngle - baseAngle);
-  const radians = diff * (Math.PI / 180);
+  const effectiveAngle = currentAngleDeg - horizonOffset;
+  const rad = effectiveAngle * Math.PI / 180;
+  const height = dist * Math.tan(rad);
 
-  const dist = parseFloat(document.getElementById("distance").value);
-  const height = Math.tan(radians) * dist;
+  angleHeightOut.textContent = `${height.toFixed(2)} m`;
+};
 
-  result.textContent = `Estimated Height: ${height.toFixed(1)} ft`;
+// Reset
+resetAngleBtn.onclick = () => {
+  horizonOffset = 0;
+  horizonDisplay.textContent = "0.0";
+  angleHeightOut.textContent = "–";
+  lastAngles = [];
+  stabilityDisplay.textContent = "–";
 };
