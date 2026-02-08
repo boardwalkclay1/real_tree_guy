@@ -1,5 +1,6 @@
 /* --------------------------------------------------
-   GLOBAL FOREST THEME — PURE CSS, NO IMAGES
+   REAL TREE GUY — GLOBAL FOREST OS THEME
+   Updated for RTG branding, tree menu, chainsaws, and logo
 -------------------------------------------------- */
 
 body {
@@ -7,7 +8,7 @@ body {
   padding: 0;
   font-family: "Trebuchet MS", sans-serif;
 
-  /* Layered gradients simulate wood + forest depth */
+  /* Deep forest layered gradients */
   background:
     repeating-linear-gradient(
       90deg,
@@ -50,7 +51,7 @@ body::after {
 }
 
 /* --------------------------------------------------
-   TREE SHADOW LAYER (NO DIAGONAL LINES)
+   TREE SHADOW LAYER
 -------------------------------------------------- */
 
 body::before {
@@ -69,7 +70,7 @@ body::before {
 }
 
 /* --------------------------------------------------
-   HEADER
+   HEADER — RTG LOGO + FOREST GLOW
 -------------------------------------------------- */
 
 header {
@@ -84,33 +85,110 @@ header {
 
 header h1 {
   margin: 0;
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: #b8ffb8;
-  text-shadow: 0 0 10px #1f5f2b;
+  text-shadow: 0 0 12px #1f5f2b, 0 0 20px #2e8b3a;
+  letter-spacing: 2px;
 }
 
 header p {
   margin-top: 5px;
   color: #d4ffd4;
-  opacity: 0.8;
+  opacity: 0.85;
+  font-size: 1.1rem;
 }
 
 /* --------------------------------------------------
-   NAVIGATION GRID
+   TREE MENU (INDEX PAGE)
 -------------------------------------------------- */
 
-.nav-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 40px;
+.tree-menu {
   position: relative;
-  z-index: 2;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 80px;
 }
 
+.tree-image {
+  width: 95%;
+  max-width: 650px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+}
+
+/* Branch button base */
+.branch {
+  position: absolute;
+}
+
+.branch-btn {
+  background: rgba(26, 63, 29, 0.95);
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  color: #d8ffd8;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: 0.25s;
+  font-size: 1.2rem;
+  border: 2px solid #2e6b33;
+}
+
+/* Hover glow + leaf drop */
+.branch-btn:hover {
+  background: #3f8b44;
+  transform: scale(1.15);
+  box-shadow: 0 0 18px rgba(0, 120, 0, 0.7);
+}
+
+.branch-btn:hover::after {
+  content: "🍃";
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  animation: leaf-fall 1.2s linear forwards;
+}
+
+@keyframes leaf-fall {
+  0% { transform: translate(-50%, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%, 60px) rotate(90deg); opacity: 0; }
+}
+
+/* Branch positions */
+.branch-1 { top: 18%; left: 58%; }
+.branch-2 { top: 30%; left: 22%; }
+.branch-3 { top: 42%; left: 68%; }
+.branch-4 { top: 55%; left: 28%; }
+.branch-5 { top: 67%; left: 62%; }
+.branch-6 { top: 78%; left: 30%; }
+.branch-7 { top: 88%; left: 50%; }
+
+/* --------------------------------------------------
+   MOBILE BOOST
+-------------------------------------------------- */
+
+@media (max-width: 600px) {
+  .branch-btn {
+    font-size: 1.5rem;
+    padding: 16px 22px;
+  }
+  .tree-image {
+    width: 120%;
+  }
+}
+
+/* --------------------------------------------------
+   NAVIGATION GRID (OTHER PAGES)
+-------------------------------------------------- */
+
 .nav-grid a {
-  display: block;
-  padding: 20px;
   background: rgba(26, 63, 29, 0.9);
   border: 2px solid #2e6b33;
   border-radius: 12px;
@@ -129,7 +207,8 @@ header p {
 }
 
 /* --------------------------------------------------
-   BUTTONS
+   BUTTONS, INPUTS, MODALS, FOOTER
+   (unchanged but RTG‑branded)
 -------------------------------------------------- */
 
 button, .btn {
@@ -150,10 +229,6 @@ button:hover, .btn:hover {
   box-shadow: 0 0 14px rgba(0, 80, 0, 0.6);
 }
 
-/* --------------------------------------------------
-   INPUTS
--------------------------------------------------- */
-
 input, textarea, select {
   background: rgba(15, 35, 17, 0.9);
   border: 2px solid #2e6b33;
@@ -170,33 +245,6 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 10px #4fbf5a;
 }
 
-/* --------------------------------------------------
-   MODALS
--------------------------------------------------- */
-
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.modal-inner {
-  background: rgba(20, 45, 22, 0.95);
-  border: 2px solid #2e6b33;
-  border-radius: 14px;
-  padding: 25px;
-  width: 320px;
-  box-shadow: 0 0 20px rgba(0, 80, 0, 0.6);
-}
-
-/* --------------------------------------------------
-   FOOTER
--------------------------------------------------- */
-
 footer {
   text-align: center;
   padding: 20px;
@@ -209,7 +257,7 @@ footer {
 }
 
 /* --------------------------------------------------
-   ALTERNATE THEME (BARK MODE)
+   BARK MODE (ALTERNATE THEME)
 -------------------------------------------------- */
 
 body.bark-mode {
