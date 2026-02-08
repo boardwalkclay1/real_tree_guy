@@ -1,144 +1,191 @@
-// ===============================
-// REAL TREE MAP – USER LOCATION + FILTERS + DIRECTIONS
-// ===============================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real Tree Map – Supply Finder</title>
 
-// DOM
-const filterRow = document.getElementById("filterRow");
-const mapFrame = document.getElementById("mapFrame");
-const locationStatus = document.getElementById("locationStatus");
-const activeFilterLabel = document.getElementById("activeFilterLabel");
-const openInMaps = document.getElementById("openInMaps");
-const clientAddressInput = document.getElementById("clientAddress");
-const directionsFromUserBtn = document.getElementById("directionsFromUser");
-const directionsFromClientBtn = document.getElementById("directionsFromClient");
-const hintText = document.getElementById("hintText");
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f7fa;
+      color: #111827;
+    }
 
-// State
-let userLat = null;
-let userLng = null;
-let currentFilter = null;
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: 16px;
+    }
 
-// Search phrases for each filter
-const FILTER_QUERIES = {
-  home_depot: "Home Depot",
-  lowes: "Lowe's",
-  ace: "Ace Hardware",
-  chainsaw: "chainsaw repair shop",
-  woodworking: "woodworking supply store",
-  wood_dump: "wood dump site",
-  sawmill: "sawmill"
-};
+    h2 { margin: 0 0 8px; }
 
-// ===============================
-// GEOLOCATION
-// ===============================
-function initLocation() {
-  if (!navigator.geolocation) {
-    locationStatus.textContent = "Geolocation not supported.";
-    return;
-  }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
 
-  locationStatus.textContent = "Requesting your location…";
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
-      locationStatus.textContent = `Location locked: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+    .pill.active {
+      background: #4caf50;
+      color: white;
+      border-color: #43a047;
+    }
 
-      if (currentFilter) updateMapEmbed();
-    },
-    () => {
-      locationStatus.textContent = "Could not get your location. Using fallback search.";
-    },
-    { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
-  );
-}
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
 
-// ===============================
-// FILTER HANDLING
-// ===============================
-filterRow.addEventListener("click", (e) => {
-  const btn = e.target.closest(".pill");
-  if (!btn) return;
+    input {
+      width: 100%;
+      margin-top: 4px;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 13px;
+      outline: none;
+      transition: 0.15s;
+    }
 
-  const type = btn.dataset.type;
-  if (!FILTER_QUERIES[type]) return;
+    input:focus {
+      border-color: #4caf50;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+    }
 
-  [...filterRow.querySelectorAll(".pill")].forEach((el) =>
-    el.classList.toggle("active", el === btn)
-  );
+    button {
+      margin-top: 10px;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
 
-  currentFilter = type;
-  activeFilterLabel.textContent = FILTER_QUERIES[type];
+    .btn-primary { background: #4caf50; color: white; }
+    .btn-primary:hover { background: #43a047; }
 
-  updateMapEmbed();
-});
+    .btn-ghost { background: #f3f4f6; color: #111827; }
+    .btn-ghost:hover { background: #e5e7eb; }
 
-// ===============================
-// MAP EMBED BUILDER (FIXED VERSION)
-// ===============================
-function updateMapEmbed() {
-  if (!currentFilter) {
-    mapFrame.src = "https://www.google.com/maps?q=&output=embed";
-    openInMaps.href = "https://www.google.com/maps";
-    return;
-  }
+    .status {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
 
-  const queryBase = FILTER_QUERIES[currentFilter];
+    .map-wrap {
+      border-radius: 14px;
+      border: 2px solid #d1d5db;
+      overflow: hidden;
+      min-height: 420px;
+      box-shadow: 0 0 18px rgba(0,0,0,0.06);
+    }
 
-  let q;
-  if (userLat != null && userLng != null) {
-    q = `${queryBase} near ${userLat},${userLng}`;
-  } else {
-    q = `${queryBase} near me`;
-  }
+    #mapFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
 
-  const encoded = encodeURIComponent(q);
+    .map-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
 
-  // ⭐ FIXED EMBED URL (this is the correct working format)
-  const embedSrc = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
-  mapFrame.src = embedSrc;
+    .map-footer a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+  </style>
+</head>
 
-  // External link
-  const externalUrl = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
-  openInMaps.href = externalUrl;
+<body>
+  <section class="shell">
+    <!-- LEFT SIDE -->
+    <div>
+      <h2>Supply Finder</h2>
+      <p style="font-size:12px; color:#6b7280;">
+        Uses your location to find nearby supply spots. Filters update the map instantly.
+      </p>
 
-  hintText.textContent = "Use the map or choose directions.";
-}
+      <label>Supply Filters</label>
+      <div class="pill-row" id="filterRow">
+        <button class="pill" data-type="home_depot">Home Depot</button>
+        <button class="pill" data-type="lowes">Lowe's</button>
+        <button class="pill" data-type="ace">Ace Hardware</button>
+        <button class="pill" data-type="chainsaw">Chainsaw Shops</button>
+        <button class="pill" data-type="woodworking">Woodworking Stores</button>
+        <button class="pill" data-type="wood_dump">Wood Dump Sites</button>
+        <button class="pill" data-type="sawmill">Sawmills</button>
+      </div>
 
-// ===============================
-// DIRECTIONS HELPERS
-// ===============================
-function buildDirectionsUrl(origin, queryBase) {
-  const dest = encodeURIComponent(queryBase);
-  const orig = encodeURIComponent(origin);
-  return `https://www.google.com/maps/dir/?api=1&origin=${orig}&destination=${dest}`;
-}
+      <label>Your Location Status</label>
+      <div id="locationStatus" class="status">Requesting location…</div>
 
-// Directions: Me → Supply
-directionsFromUserBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a supply filter first.");
-  if (userLat == null || userLng == null) return alert("Your location is not available yet.");
+      <label>Client Address (optional)</label>
+      <input id="clientAddress" placeholder="123 Oak St, Yulee, FL">
 
-  const origin = `${userLat},${userLng}`;
-  const queryBase = FILTER_QUERIES[currentFilter];
-  window.open(buildDirectionsUrl(origin, queryBase), "_blank", "noopener");
-});
+      <button id="directionsFromUser" class="btn-primary">
+        Directions: Me → Selected Supply Type
+      </button>
 
-// Directions: Client → Supply
-directionsFromClientBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a supply filter first.");
+      <button id="directionsFromClient" class="btn-ghost">
+        Directions: Client → Selected Supply Type
+      </button>
 
-  const clientAddress = clientAddressInput.value.trim();
-  if (!clientAddress) return alert("Enter a client address first.");
+      <div class="status" id="hintText">
+        Select a filter, then choose directions from you or from the client.
+      </div>
+    </div>
 
-  const queryBase = FILTER_QUERIES[currentFilter];
-  window.open(buildDirectionsUrl(clientAddress, queryBase), "_blank", "noopener");
-});
+    <!-- RIGHT SIDE -->
+    <div>
+      <div class="map-wrap">
+        <iframe
+          id="mapFrame"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed?pb=&q=home+depot&z=12">
+        </iframe>
+      </div>
 
-// ===============================
-// INIT
-// ===============================
-initLocation();
-updateMapEmbed();
+      <div class="map-footer">
+        <div>Filter: <span id="activeFilterLabel">None</span></div>
+        <div><a id="openInMaps" href="https://www.google.com/maps" target="_blank" rel="noopener">Open in Google Maps</a></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="real-tree-map.js" type="module"></script>
+</body>
+</html>
