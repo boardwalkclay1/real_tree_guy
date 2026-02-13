@@ -276,3 +276,83 @@ body.bark-mode button {
   background: #6b4e1f;
   border-color: #8b6b33;
 }
+.tree-menu {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  position: relative;
+}
+
+.tree {
+  position: relative;
+  width: 300px;
+  padding-bottom: 200px;
+}
+
+/* TRUNK */
+.trunk {
+  width: 40px;
+  height: 600px;
+  background: #5a3e1b;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* BRANCH BASE STYLE */
+.branch {
+  position: absolute;
+  width: 200px;
+  height: 20px;
+  background: #6b4a23;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* LEFT BRANCHES */
+.branch-left {
+  left: -180px;
+  transform-origin: right center;
+}
+
+/* RIGHT BRANCHES */
+.branch-right {
+  right: -180px;
+  transform-origin: left center;
+}
+
+/* CENTER BRANCH */
+.branch-center {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240px;
+}
+
+/* INDIVIDUAL BRANCH POSITIONS */
+.b1 { top: 40px; transform: rotate(-8deg); }
+.b2 { top: 110px; transform: rotate(8deg); }
+.b3 { top: 180px; transform: rotate(-6deg); }
+.b4 { top: 250px; transform: rotate(6deg); }
+.b5 { top: 320px; transform: rotate(-5deg); }
+.b6 { top: 390px; transform: rotate(5deg); }
+.b7 { top: 470px; }
+
+/* BUTTONS */
+.branch-btn {
+  background: #ffffff;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #0f3d1a;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  transition: 0.2s;
+}
+
+.branch-btn:hover {
+  background: #e8ffe8;
+  transform: translateY(-3px);
+}
