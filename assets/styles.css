@@ -95,3 +95,75 @@
   width: 300px;
   top: 610px;
 }
+/* --------------------------------------------------
+   FULL CANOPY + BACKGROUND TREE + GROUND BUSHES
+   (Pure CSS — no images)
+-------------------------------------------------- */
+
+/* CANOPY (big leafy crown) */
+.tree::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px;
+  height: 260px;
+  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 25px rgba(0,0,0,0.5));
+  z-index: 1;
+}
+
+/* CANOPY LAYERS (depth + shape) */
+.tree::after {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 300px;
+  background: radial-gradient(circle at 50% 50%, #174d22, #0f3d1a);
+  border-radius: 50%;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+/* SIDE CANOPY CLUSTERS */
+.canopy-left,
+.canopy-right {
+  position: absolute;
+  top: -40px;
+  width: 260px;
+  height: 180px;
+  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
+  border-radius: 50%;
+  z-index: 1;
+  filter: drop-shadow(0 0 20px rgba(0,0,0,0.4));
+}
+
+.canopy-left {
+  left: -140px;
+}
+
+.canopy-right {
+  right: -140px;
+}
+
+/* GROUND BUSHES */
+.ground-bushes {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 120px;
+  background: radial-gradient(circle at 50% 60%, #1f6b2e, #174d22);
+  border-radius: 50%;
+  z-index: 0;
+  box-shadow:
+    -120px 20px 0 #1a5c28,
+    120px 20px 0 #1a5c28,
+    0px 40px 0 #174d22;
+}
