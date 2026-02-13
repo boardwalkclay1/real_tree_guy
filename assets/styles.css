@@ -1,371 +1,21 @@
 /* --------------------------------------------------
-   REAL TREE GUY — GLOBAL FOREST OS THEME
-   Updated for RTG branding, tree menu, chainsaws, and logo
--------------------------------------------------- */
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Trebuchet MS", sans-serif;
-
-  /* Deep forest layered gradients */
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #0d2a12 0px,
-      #0f3116 40px,
-      #0d2a12 80px
-    ),
-    linear-gradient(#0b2e13, #0f3d1a, #0b2e13);
-
-  color: #e8ffe8;
-  overflow-x: hidden;
-  animation: bgMove 20s ease-in-out infinite alternate;
-}
-
-@keyframes bgMove {
-  0% { background-position: 0 0, 0 0; }
-  100% { background-position: 40px 0, 0 0; }
-}
-
-/* --------------------------------------------------
-   FLOATING PARTICLES (POLLEN / DUST)
--------------------------------------------------- */
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(#ffffff22 2px, transparent 2px),
-    radial-gradient(#ffffff11 1px, transparent 1px);
-  background-size: 4px 4px, 6px 6px;
-  opacity: 0.15;
-  animation: drift 18s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes drift {
-  from { transform: translateY(0); }
-  to { transform: translateY(-40px); }
-}
-
-/* --------------------------------------------------
-   TREE SHADOW LAYER
--------------------------------------------------- */
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(
-      to top,
-      rgba(0,0,0,0.4) 0%,
-      rgba(0,0,0,0.0) 40%
-    );
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* --------------------------------------------------
-   HEADER — RTG LOGO + FOREST GLOW
--------------------------------------------------- */
-
-header {
-  text-align: center;
-  padding: 30px 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border-bottom: 2px solid #1f5f2b;
-  backdrop-filter: blur(4px);
-  position: relative;
-  z-index: 2;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 3rem;
-  color: #b8ffb8;
-  text-shadow: 0 0 12px #1f5f2b, 0 0 20px #2e8b3a;
-  letter-spacing: 2px;
-}
-
-header p {
-  margin-top: 5px;
-  color: #d4ffd4;
-  opacity: 0.85;
-  font-size: 1.1rem;
-}
-
-/* --------------------------------------------------
-   TREE MENU (INDEX PAGE)
+   PURE CSS TREE — FINAL CLEAN VERSION
+   (Replaces all previous tree/trunk/branch code)
 -------------------------------------------------- */
 
 .tree-menu {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding-bottom: 80px;
-}
-
-.tree-image {
-  width: 95%;
-  max-width: 650px;
-  height: auto;
-  pointer-events: none;
-  user-select: none;
-  filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
-}
-
-/* Branch button base */
-.branch {
-  position: absolute;
-}
-
-.branch-btn {
-  background: rgba(26, 63, 29, 0.95);
-  padding: 12px 18px;
-  border-radius: 12px;
-  font-weight: bold;
-  color: #d8ffd8;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: 0.25s;
-  font-size: 1.2rem;
-  border: 2px solid #2e6b33;
-}
-
-/* Hover glow + leaf drop */
-.branch-btn:hover {
-  background: #3f8b44;
-  transform: scale(1.15);
-  box-shadow: 0 0 18px rgba(0, 120, 0, 0.7);
-}
-
-.branch-btn:hover::after {
-  content: "🍃";
-  position: absolute;
-  left: 50%;
-  top: -10px;
-  animation: leaf-fall 1.2s linear forwards;
-}
-
-@keyframes leaf-fall {
-  0% { transform: translate(-50%, 0) rotate(0deg); opacity: 1; }
-  100% { transform: translate(-50%, 60px) rotate(90deg); opacity: 0; }
-}
-
-/* Branch positions */
-.branch-1 { top: 18%; left: 58%; }
-.branch-2 { top: 30%; left: 22%; }
-.branch-3 { top: 42%; left: 68%; }
-.branch-4 { top: 55%; left: 28%; }
-.branch-5 { top: 67%; left: 62%; }
-.branch-6 { top: 78%; left: 30%; }
-.branch-7 { top: 88%; left: 50%; }
-
-/* --------------------------------------------------
-   MOBILE BOOST
--------------------------------------------------- */
-
-@media (max-width: 600px) {
-  .branch-btn {
-    font-size: 1.5rem;
-    padding: 16px 22px;
-  }
-  .tree-image {
-    width: 120%;
-  }
-}
-
-/* --------------------------------------------------
-   NAVIGATION GRID (OTHER PAGES)
--------------------------------------------------- */
-
-.nav-grid a {
-  background: rgba(26, 63, 29, 0.9);
-  border: 2px solid #2e6b33;
-  border-radius: 12px;
-  text-align: center;
-  color: #d8ffd8;
-  text-decoration: none;
-  font-size: 1.2rem;
-  transition: 0.3s;
-  box-shadow: 0 0 10px rgba(0, 50, 0, 0.4);
-}
-
-.nav-grid a:hover {
-  background: #245c29;
-  transform: translateY(-4px);
-  box-shadow: 0 0 15px rgba(0, 80, 0, 0.6);
-}
-
-/* --------------------------------------------------
-   BUTTONS, INPUTS, MODALS, FOOTER
-   (unchanged but RTG‑branded)
--------------------------------------------------- */
-
-button, .btn {
-  background: #2e6b33;
-  color: #e8ffe8;
-  border: 2px solid #3f8b44;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.25s;
-  box-shadow: 0 0 8px rgba(0, 50, 0, 0.4);
-}
-
-button:hover, .btn:hover {
-  background: #3f8b44;
-  transform: translateY(-3px);
-  box-shadow: 0 0 14px rgba(0, 80, 0, 0.6);
-}
-
-input, textarea, select {
-  background: rgba(15, 35, 17, 0.9);
-  border: 2px solid #2e6b33;
-  color: #d8ffd8;
-  padding: 10px;
-  border-radius: 8px;
-  width: 100%;
-  box-shadow: inset 0 0 6px rgba(0, 50, 0, 0.4);
-}
-
-input:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: #4fbf5a;
-  box-shadow: 0 0 10px #4fbf5a;
-}
-
-footer {
-  text-align: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.25);
-  border-top: 2px solid #1f5f2b;
-  color: #caffca;
+  align-items: flex-start;
   margin-top: 40px;
   position: relative;
-  z-index: 2;
-}
-
-/* --------------------------------------------------
-   BARK MODE (ALTERNATE THEME)
--------------------------------------------------- */
-
-body.bark-mode {
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #2a1b0f 0px,
-      #3a2615 40px,
-      #2a1b0f 80px
-    ),
-    linear-gradient(#0a0a0a, #111, #0a0a0a);
-  color: #f0f0f0;
-}
-
-body.bark-mode button {
-  background: #6b4e1f;
-  border-color: #8b6b33;
-}
-.tree-menu {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  position: relative;
+  height: 750px;
 }
 
 .tree {
   position: relative;
-  width: 300px;
-  padding-bottom: 200px;
-}
-
-/* TRUNK */
-.trunk {
-  width: 40px;
-  height: 600px;
-  background: #5a3e1b;
-  margin: 0 auto;
-  border-radius: 20px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
-}
-
-/* BRANCH BASE STYLE */
-.branch {
-  position: absolute;
-  width: 200px;
-  height: 20px;
-  background: #6b4a23;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
-}
-
-/* LEFT BRANCHES */
-.branch-left {
-  left: -180px;
-  transform-origin: right center;
-}
-
-/* RIGHT BRANCHES */
-.branch-right {
-  right: -180px;
-  transform-origin: left center;
-}
-
-/* CENTER BRANCH */
-.branch-center {
-  left: 50%;
-  transform: translateX(-50%);
-  width: 240px;
-}
-
-/* INDIVIDUAL BRANCH POSITIONS */
-.b1 { top: 40px; transform: rotate(-8deg); }
-.b2 { top: 110px; transform: rotate(8deg); }
-.b3 { top: 180px; transform: rotate(-6deg); }
-.b4 { top: 250px; transform: rotate(6deg); }
-.b5 { top: 320px; transform: rotate(-5deg); }
-.b6 { top: 390px; transform: rotate(5deg); }
-.b7 { top: 470px; }
-
-/* BUTTONS */
-.branch-btn {
-  background: #ffffff;
-  padding: 8px 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  color: #0f3d1a;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transition: 0.2s;
-}
-
-.branch-btn:hover {
-  background: #e8ffe8;
-  transform: translateY(-3px);
-}
-.tree-menu {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.tree {
-  position: relative;
-  width: 300px;
-  height: 650px;
+  width: 380px;
+  height: 700px;
 }
 
 /* TRUNK */
@@ -373,55 +23,75 @@ body.bark-mode button {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
+  width: 80px;
   height: 100%;
-  background: #5a3e1b;
-  border-radius: 30px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+  background: linear-gradient(90deg, #4e3418, #6b4a23, #4e3418);
+  border-radius: 40px;
+  box-shadow: inset 0 0 14px rgba(0,0,0,0.5);
 }
 
 /* BRANCH BASE */
 .branch {
   position: absolute;
-  width: 220px;
-  height: 18px;
-  background: #6b4a23;
-  border-radius: 12px;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  width: 260px;
+  height: 22px;
+  background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
+  border-radius: 14px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 3;
+}
+
+/* BUSHES BEHIND BUTTONS */
+.branch::before {
+  content: "";
+  position: absolute;
+  bottom: -28px;
+  width: 150px;
+  height: 70px;
+  background: #1f6b2e;
+  border-radius: 50%;
+  z-index: -1;
+  box-shadow:
+    -40px 15px 0 #1a5c28,
+    40px 15px 0 #1a5c28,
+    0px 30px 0 #174d22;
 }
 
 /* BUTTONS */
 .branch-btn {
-  background: #ffffff;
-  padding: 8px 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  color: #0f3d1a;
+  background: rgba(26, 63, 29, 0.95);
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-weight: bold;
+  color: #d8ffd8;
   text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transition: 0.2s;
+  border: 2px solid #2e6b33;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  transition: 0.25s;
 }
 
 .branch-btn:hover {
-  background: #e8ffe8;
-  transform: translateY(-3px);
+  background: #3f8b44;
+  transform: scale(1.12);
+  box-shadow: 0 0 18px rgba(0, 120, 0, 0.7);
 }
 
-/* INDIVIDUAL BRANCH POSITIONS + ANGLES */
-.b1 { top: 60px; left: -150px; transform: rotate(-12deg); }
-.b2 { top: 130px; right: -150px; transform: rotate(12deg); }
-.b3 { top: 200px; left: -140px; transform: rotate(-10deg); }
-.b4 { top: 270px; right: -140px; transform: rotate(10deg); }
-.b5 { top: 340px; left: -130px; transform: rotate(-8deg); }
-.b6 { top: 410px; right: -130px; transform: rotate(8deg); }
+/* SPREAD OUT BRANCH POSITIONS */
+.b1 { top: 70px; left: -210px; transform: rotate(-16deg); }
+.b2 { top: 150px; right: -210px; transform: rotate(16deg); }
+.b3 { top: 240px; left: -190px; transform: rotate(-14deg); }
+.b4 { top: 330px; right: -190px; transform: rotate(14deg); }
+.b5 { top: 420px; left: -170px; transform: rotate(-12deg); }
+.b6 { top: 510px; right: -170px; transform: rotate(12deg); }
 
 /* CENTER BRANCH */
 .center-branch {
   left: 50%;
   transform: translateX(-50%);
-  width: 260px;
-  top: 500px;
+  width: 300px;
+  top: 610px;
 }
