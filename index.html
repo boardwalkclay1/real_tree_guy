@@ -1,97 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Real Tree Guy</title>
+<main class="tree-menu">
 
-  <!-- GLOBAL FOREST THEME -->
-  <link rel="stylesheet" href="assets/styles.css">
+  <div class="tree">
 
-  <!-- Manifest -->
-  <link rel="manifest" href="manifest.json">
-</head>
+    <div class="trunk"></div>
 
-<body>
-
-  <!-- HEADER -->
-  <header>
-    <h1>Real Tree Guy</h1>
-    <p>Modular Static OS for Tree Work</p>
-  </header>
-
-  <!-- INSTALL BUTTON -->
-  <div id="installBtn" style="display:none;">📲 Install App</div>
-
-  <!-- TREE MENU -->
-  <main class="tree-menu">
-
-    <!-- Tree Image (placeholder so page loads even without your PNG) -->
-    <div class="rtg-tree">
-      <img 
-        src="assets/rtg-tree.png" 
-        onerror="this.src='https://via.placeholder.com/600x900/0f3d1a/ffffff?text=RTG+Tree+Placeholder'" 
-        class="tree-image"
-      >
-    </div>
-
-    <!-- Branch Buttons -->
-    <div class="branch branch-1">
+    <div class="branch b1">
       <a href="modules/profile/profile.html" class="branch-btn">Profile</a>
     </div>
 
-    <div class="branch branch-2">
+    <div class="branch b2">
       <a href="modules/customers/customers.html" class="branch-btn">Customers & Jobs</a>
     </div>
 
-    <div class="branch branch-3">
+    <div class="branch b3">
       <a href="modules/measurement/measurement.html" class="branch-btn">Tree Measurement</a>
     </div>
 
-    <div class="branch branch-4">
+    <div class="branch b4">
       <a href="modules/contracts/contracts.html" class="branch-btn">Contracts</a>
     </div>
 
-    <div class="branch branch-5">
+    <div class="branch b5">
       <a href="modules/calendar/calendar.html" class="branch-btn">Calendar</a>
     </div>
 
-    <div class="branch branch-6">
+    <div class="branch b6">
       <a href="modules/flyers/flyers.html" class="branch-btn">Cards & Flyers</a>
     </div>
 
-    <div class="branch branch-7">
+    <div class="branch b7 center-branch">
       <a href="modules/map/real-tree-map.html" class="branch-btn">Real Tree Map</a>
     </div>
 
-  </main>
+  </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>Real Tree Guy • Modular Static App</p>
-  </footer>
-
-  <!-- INSTALL LOGIC -->
-  <script>
-    let deferredPrompt;
-    const installBtn = document.getElementById("installBtn");
-
-    window.addEventListener("beforeinstallprompt", e => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = "block";
-    });
-
-    installBtn.addEventListener("click", () => {
-      if (deferredPrompt) deferredPrompt.prompt();
-    });
-  </script>
-
-  <!-- SERVICE WORKER -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-  </script>
-
-</body>
-</html>
+</main>
