@@ -4,33 +4,31 @@
   <meta charset="UTF-8">
   <title>Real Tree Guy</title>
 
-  <!-- GLOBAL FOREST THEME -->
   <link rel="stylesheet" href="assets/styles.css">
-
-  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
-  <!-- HEADER -->
   <header>
     <h1>Real Tree Guy</h1>
     <p>Modular Static OS for Tree Work</p>
   </header>
 
-  <!-- INSTALL BUTTON -->
   <div id="installBtn" style="display:none;">📲 Install App</div>
 
-  <!-- TREE MENU -->
   <main class="tree-menu">
 
     <div class="tree">
 
-      <!-- 🌳 NEW CANOPY + SIDE CANOPY + GROUND BUSHES -->
+      <!-- CANOPY -->
       <div class="canopy-left"></div>
       <div class="canopy-right"></div>
-      <div class="ground-bushes"></div>
+
+      <!-- ROOTS -->
+      <div class="ground-bushes">
+        <div></div>
+      </div>
 
       <!-- TRUNK -->
       <div class="trunk"></div>
@@ -68,12 +66,10 @@
 
   </main>
 
-  <!-- FOOTER -->
   <footer>
     <p>Real Tree Guy • Modular Static App</p>
   </footer>
 
-  <!-- INSTALL LOGIC -->
   <script>
     let deferredPrompt;
     const installBtn = document.getElementById("installBtn");
@@ -89,7 +85,6 @@
     });
   </script>
 
-  <!-- SERVICE WORKER -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js");
