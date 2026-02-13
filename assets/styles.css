@@ -1,6 +1,77 @@
 /* --------------------------------------------------
-   PURE CSS TREE — FINAL CLEAN VERSION
-   (Replaces all previous tree/trunk/branch code)
+   REAL TREE GUY — GLOBAL FOREST OS THEME
+   Full Clean Rebuild • With Faded Logo + Full CSS Tree
+-------------------------------------------------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Trebuchet MS", sans-serif;
+
+  /* Background layers */
+  background-image:
+    url("assets/rtg-192.png"), /* faded RTG logo */
+    repeating-linear-gradient(
+      90deg,
+      #0d2a12 0px,
+      #0f3116 40px,
+      #0d2a12 80px
+    ),
+    linear-gradient(#0b2e13, #0f3d1a, #0b2e13);
+
+  background-size:
+    500px,
+    auto,
+    auto;
+
+  background-repeat:
+    no-repeat,
+    repeat,
+    no-repeat;
+
+  background-position:
+    center 160px,
+    0 0,
+    0 0;
+
+  background-blend-mode: lighten;
+  filter: brightness(0.35);
+
+  color: #e8ffe8;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------
+   HEADER
+-------------------------------------------------- */
+
+header {
+  text-align: center;
+  padding: 30px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid #1f5f2b;
+  backdrop-filter: blur(4px);
+  position: relative;
+  z-index: 10;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 3rem;
+  color: #b8ffb8;
+  text-shadow: 0 0 12px #1f5f2b, 0 0 20px #2e8b3a;
+  letter-spacing: 2px;
+}
+
+header p {
+  margin-top: 5px;
+  color: #d4ffd4;
+  opacity: 0.85;
+  font-size: 1.1rem;
+}
+
+/* --------------------------------------------------
+   TREE MENU
 -------------------------------------------------- */
 
 .tree-menu {
@@ -10,6 +81,7 @@
   margin-top: 40px;
   position: relative;
   height: 750px;
+  z-index: 5;
 }
 
 .tree {
@@ -18,19 +90,75 @@
   height: 700px;
 }
 
-/* TRUNK */
+/* --------------------------------------------------
+   CANOPY (TOP OF TREE)
+-------------------------------------------------- */
+
+.tree::before {
+  content: "";
+  position: absolute;
+  top: -160px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 520px;
+  height: 320px;
+  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 25px rgba(0,0,0,0.5));
+  z-index: 1;
+}
+
+.tree::after {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 360px;
+  background: radial-gradient(circle at 50% 50%, #174d22, #0f3d1a);
+  border-radius: 50%;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+/* SIDE CANOPY CLUSTERS */
+.canopy-left,
+.canopy-right {
+  position: absolute;
+  top: -40px;
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
+  border-radius: 50%;
+  z-index: 2;
+  filter: drop-shadow(0 0 20px rgba(0,0,0,0.4));
+}
+
+.canopy-left { left: -180px; }
+.canopy-right { right: -180px; }
+
+/* --------------------------------------------------
+   TRUNK
+-------------------------------------------------- */
+
 .trunk {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
-  height: 100%;
+  height: 105%;
+  margin-top: -20px;
   background: linear-gradient(90deg, #4e3418, #6b4a23, #4e3418);
   border-radius: 40px;
   box-shadow: inset 0 0 14px rgba(0,0,0,0.5);
+  z-index: 3;
 }
 
-/* BRANCH BASE */
+/* --------------------------------------------------
+   BRANCHES
+-------------------------------------------------- */
+
 .branch {
   position: absolute;
   width: 260px;
@@ -41,7 +169,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3;
+  z-index: 4;
 }
 
 /* BUSHES BEHIND BUTTONS */
@@ -60,7 +188,25 @@
     0px 30px 0 #174d22;
 }
 
-/* BUTTONS */
+/* BRANCH POSITIONS */
+.b1 { top: 70px; left: -210px; transform: rotate(-16deg); }
+.b2 { top: 150px; right: -210px; transform: rotate(16deg); }
+.b3 { top: 240px; left: -190px; transform: rotate(-14deg); }
+.b4 { top: 330px; right: -190px; transform: rotate(14deg); }
+.b5 { top: 420px; left: -170px; transform: rotate(-12deg); }
+.b6 { top: 510px; right: -170px; transform: rotate(12deg); }
+
+.center-branch {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  top: 610px;
+}
+
+/* --------------------------------------------------
+   BUTTONS
+-------------------------------------------------- */
+
 .branch-btn {
   background: rgba(26, 63, 29, 0.95);
   padding: 12px 20px;
@@ -80,90 +226,37 @@
   box-shadow: 0 0 18px rgba(0, 120, 0, 0.7);
 }
 
-/* SPREAD OUT BRANCH POSITIONS */
-.b1 { top: 70px; left: -210px; transform: rotate(-16deg); }
-.b2 { top: 150px; right: -210px; transform: rotate(16deg); }
-.b3 { top: 240px; left: -190px; transform: rotate(-14deg); }
-.b4 { top: 330px; right: -190px; transform: rotate(14deg); }
-.b5 { top: 420px; left: -170px; transform: rotate(-12deg); }
-.b6 { top: 510px; right: -170px; transform: rotate(12deg); }
-
-/* CENTER BRANCH */
-.center-branch {
-  left: 50%;
-  transform: translateX(-50%);
-  width: 300px;
-  top: 610px;
-}
 /* --------------------------------------------------
-   FULL CANOPY + BACKGROUND TREE + GROUND BUSHES
-   (Pure CSS — no images)
+   GROUND BUSHES
 -------------------------------------------------- */
 
-/* CANOPY (big leafy crown) */
-.tree::before {
-  content: "";
-  position: absolute;
-  top: -120px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 420px;
-  height: 260px;
-  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
-  border-radius: 50%;
-  filter: drop-shadow(0 0 25px rgba(0,0,0,0.5));
-  z-index: 1;
-}
-
-/* CANOPY LAYERS (depth + shape) */
-.tree::after {
-  content: "";
-  position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 500px;
-  height: 300px;
-  background: radial-gradient(circle at 50% 50%, #174d22, #0f3d1a);
-  border-radius: 50%;
-  opacity: 0.55;
-  z-index: 0;
-}
-
-/* SIDE CANOPY CLUSTERS */
-.canopy-left,
-.canopy-right {
-  position: absolute;
-  top: -40px;
-  width: 260px;
-  height: 180px;
-  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
-  border-radius: 50%;
-  z-index: 1;
-  filter: drop-shadow(0 0 20px rgba(0,0,0,0.4));
-}
-
-.canopy-left {
-  left: -140px;
-}
-
-.canopy-right {
-  right: -140px;
-}
-
-/* GROUND BUSHES */
 .ground-bushes {
   position: absolute;
-  bottom: -40px;
+  bottom: -60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 500px;
-  height: 120px;
+  width: 600px;
+  height: 160px;
   background: radial-gradient(circle at 50% 60%, #1f6b2e, #174d22);
   border-radius: 50%;
-  z-index: 0;
+  z-index: 1;
   box-shadow:
-    -120px 20px 0 #1a5c28,
-    120px 20px 0 #1a5c28,
-    0px 40px 0 #174d22;
+    -160px 30px 0 #1a5c28,
+    160px 30px 0 #1a5c28,
+    0px 50px 0 #174d22;
+}
+
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 2px solid #1f5f2b;
+  color: #caffca;
+  margin-top: 40px;
+  position: relative;
+  z-index: 10;
 }
