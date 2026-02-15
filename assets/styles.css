@@ -1,299 +1,43 @@
 /* --------------------------------------------------
-   REAL TREE GUY — FULL FOREST OS THEME
-   Full Rebuild • Fullscreen Logo • Connected Tree
+   MEASUREMENT HUB — PHONE OPTIMIZED BUTTONS
 -------------------------------------------------- */
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Trebuchet MS", sans-serif;
-
-  /* FULLSCREEN LOGO + FOREST BACKGROUND */
-  background:
-    url("assets/rtg-192.png") center/900px no-repeat,
-    linear-gradient(#0f3d1a, #0b2e13, #0f3d1a);
-
-  /* Brighten the entire UI */
-  filter: brightness(0.85);
-
-  color: #e8ffe8;
-  overflow-x: hidden;
+.nav-grid {
+  display: flex;
+  flex-direction: column;      /* vertical stack */
+  gap: 22px;                   /* spacing between buttons */
+  width: 90%;
+  max-width: 500px;
+  margin: 40px auto;
 }
 
-/* --------------------------------------------------
-   HEADER
--------------------------------------------------- */
-
-header {
-  text-align: center;
-  padding: 30px 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border-bottom: 2px solid #1f5f2b;
-  backdrop-filter: blur(4px);
-  position: relative;
-  z-index: 10;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 3rem;
-  color: #b8ffb8;
-  text-shadow: 0 0 12px #1f5f2b, 0 0 20px #2e8b3a;
-}
-
-header p {
-  margin-top: 5px;
-  color: #d4ffd4;
-  opacity: 0.85;
-  font-size: 1.1rem;
-}
-
-/* --------------------------------------------------
-   INSTALL BUTTON (LEAF)
--------------------------------------------------- */
-
-#installBtn {
-  background: #2e6b33;
-  color: #e8ffe8;
-  padding: 14px 22px;
-  border-radius: 40px 10px 40px 10px; /* leaf shape */
-  border: 2px solid #3f8b44;
+.nav-grid a {
+  display: block;
+  padding: 22px 28px;          /* bigger tap area */
+  font-size: 1.6rem;           /* bigger text */
   font-weight: bold;
-  font-size: 1.2rem;
-  width: fit-content;
-  margin: 20px auto;
-  cursor: pointer;
-  display: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  text-align: center;
+
+  background: rgba(26, 63, 29, 0.95);
+  border: 3px solid #3f8b44;
+  border-radius: 18px;         /* rounded, OS-style */
+  color: #d8ffd8;
+  text-decoration: none;
+
+  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
   transition: 0.25s;
 }
 
-#installBtn:hover {
+.nav-grid a:hover {
   background: #3f8b44;
-  transform: scale(1.08) rotate(-2deg);
+  transform: scale(1.05);
   box-shadow: 0 0 18px rgba(0,120,0,0.7);
 }
 
-/* --------------------------------------------------
-   TREE MENU
--------------------------------------------------- */
-
-.tree-menu {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  margin-top: 40px;
-  position: relative;
-  height: 780px;
-  z-index: 5;
-}
-
-.tree {
-  position: relative;
-  width: 420px;
-  height: 720px;
-}
-
-/* --------------------------------------------------
-   CANOPY
--------------------------------------------------- */
-
-.tree::before {
-  content: "";
-  position: absolute;
-  top: -180px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 360px;
-  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.tree::after {
-  content: "";
-  position: absolute;
-  top: -140px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 700px;
-  height: 420px;
-  background: radial-gradient(circle at 50% 50%, #174d22, #0f3d1a);
-  border-radius: 50%;
-  opacity: 0.55;
-  z-index: 0;
-}
-
-.canopy-left,
-.canopy-right {
-  position: absolute;
-  top: -40px;
-  width: 340px;
-  height: 220px;
-  background: radial-gradient(circle at 50% 40%, #1f6b2e, #174d22);
-  border-radius: 50%;
-  z-index: 2;
-}
-
-.canopy-left { left: -200px; }
-.canopy-right { right: -200px; }
-
-/* --------------------------------------------------
-   TRUNK
--------------------------------------------------- */
-
-.trunk {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 110px;
-  height: 110%;
-  margin-top: -20px;
-  background: linear-gradient(90deg, #4e3418, #6b4a23, #4e3418);
-  border-radius: 55px;
-  box-shadow: inset 0 0 14px rgba(0,0,0,0.5);
-  z-index: 3;
-}
-
-/* --------------------------------------------------
-   BRANCHES (CONNECTED)
--------------------------------------------------- */
-
-.branch {
-  position: absolute;
-  width: 360px;
-  height: 30px;
-  background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
-  border-radius: 14px;
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 4;
-}
-
-/* JOINT */
-.branch::after {
-  content: "";
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  right: -10px;
-  background: #5a3e1b;
-  border-radius: 50%;
-  z-index: -1;
-}
-
-/* BUTTON BUSHES */
-.branch::before {
-  content: "";
-  position: absolute;
-  bottom: -28px;
-  width: 160px;
-  height: 70px;
-  background: #1f6b2e;
-  border-radius: 50%;
-  z-index: -1;
-}
-
-/* BRANCH POSITIONS */
-.b1 { top: 90px; left: -40px; transform: rotate(-14deg); }
-.b2 { top: 170px; right: -40px; transform: rotate(14deg); }
-.b3 { top: 260px; left: -30px; transform: rotate(-12deg); }
-.b4 { top: 350px; right: -30px; transform: rotate(12deg); }
-.b5 { top: 440px; left: -20px; transform: rotate(-10deg); }
-.b6 { top: 530px; right: -20px; transform: rotate(10deg); }
-
-.center-branch {
-  left: 50%;
-  transform: translateX(-50%);
-  width: 380px;
-  top: 620px;
-}
-
-/* --------------------------------------------------
-   BUTTONS
--------------------------------------------------- */
-
-.branch-btn {
-  background: rgba(26, 63, 29, 0.95);
-  padding: 12px 20px;
-  border-radius: 14px;
-  font-weight: bold;
-  color: #d8ffd8;
-  text-decoration: none;
-  border: 2px solid #2e6b33;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-  transition: 0.25s;
-}
-
-.branch-btn:hover {
-  background: #3f8b44;
-  transform: scale(1.12);
-}
-
-/* --------------------------------------------------
-   ROOTS
--------------------------------------------------- */
-
-.ground-bushes {
-  position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 360px;
-  height: 160px;
-  background: none;
-  z-index: 1;
-}
-
-.ground-bushes::before,
-.ground-bushes::after,
-.ground-bushes div {
-  background: #4e3418;
-  border-radius: 0 0 60% 60%;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
-}
-
-.ground-bushes::before {
-  content: "";
-  position: absolute;
-  left: -40px;
-  width: 180px;
-  height: 120px;
-  transform: rotate(12deg);
-}
-
-.ground-bushes::after {
-  content: "";
-  position: absolute;
-  right: -40px;
-  width: 180px;
-  height: 120px;
-  transform: rotate(-12deg);
-}
-
-.ground-bushes div {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 220px;
-  height: 140px;
-}
-
-/* --------------------------------------------------
-   FOOTER
--------------------------------------------------- */
-
-footer {
-  text-align: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.25);
-  border-top: 2px solid #1f5f2b;
-  color: #caffca;
-  margin-top: 40px;
-  position: relative;
-  z-index: 10;
+/* MOBILE BOOST */
+@media (max-width: 600px) {
+  .nav-grid a {
+    font-size: 1.8rem;
+    padding: 26px 30px;
+  }
 }
