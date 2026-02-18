@@ -1,108 +1,121 @@
-/* PAGE LAYOUT */
-body {
+/* RESET / BASE */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Inter", sans-serif;
-  background: linear-gradient(180deg, #14522a, #0d3a1d, #0a2d16);
-  color: #e8ffe8;
 }
 
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  background: linear-gradient(180deg, #14522a, #0d3a1d, #0a2d16);
+  color: #e8ffe8;
+  min-height: 100vh;
+}
+
+/* HEADER */
 header {
   text-align: center;
-  padding: 20px;
-  background: rgba(0,0,0,0.3);
+  padding: 24px 10px;
+  background: rgba(0, 0, 0, 0.35);
   border-bottom: 2px solid #2e6b33;
 }
 
-/* TREE MENU */
+header h1 {
+  font-size: 2.4rem;
+  margin-bottom: 6px;
+  color: #b8ffb8;
+}
+
+header p {
+  font-size: 1.1rem;
+  color: #d4ffd4;
+}
+
+/* TREE MENU LAYOUT */
 .tree-menu {
   display: flex;
   justify-content: center;
-  margin-top: 40px;
-  height: 800px;
+  align-items: flex-start;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 /* TREE WRAPPER */
 .tree {
   position: relative;
   width: 420px;
-  height: 720px;
+  height: 640px;
 }
-
-/* CANOPY */
-.canopy-left,
-.canopy-right {
-  position: absolute;
-  top: -40px;
-  width: 300px;
-  height: 200px;
-  background: radial-gradient(circle, #1f6b2e, #174d22);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.canopy-left { left: -140px; }
-.canopy-right { right: -140px; }
 
 /* TRUNK */
 .trunk {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 120px;
+  width: 110px;
   height: 100%;
   background: linear-gradient(90deg, #4e3418, #6b4a23, #4e3418);
   border-radius: 60px;
-  z-index: 2;
+  box-shadow: 0 0 18px rgba(0,0,0,0.6);
 }
 
 /* BRANCHES */
 .branch {
   position: absolute;
-  width: 300px;
+  width: 290px;
   height: 26px;
   background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
   border-radius: 14px;
-  z-index: 3;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 /* BRANCH POSITIONS */
-.b1 { top: 120px; left: 40px; transform: rotate(-12deg); }
-.b2 { top: 180px; right: 40px; transform: rotate(12deg); }
-.b3 { top: 240px; left: 30px; transform: rotate(-10deg); }
-.b4 { top: 300px; right: 30px; transform: rotate(10deg); }
-.b5 { top: 360px; left: 40px; transform: rotate(-8deg); }
-.b6 { top: 420px; right: 40px; transform: rotate(8deg); }
+.b1 { top: 80px;  left: 40px;  transform: rotate(-12deg); }
+.b2 { top: 135px; right: 40px; transform: rotate(12deg); }
+.b3 { top: 190px; left: 35px;  transform: rotate(-10deg); }
+.b4 { top: 245px; right: 35px; transform: rotate(10deg); }
+.b5 { top: 300px; left: 40px;  transform: rotate(-8deg); }
+.b6 { top: 355px; right: 40px; transform: rotate(8deg); }
 .b7 {
-  top: 500px;
+  top: 420px;
   left: 50%;
   transform: translateX(-50%);
-  width: 340px;
+  width: 320px;
 }
 
-/* BUTTONS */
+/* BUTTONS ON BRANCHES */
 .branch-btn {
   position: absolute;
   right: -10px;
   top: -18px;
 
-  padding: 14px 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
+  display: inline-block;
+  padding: 14px 22px;
+  font-size: 1.1rem;
+  font-weight: 700;
 
-  background: rgba(26,63,29,0.95);
-  border: 3px solid #3f8b44;
+  background: rgba(26, 63, 29, 0.96);
   border-radius: 40px 14px 40px 14px;
+  border: 3px solid #3f8b44;
 
   color: #d8ffd8;
   text-decoration: none;
-
-  box-shadow: 0 6px 14px rgba(0,0,0,0.45);
-  transition: 0.25s;
-  z-index: 9999;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.55);
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
 }
 
 .branch-btn:hover {
   background: #3f8b44;
   transform: scale(1.06);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 16px 10px 24px;
+  font-size: 0.95rem;
+  color: #c8f5c8;
+  opacity: 0.9;
 }
