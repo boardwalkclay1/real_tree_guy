@@ -1,10 +1,11 @@
-/* RESET / BASE */
+/* RESET */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
+/* GLOBAL */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   background: linear-gradient(180deg, #14522a, #0d3a1d, #0a2d16);
@@ -35,9 +36,7 @@ header p {
 .tree-menu {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding: 40px 0;
 }
 
 /* TREE WRAPPER */
@@ -52,59 +51,84 @@ header p {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 110px;
+  width: 120px;
   height: 100%;
   background: linear-gradient(90deg, #4e3418, #6b4a23, #4e3418);
   border-radius: 60px;
   box-shadow: 0 0 18px rgba(0,0,0,0.6);
+  z-index: 1;
 }
 
 /* BRANCHES */
 .branch {
   position: absolute;
-  width: 290px;
-  height: 26px;
+  width: 300px;
+  height: 28px;
   background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
   border-radius: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  z-index: 2;
 }
 
-/* BRANCH POSITIONS */
+/* BRANCH POSITIONS — LEFT SIDE */
 .b1 { top: 80px;  left: 40px;  transform: rotate(-12deg); }
-.b2 { top: 135px; right: 40px; transform: rotate(12deg); }
-.b3 { top: 190px; left: 35px;  transform: rotate(-10deg); }
-.b4 { top: 245px; right: 35px; transform: rotate(10deg); }
-.b5 { top: 300px; left: 40px;  transform: rotate(-8deg); }
-.b6 { top: 355px; right: 40px; transform: rotate(8deg); }
+.b3 { top: 160px; left: 40px;  transform: rotate(-10deg); }
+.b5 { top: 240px; left: 40px;  transform: rotate(-8deg); }
+
+/* BRANCH POSITIONS — RIGHT SIDE */
+.b2 { top: 120px; right: 40px; transform: rotate(12deg); }
+.b4 { top: 200px; right: 40px; transform: rotate(10deg); }
+.b6 { top: 280px; right: 40px; transform: rotate(8deg); }
+
+/* CENTER BRANCH */
 .b7 {
-  top: 420px;
+  top: 360px;
   left: 50%;
   transform: translateX(-50%);
-  width: 320px;
+  width: 340px;
 }
 
-/* BUTTONS ON BRANCHES */
+/* BUTTONS */
 .branch-btn {
   position: absolute;
-  right: -10px;
-  top: -18px;
-
-  display: inline-block;
   padding: 14px 22px;
   font-size: 1.1rem;
   font-weight: 700;
-
   background: rgba(26, 63, 29, 0.96);
   border-radius: 40px 14px 40px 14px;
   border: 3px solid #3f8b44;
-
   color: #d8ffd8;
   text-decoration: none;
   box-shadow: 0 6px 14px rgba(0,0,0,0.55);
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-  z-index: 10;
+  transition: 0.2s ease;
+  white-space: nowrap;
+  z-index: 3;
 }
 
+/* BUTTONS ON LEFT BRANCHES */
+.b1 .branch-btn,
+.b3 .branch-btn,
+.b5 .branch-btn {
+  left: -10px;
+  top: -20px;
+}
+
+/* BUTTONS ON RIGHT BRANCHES */
+.b2 .branch-btn,
+.b4 .branch-btn,
+.b6 .branch-btn {
+  right: -10px;
+  top: -20px;
+}
+
+/* CENTER BUTTON */
+.b7 .branch-btn {
+  left: 50%;
+  top: -20px;
+  transform: translateX(-50%);
+}
+
+/* HOVER */
 .branch-btn:hover {
   background: #3f8b44;
   transform: scale(1.06);
