@@ -59,28 +59,42 @@ header p {
   z-index: 1;
 }
 
-/* BRANCHES */
+/* BRANCH WRAPPER (NO TRANSFORM HERE) */
 .branch {
   position: absolute;
   width: 300px;
   height: 28px;
-  background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   z-index: 2;
 }
 
-/* BRANCH POSITIONS — LEFT SIDE */
-.b1 { top: 80px;  left: 40px;  transform: rotate(-12deg); }
-.b3 { top: 160px; left: 40px;  transform: rotate(-10deg); }
-.b5 { top: 240px; left: 40px;  transform: rotate(-8deg); }
+/* BRANCH VISUAL (TRANSFORM GOES HERE) */
+.branch-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #5a3e1b, #6b4a23, #5a3e1b);
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
 
-/* BRANCH POSITIONS — RIGHT SIDE */
-.b2 { top: 120px; right: 40px; transform: rotate(12deg); }
-.b4 { top: 200px; right: 40px; transform: rotate(10deg); }
-.b6 { top: 280px; right: 40px; transform: rotate(8deg); }
+/* BRANCH POSITIONS */
+.b1 { top: 80px;  left: 40px; }
+.b1 .branch-bar { transform: rotate(-12deg); }
 
-/* CENTER BRANCH */
+.b2 { top: 120px; right: 40px; }
+.b2 .branch-bar { transform: rotate(12deg); }
+
+.b3 { top: 160px; left: 40px; }
+.b3 .branch-bar { transform: rotate(-10deg); }
+
+.b4 { top: 200px; right: 40px; }
+.b4 .branch-bar { transform: rotate(10deg); }
+
+.b5 { top: 240px; left: 40px; }
+.b5 .branch-bar { transform: rotate(-8deg); }
+
+.b6 { top: 280px; right: 40px; }
+.b6 .branch-bar { transform: rotate(8deg); }
+
 .b7 {
   top: 360px;
   left: 50%;
@@ -88,7 +102,7 @@ header p {
   width: 340px;
 }
 
-/* BUTTONS — ALWAYS IN FRONT OF EVERYTHING */
+/* BUTTONS — ALWAYS ON TOP OF EVERYTHING */
 .branch-btn {
   position: absolute;
   padding: 14px 22px;
@@ -106,11 +120,12 @@ header p {
   transition: 0.2s ease;
   white-space: nowrap;
 
-  /* THIS IS THE KEY */
-  z-index: 999999999;
+  /* THIS IS THE FIX */
+  z-index: 999999999999999;
+  pointer-events: auto;
 }
 
-/* LEFT-SIDE BUTTONS */
+/* LEFT BUTTONS */
 .b1 .branch-btn,
 .b3 .branch-btn,
 .b5 .branch-btn {
@@ -118,7 +133,7 @@ header p {
   top: -20px;
 }
 
-/* RIGHT-SIDE BUTTONS */
+/* RIGHT BUTTONS */
 .b2 .branch-btn,
 .b4 .branch-btn,
 .b6 .branch-btn {
