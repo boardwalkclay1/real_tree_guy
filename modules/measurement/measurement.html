@@ -3,9 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <title>Tree Measurement Hub</title>
+
+  <!-- GLOBAL RTG OS STYLES -->
   <link rel="stylesheet" href="../../assets/styles.css">
+
+  <!-- PAGE-SPECIFIC STYLES -->
+  <style>
+    body {
+      background: linear-gradient(180deg, #14522a, #0d3a1d, #0a2d16);
+      color: #e8ffe8;
+      font-family: "Inter", sans-serif;
+    }
+
+    header {
+      text-align: center;
+      padding: 26px 10px;
+      background: rgba(0,0,0,0.35);
+      border-bottom: 2px solid #2e6b33;
+      backdrop-filter: blur(8px);
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 2.2rem;
+      color: #b8ffb8;
+      text-shadow: 0 0 12px #1f5f2b;
+    }
+
+    header a {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 1.2rem;
+      color: #d4ffd4;
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 14px;
+      border: 2px solid #3f8b44;
+      background: rgba(26,63,29,0.85);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: 0.25s;
+    }
+
+    header a:hover {
+      background: #3f8b44;
+      transform: scale(1.05);
+    }
+
+    .card {
+      background: rgba(0,0,0,0.45);
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 26px;
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+      border: 2px solid #2e6b33;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .card h3 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #c8ffc8;
+    }
+
+    .nav-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      width: 92%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .nav-grid a {
+      display: block;
+      padding: 26px 30px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      text-align: center;
+
+      background: rgba(26,63,29,0.95);
+      border: 3px solid #3f8b44;
+      border-radius: 22px;
+
+      color: #d8ffd8;
+      text-decoration: none;
+
+      box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+      transition: 0.25s;
+    }
+
+    .nav-grid a:hover {
+      background: #3f8b44;
+      transform: scale(1.06);
+    }
+  </style>
 </head>
+
 <body>
+
   <header>
     <h2>Tree Measurement</h2>
     <a href="../../index.html">Back to Home</a>
