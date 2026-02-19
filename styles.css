@@ -32,7 +32,7 @@ header p {
   color: #d4ffd4;
 }
 
-/* TREE MENU LAYOUT */
+/* TREE MENU */
 .tree-menu {
   display: flex;
   justify-content: center;
@@ -88,24 +88,29 @@ header p {
   width: 340px;
 }
 
-/* BUTTONS */
+/* BUTTONS — ALWAYS IN FRONT OF EVERYTHING */
 .branch-btn {
   position: absolute;
   padding: 14px 22px;
   font-size: 1.1rem;
   font-weight: 700;
+
   background: rgba(26, 63, 29, 0.96);
   border-radius: 40px 14px 40px 14px;
   border: 3px solid #3f8b44;
+
   color: #d8ffd8;
   text-decoration: none;
+
   box-shadow: 0 6px 14px rgba(0,0,0,0.55);
   transition: 0.2s ease;
   white-space: nowrap;
-  z-index: 3;
+
+  /* THIS IS THE KEY */
+  z-index: 999999999;
 }
 
-/* BUTTONS ON LEFT BRANCHES */
+/* LEFT-SIDE BUTTONS */
 .b1 .branch-btn,
 .b3 .branch-btn,
 .b5 .branch-btn {
@@ -113,7 +118,7 @@ header p {
   top: -20px;
 }
 
-/* BUTTONS ON RIGHT BRANCHES */
+/* RIGHT-SIDE BUTTONS */
 .b2 .branch-btn,
 .b4 .branch-btn,
 .b6 .branch-btn {
