@@ -1,0 +1,163 @@
+/* ============================================================
+   REAL TREE GUY OS — UNIVERSAL MEASUREMENT STYLE (PREMIUM v2)
+   ============================================================ */
+
+/* GLOBAL */
+body {
+  background: linear-gradient(180deg, #0f3d20, #0b2d18, #081f12);
+  color: #e8ffe8;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+  padding-bottom: 60px;
+  letter-spacing: 0.3px;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 32px 10px;
+  background: rgba(0,0,0,0.45);
+  border-bottom: 2px solid #2e6b33;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+header h2, header h3 {
+  margin: 0;
+  font-size: 2.4rem;
+  color: #caffca;
+  text-shadow: 0 0 14px #1f5f2b, 0 0 4px #0f2f18;
+  font-weight: 700;
+}
+
+/* NAVIGATION */
+header nav {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+header nav a {
+  padding: 12px 22px;
+  border-radius: 16px;
+  border: 2px solid #3f8b44;
+  background: rgba(26,63,29,0.9);
+  color: #d4ffd4;
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  transition: 0.25s ease;
+}
+
+header nav a:hover {
+  background: #3f8b44;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+
+/* CARD */
+.card {
+  background: rgba(0,0,0,0.5);
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 34px;
+  border-radius: 22px;
+  backdrop-filter: blur(14px);
+  border: 2px solid #2e6b33;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+}
+
+.card h3 {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 26px;
+  color: #d8ffd8;
+  text-shadow: 0 0 10px #1f5f2b;
+}
+
+/* GRID BUTTONS */
+.nav-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: 92%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.nav-grid a {
+  display: block;
+  padding: 28px 32px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  text-align: center;
+
+  background: rgba(26,63,29,0.95);
+  border: 3px solid #3f8b44;
+  border-radius: 26px;
+
+  color: #d8ffd8;
+  text-decoration: none;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.55);
+  transition: 0.25s ease;
+}
+
+.nav-grid a:hover {
+  background: #3f8b44;
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.65);
+}
+
+/* INPUTS + SELECTS + BUTTONS */
+input, select, button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  border: 2px solid #3f8b44;
+  background: rgba(0,0,0,0.4);
+  color: #d8ffd8;
+  font-size: 1.2rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  transition: 0.25s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #5aff6a;
+  box-shadow: 0 0 12px #3f8b44;
+}
+
+button {
+  cursor: pointer;
+  background: rgba(26,63,29,0.95);
+  font-weight: 700;
+}
+
+button:hover {
+  background: #3f8b44;
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+}
+
+label {
+  font-size: 1.25rem;
+  color: #c8ffc8;
+  font-weight: 600;
+}
+
+/* CANVAS */
+canvas {
+  display: block;
+  margin: 26px auto;
+  border: 3px solid #3f8b44;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.25);
+}
