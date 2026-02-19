@@ -3,12 +3,16 @@ const canvas = document.getElementById("photoCanvas");
 const ctx = canvas.getContext("2d");
 
 const refHeightInput = document.getElementById("refHeight");
+const manualHeightInput = document.getElementById("manualHeight");
+const manualThicknessInput = document.getElementById("manualThickness");
+
 const photoClickMode = document.getElementById("photoClickMode");
 const resetPhotoBtn = document.getElementById("resetPhotoBtn");
 
 const pixelScaleOut = document.getElementById("pixelScaleOut");
 const photoHeightOut = document.getElementById("photoHeightOut");
 const photoThicknessOut = document.getElementById("photoThicknessOut");
+const accuracyOut = document.getElementById("accuracyOut");
 
 let img = null;
 let refPoints = [];
@@ -73,6 +77,7 @@ resetPhotoBtn.onclick = () => {
   pixelScaleOut.textContent = "–";
   photoHeightOut.textContent = "–";
   photoThicknessOut.textContent = "–";
+  accuracyOut.textContent = "–";
 };
 
 function redraw() {
@@ -81,6 +86,7 @@ function redraw() {
 
   ctx.lineWidth = 3;
 
+  // Reference line
   if (refPoints.length === 2) {
     ctx.strokeStyle = "#4fbf5a";
     ctx.beginPath();
@@ -89,6 +95,7 @@ function redraw() {
     ctx.stroke();
   }
 
+  // Tree height line
   if (treePoints.length === 2) {
     ctx.strokeStyle = "#ffcc33";
     ctx.beginPath();
@@ -97,6 +104,7 @@ function redraw() {
     ctx.stroke();
   }
 
+  // Thickness line
   if (thicknessPoints.length === 2) {
     ctx.strokeStyle = "#ff6666";
     ctx.beginPath();
@@ -107,23 +115,46 @@ function redraw() {
 }
 
 function compute() {
-  if (refPoints.length === 2) {
+  let scale = null;
+
+  // 1. Manual height override
+  const manualHeight = parseFloat(manualHeightInput.value);
+  if (manualHeight > 0 && treePoints.length === 2) {
+    const treePx = dist(treePoints[0], treePoints[1]);
+    scale = manualHeight / treePx;
+    pixelScaleOut.textContent = `${scale.toFixed(4)} m/pixel`;
+    photoHeightOut.textContent = `${manualHeight.toFixed(2)} m`;
+    accuracyOut.textContent = "Manual height override used";
+  }
+
+  // 2. Reference object scale
+  if (!scale && refPoints.length === 2) {
     const refPx = dist(refPoints[0], refPoints[1]);
     const refHeight = parseFloat(refHeightInput.value);
 
     if (refPx > 0 && refHeight > 0) {
-      const scale = refHeight / refPx;
+      scale = refHeight / refPx;
       pixelScaleOut.textContent = `${scale.toFixed(4)} m/pixel`;
-
-      if (treePoints.length === 2) {
-        const treePx = dist(treePoints[0], treePoints[1]);
-        photoHeightOut.textContent = `${(treePx * scale).toFixed(2)} m`;
-      }
-
-      if (thicknessPoints.length === 2) {
-        const thickPx = dist(thicknessPoints[0], thicknessPoints[1]);
-        photoThicknessOut.textContent = `${(thickPx * scale).toFixed(2)} m`;
-      }
+      accuracyOut.textContent = "Reference object used";
     }
+  }
+
+  if (!scale) return;
+
+  // Tree height
+  if (treePoints.length === 2) {
+    const treePx = dist(treePoints[0], treePoints[1]);
+    const h = treePx * scale;
+    photoHeightOut.textContent = `${h.toFixed(2)} m`;
+  }
+
+  // Thickness
+  const manualThick = parseFloat(manualThicknessInput.value);
+  if (manualThick > 0) {
+    photoThicknessOut.textContent = `${manualThick.toFixed(2)} m`;
+  } else if (thicknessPoints.length === 2) {
+    const thickPx = dist(thicknessPoints[0], thicknessPoints[1]);
+    const t = thickPx * scale;
+    photoThicknessOut.textContent = `${t.toFixed(2)} m`;
   }
 }
