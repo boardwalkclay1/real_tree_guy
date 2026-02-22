@@ -13,23 +13,29 @@ body {
   min-height: 100vh;
 }
 
-/* HEADER */
+/* HEADER — Bigger + Always On Top */
 header {
+  position: relative;
+  z-index: 999999999; /* forces header above canopy, branches, bushes, buttons */
   text-align: center;
-  padding: 24px 10px;
+  padding: 40px 10px;
   background: rgba(0, 0, 0, 0.35);
   border-bottom: 2px solid #2e6b33;
+  backdrop-filter: blur(10px);
 }
 
 header h1 {
-  font-size: 2.4rem;
-  margin-bottom: 6px;
-  color: #b8ffb8;
+  font-size: 3.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #caffca;
+  text-shadow: 0 0 14px #1f5f2b, 0 0 6px #0f2f18;
 }
 
 header p {
-  font-size: 1.1rem;
-  color: #d4ffd4;
+  font-size: 1.5rem;
+  color: #d8ffd8;
+  text-shadow: 0 0 10px #1f5f2b;
 }
 
 /* TREE MENU */
@@ -105,7 +111,7 @@ header p {
 .branch-btn {
   position: absolute;
   padding: 14px 22px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
 
   background: rgba(26, 63, 29, 0.96);
@@ -119,7 +125,7 @@ header p {
   transition: 0.2s ease;
   white-space: nowrap;
 
-  z-index: 999999999;
+  z-index: 99999999;
 }
 
 /* BRANCH POSITIONS */
@@ -202,7 +208,7 @@ header p {
 footer {
   text-align: center;
   padding: 16px 10px 24px;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   color: #c8f5c8;
   opacity: 0.9;
 }
