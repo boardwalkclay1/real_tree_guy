@@ -1,10 +1,35 @@
 // ===============================
-// REAL TREE MAP – PERMISSION ONCE, FRESH GPS ALWAYS
+// REAL TREE MAP – PERMISSION ONCE + FRESH GPS BEFORE FILTER
 // ===============================
 
+// DOM
+const filterRow = document.getElementById("filterRow");
+const mapFrame = document.getElementById("mapFrame");
+const locationStatus = document.getElementById("locationStatus");
+const activeFilterLabel = document.getElementById("activeFilterLabel");
+const openInMaps = document.getElementById("openInMaps");
+const clientAddressInput = document.getElementById("clientAddress");
+const directionsFromUserBtn = document.getElementById("directionsFromUser");
+const directionsFromClientBtn = document.getElementById("directionsFromClient");
+
+// State
+let currentFilter = null;
 let hasPermission = false;
 
-// Ask for permission ONCE
+// Search phrases
+const FILTER_QUERIES = {
+  home_depot: "Home Depot",
+  lowes: "Lowe's",
+  ace: "Ace Hardware",
+  chainsaw: "chainsaw repair shop",
+  woodworking: "woodworking supply store",
+  wood_dump: "wood dump site",
+  sawmill: "sawmill"
+};
+
+// ===============================
+// ASK FOR PERMISSION ONCE
+// ===============================
 function requestPermissionOnce() {
   navigator.geolocation.getCurrentPosition(
     () => {
@@ -17,7 +42,9 @@ function requestPermissionOnce() {
   );
 }
 
-// Always get fresh GPS, but never trigger popup again
+// ===============================
+// ALWAYS GET FRESH GPS (NO POPUP)
+// ===============================
 function getFreshLocation(callback) {
   if (!hasPermission) {
     requestPermissionOnce();
@@ -71,7 +98,7 @@ filterRow.addEventListener("click", (e) => {
 });
 
 // ===============================
-// UPDATE MAP WITH FRESH GPS
+// UPDATE MAP WITH FRESH GPS BEFORE SHOWING PLACES
 // ===============================
 function updateMapEmbed() {
   if (!currentFilter) return;
@@ -114,6 +141,6 @@ directionsFromClientBtn.addEventListener("click", () => {
 });
 
 // ===============================
-// INIT — Ask permission once
+// INIT — ASK PERMISSION ONCE
 // ===============================
 requestPermissionOnce();
