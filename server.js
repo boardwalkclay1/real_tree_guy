@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Your PocketBase URL (Railway or Fly.io)
+// Your PocketBase URL (Railway)
 const PB_URL = process.env.PB_URL;
 
 // Middleware
@@ -20,10 +20,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", async (req, res) => {
   try {
     const url = PB_URL + req.url;
+
+    const headers = {
+      "Content-Type": req.headers["content-type"] || "application/json",
+      "Authorization": req.headers["authorization"] || ""
+    };
+
     const options = {
       method: req.method,
-      headers: { "Content-Type": "application/json" },
-      body: ["GET", "HEAD"].includes(req.method) ? undefined : JSON.stringify(req.body)
+      headers,
+      body: ["GET", "HEAD"].includes(req.method)
+        ? undefined
+        : req.body instanceof Buffer
+        ? req.body
+        : JSON.stringify(req.body)
     };
 
     const pbRes = await fetch(url, options);
@@ -31,7 +41,10 @@ app.use("/api", async (req, res) => {
 
     res.status(pbRes.status).send(data);
   } catch (err) {
-    res.status(500).json({ error: "PocketBase proxy failed", details: err.message });
+    res.status(500).json({
+      error: "PocketBase proxy failed",
+      details: err.message
+    });
   }
 });
 
