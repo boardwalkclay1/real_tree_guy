@@ -1,10 +1,13 @@
+/* GLOBAL */
 body {
   font-family: "Inter", sans-serif;
   margin: 0;
   padding: 20px;
-  background: #f4f7fa;
+  background: linear-gradient(180deg, #0d3a1d, #0a2d16, #071f10);
+  color: #e8ffe8;
 }
 
+/* LAYOUT */
 .shell {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -12,12 +15,32 @@ body {
   height: calc(100vh - 40px);
 }
 
+/* LEFT PANEL */
 .left-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid #2e6b33;
+  border-radius: 16px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
 }
 
+.left-panel h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #b8ffb8;
+}
+
+/* STATUS TEXT */
+.status {
+  font-size: 0.9rem;
+  color: #d4ffd4;
+  opacity: 0.9;
+}
+
+/* FILTER PILLS */
 .pill-row {
   display: flex;
   flex-wrap: wrap;
@@ -25,24 +48,80 @@ body {
 }
 
 .pill {
-  padding: 6px 10px;
+  padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
+  border: 2px solid #3f8b44;
+  background: rgba(26, 63, 29, 0.9);
+  color: #d8ffd8;
   cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.pill:hover {
+  background: #3f8b44;
+  transform: scale(1.05);
 }
 
 .pill.active {
   background: #4caf50;
-  color: white;
+  border-color: #6aff6a;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.35);
 }
 
+/* INPUT */
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid #3f8b44;
+  background: rgba(0, 0, 0, 0.25);
+  color: #e8ffe8;
+  font-size: 0.95rem;
+}
+
+/* BUTTONS */
+.btn-primary {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #3f8b44;
+  border: 2px solid #6aff6a;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #55c85a;
+  transform: scale(1.05);
+}
+
+.btn-ghost {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px solid #3f8b44;
+  color: #d8ffd8;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(63, 139, 68, 0.4);
+  transform: scale(1.05);
+}
+
+/* MAP PANEL */
 .map-wrap {
   width: 100%;
   height: 100%;
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
-  border: 2px solid #d1d5db;
+  border: 3px solid #2e6b33;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
 }
@@ -53,9 +132,21 @@ body {
   border: 0;
 }
 
+/* MAP FOOTER */
 .map-footer {
-  padding: 6px 10px;
-  background: #fff;
-  font-size: 12px;
-  border-top: 1px solid #d1d5db;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.45);
+  border-top: 2px solid #2e6b33;
+  font-size: 0.9rem;
+  color: #b8ffb8;
+}
+
+.map-footer a {
+  color: #6aff6a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.map-footer a:hover {
+  text-decoration: underline;
 }
