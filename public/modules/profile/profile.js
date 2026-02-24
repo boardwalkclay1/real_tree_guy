@@ -1,5 +1,9 @@
-const key = "business_profile";
-let profile = JSON.parse(localStorage.getItem(key) || "{}");
+import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.es.mjs";
+
+const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+
+// The single business profile record (we'll fetch or create it)
+let profileRecord = null;
 
 // ELEMENTS
 const logoPreview = document.getElementById("logoPreview");
@@ -8,67 +12,74 @@ const logoFile = document.getElementById("logoFile");
 const insurancePreview = document.getElementById("insurancePreview");
 const insuranceFile = document.getElementById("insuranceFile");
 
-// LOAD PROFILE INTO UI
-function loadProfile() {
-  document.getElementById("bizName").value = profile.name || "";
-  document.getElementById("owner").value = profile.owner || "";
-  document.getElementById("phone").value = profile.phone || "";
-  document.getElementById("email").value = profile.email || "";
-  document.getElementById("address").value = profile.address || "";
-  document.getElementById("license").value = profile.license || "";
-  document.getElementById("insurance").value = profile.insurance || "";
+// LOAD PROFILE FROM POCKETBASE
+async function loadProfile() {
+  try {
+    // Get the first (and only) business profile record
+    profileRecord = await pb.collection("business_profile").getFirstListItem("");
 
-  if (profile.logo) {
-    logoPreview.style.backgroundImage = `url(${profile.logo})`;
-  }
+    // Fill UI
+    document.getElementById("bizName").value = profileRecord.name || "";
+    document.getElementById("owner").value = profileRecord.owner || "";
+    document.getElementById("phone").value = profileRecord.phone || "";
+    document.getElementById("email").value = profileRecord.email || "";
+    document.getElementById("address").value = profileRecord.address || "";
+    document.getElementById("license").value = profileRecord.license || "";
+    document.getElementById("insurance").value = profileRecord.insurance || "";
 
-  if (profile.insurancePhoto) {
-    insurancePreview.style.backgroundImage = `url(${profile.insurancePhoto})`;
+    // Logo preview
+    if (profileRecord.logo) {
+      const url = pb.files.getUrl(profileRecord, profileRecord.logo);
+      logoPreview.style.backgroundImage = `url(${url})`;
+    }
+
+    // Insurance photo preview
+    if (profileRecord.insurancePhoto) {
+      const url = pb.files.getUrl(profileRecord, profileRecord.insurancePhoto);
+      insurancePreview.style.backgroundImage = `url(${url})`;
+    }
+
+  } catch (err) {
+    console.warn("No business profile found — will create on save.");
   }
 }
 
-// LOGO UPLOAD
-logoFile.onchange = () => {
-  const file = logoFile.files[0];
-  if (!file) return;
+// SAVE PROFILE TO POCKETBASE
+document.getElementById("save").onclick = async () => {
+  const formData = new FormData();
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    profile.logo = reader.result;
-    logoPreview.style.backgroundImage = `url(${reader.result})`;
-  };
-  reader.readAsDataURL(file);
-};
+  formData.append("name", document.getElementById("bizName").value);
+  formData.append("owner", document.getElementById("owner").value);
+  formData.append("phone", document.getElementById("phone").value);
+  formData.append("email", document.getElementById("email").value);
+  formData.append("address", document.getElementById("address").value);
+  formData.append("license", document.getElementById("license").value);
+  formData.append("insurance", document.getElementById("insurance").value);
 
-// INSURANCE PHOTO UPLOAD
-insuranceFile.onchange = () => {
-  const file = insuranceFile.files[0];
-  if (!file) return;
+  // Attach files if selected
+  if (logoFile.files[0]) {
+    formData.append("logo", logoFile.files[0]);
+  }
+  if (insuranceFile.files[0]) {
+    formData.append("insurancePhoto", insuranceFile.files[0]);
+  }
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    profile.insurancePhoto = reader.result;
-    insurancePreview.style.backgroundImage = `url(${reader.result})`;
-  };
-  reader.readAsDataURL(file);
-};
+  try {
+    if (profileRecord) {
+      // Update existing record
+      profileRecord = await pb.collection("business_profile").update(profileRecord.id, formData);
+    } else {
+      // Create new record
+      profileRecord = await pb.collection("business_profile").create(formData);
+    }
 
-// SAVE PROFILE
-document.getElementById("save").onclick = () => {
-  profile = {
-    name: document.getElementById("bizName").value,
-    owner: document.getElementById("owner").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    address: document.getElementById("address").value,
-    license: document.getElementById("license").value,
-    insurance: document.getElementById("insurance").value,
-    logo: profile.logo || null,
-    insurancePhoto: profile.insurancePhoto || null
-  };
+    alert("Profile saved to PocketBase.");
+    loadProfile(); // refresh UI
 
-  localStorage.setItem(key, JSON.stringify(profile));
-  alert("Profile saved.");
+  } catch (err) {
+    console.error("Save failed:", err);
+    alert("Error saving profile.");
+  }
 };
 
 // INIT
