@@ -2,250 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cards & Flyers</title>
-  <link rel="stylesheet" href="../../assets/styles.css">
-  <style>
-    body {
-      background:#f4f7fa;
-      font-family:"Inter",sans-serif;
-      margin:0;
-      padding:0;
-      color:#111827;
-    }
-
-    header {
-      background:#1a1f36;
-      color:white;
-      padding:18px 24px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    header a {
-      color:#9ee6a8;
-      text-decoration:none;
-      font-size:14px;
-    }
-
-    .layout {
-      display:flex;
-      flex-wrap:wrap;
-      gap:20px;
-      padding:20px;
-      max-width:1200px;
-      margin:0 auto;
-    }
-
-    .card {
-      background:white;
-      border-radius:18px;
-      box-shadow:0 8px 20px rgba(0,0,0,0.06);
-      padding:20px;
-    }
-
-    .card-left { flex:1 1 360px; }
-    .card-right { flex:1 1 360px; }
-
-    h3 { margin-top:0; font-size:20px; }
-
-    label {
-      display:block;
-      margin-top:10px;
-      font-size:13px;
-      font-weight:600;
-      color:#374151;
-    }
-
-    input, textarea, select {
-      width:100%;
-      margin-top:4px;
-      padding:9px 11px;
-      border-radius:12px;
-      border:1px solid #d1d5db;
-      background:#f9fafb;
-      font-size:13px;
-      outline:none;
-      transition:0.2s;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color:#4caf50;
-      background:white;
-      box-shadow:0 0 0 3px rgba(76,175,80,0.15);
-    }
-
-    textarea { resize:vertical; min-height:80px; }
-
-    .row {
-      display:flex;
-      gap:10px;
-      margin-top:8px;
-    }
-
-    .row > div { flex:1; }
-
-    button {
-      margin-top:12px;
-      padding:10px 14px;
-      border:none;
-      border-radius:12px;
-      font-size:13px;
-      font-weight:600;
-      cursor:pointer;
-      transition:0.2s;
-    }
-
-    #save { background:#4caf50; color:white; width:100%; }
-    #printFlyer { background:#0ea5e9; color:white; }
-    #emailFlyer { background:#6366f1; color:white; }
-    #shareFlyer { background:#22c55e; color:white; }
-    #fullscreenFlyer { background:#f97316; color:white; }
-
-    .actions-row {
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      margin-top:10px;
-    }
-
-    .mode-toggle {
-      display:flex;
-      gap:8px;
-      margin-bottom:10px;
-    }
-
-    .mode-toggle button {
-      flex:1;
-      background:#e5e7eb;
-      color:#111827;
-    }
-
-    .mode-toggle button.active {
-      background:#1a1f36;
-      color:white;
-    }
-
-    #previewWrapper {
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
-    #preview {
-      width:100%;
-      max-width:420px;
-      aspect-ratio:3/5;
-      border-radius:18px;
-      border:1px solid #e5e7eb;
-      background:#ffffff;
-      padding:18px;
-      box-sizing:border-box;
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-    }
-
-    #preview.card-mode {
-      aspect-ratio:3.5/2;
-      max-width:420px;
-    }
-
-    #previewBgImage {
-      position:absolute;
-      inset:0;
-      background-size:cover;
-      background-position:center;
-      opacity:0.25;
-      pointer-events:none;
-    }
-
-    #previewLogo {
-      position:absolute;
-      top:10px;
-      right:10px;
-      width:60px;
-      height:60px;
-      border-radius:12px;
-      background-size:cover;
-      background-position:center;
-      background-color:rgba(255,255,255,0.7);
-      overflow:hidden;
-    }
-
-    .flyer-headline {
-      position:relative;
-      font-size:24px;
-      font-weight:800;
-      margin-bottom:8px;
-    }
-
-    .flyer-body {
-      position:relative;
-      font-size:14px;
-      white-space:pre-wrap;
-      flex:1;
-    }
-
-    .flyer-offer {
-      position:relative;
-      font-size:16px;
-      font-weight:700;
-      margin-top:10px;
-    }
-
-    .flyer-contact {
-      position:relative;
-      font-size:12px;
-      margin-top:12px;
-      border-top:1px solid rgba(0,0,0,0.1);
-      padding-top:8px;
-    }
-  </style>
+  <title>Real Tree Guy – Cards & Flyers</title>
+  <link rel="stylesheet" href="../../assets/rtg-theme.css">
+  <link rel="stylesheet" href="flyers.css">
 </head>
 
 <body>
-  <header>
-    <h2>Cards & Flyers</h2>
-    <a href="../../index.html">Back to Home</a>
+
+  <header class="rtg-header">
+    <h1>Cards & Flyers Studio</h1>
+    <a href="../../dashboard.html" class="rtg-back">← Back to Dashboard</a>
   </header>
 
-  <main class="layout">
-    <section class="card card-left">
-      <h3>Design Studio</h3>
+  <main class="flyer-shell">
 
+    <!-- LEFT PANEL: CONTROLS -->
+    <section class="flyer-controls">
+
+      <h2>Design Controls</h2>
+
+      <!-- MODE -->
       <div class="mode-toggle">
-        <button id="modeCards" class="active">Cards</button>
-        <button id="modeFlyers">Flyers</button>
+        <button id="modeCard" class="active">Card</button>
+        <button id="modeFlyer">Flyer</button>
+        <button id="modeDoorHanger">Door Hanger</button>
       </div>
 
+      <!-- TEMPLATE -->
       <label>Template</label>
       <select id="templateSelect">
         <option value="classic">Classic Tree Service</option>
         <option value="bold">Bold Offer</option>
         <option value="minimal">Minimal Clean</option>
+        <option value="premium">Premium Gold</option>
+        <option value="storm">Storm Damage Emergency</option>
       </select>
 
+      <!-- HEADLINE -->
       <label>Headline</label>
-      <input id="headline">
+      <input id="headline" placeholder="Example: Professional Tree Removal">
 
-      <label>Body</label>
-      <textarea id="body"></textarea>
+      <!-- BODY -->
+      <label>Description</label>
+      <textarea id="body" placeholder="Describe your service or offer..."></textarea>
 
-      <label>Offer</label>
-      <input id="offer">
+      <!-- OFFER -->
+      <label>Offer / CTA</label>
+      <input id="offer" placeholder="Example: 10% Off This Week">
 
-      <label>Upload Background Photo</label>
-      <input type="file" id="photoInput" accept="image/*">
+      <!-- BACKGROUND -->
+      <label>Background Image</label>
+      <input type="file" id="bgUpload" accept="image/*">
 
       <label>Background Strength</label>
       <input type="range" id="bgStrength" min="0" max="100" value="25">
 
-      <label>Upload Logo (override profile logo)</label>
+      <!-- LOGO -->
+      <label>Logo Override</label>
       <input type="file" id="logoUpload" accept="image/*">
 
+      <!-- COLORS -->
       <div class="row">
         <div>
           <label>Background Color</label>
@@ -268,31 +84,38 @@
         </div>
       </div>
 
-      <button id="save">Save Design</button>
+      <!-- ACTIONS -->
+      <button id="saveDesign" class="rtg-btn-green">Save Design</button>
 
       <div class="actions-row">
-        <button id="printFlyer">Print</button>
-        <button id="emailFlyer">Email</button>
-        <button id="shareFlyer">Share</button>
-        <button id="fullscreenFlyer">Open Fullscreen</button>
+        <button id="printFlyer" class="rtg-btn-blue">Print</button>
+        <button id="emailFlyer" class="rtg-btn-purple">Email</button>
+        <button id="shareFlyer" class="rtg-btn-green">Share</button>
+        <button id="fullscreenFlyer" class="rtg-btn-orange">Fullscreen</button>
       </div>
+
     </section>
 
-    <section class="card card-right">
-      <h3>Preview</h3>
+    <!-- RIGHT PANEL: PREVIEW -->
+    <section class="flyer-preview">
+      <h2>Live Preview</h2>
+
       <div id="previewWrapper">
         <div id="preview" class="card-mode">
-          <div id="previewBgImage"></div>
+          <div id="previewBg"></div>
           <div id="previewLogo"></div>
-          <div>
-            <div class="flyer-headline" id="previewHeadline"></div>
-            <div class="flyer-body" id="previewBody"></div>
-            <div class="flyer-offer" id="previewOffer"></div>
+
+          <div class="preview-content">
+            <div id="previewHeadline" class="flyer-headline"></div>
+            <div id="previewBody" class="flyer-body"></div>
+            <div id="previewOffer" class="flyer-offer"></div>
           </div>
-          <div class="flyer-contact" id="previewContact"></div>
+
+          <div id="previewContact" class="flyer-contact"></div>
         </div>
       </div>
     </section>
+
   </main>
 
   <script src="flyers.js"></script>
