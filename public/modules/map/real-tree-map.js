@@ -16,6 +16,10 @@ const directionsFromClientBtn = document.getElementById("directionsFromClient");
 let currentFilter = null;
 let hasPermission = false;
 
+// Disable filters until GPS is ready
+const filterButtons = [...filterRow.querySelectorAll(".pill")];
+filterButtons.forEach(btn => btn.disabled = true);
+
 // Search phrases
 const FILTER_QUERIES = {
   home_depot: "Home Depot",
@@ -31,9 +35,15 @@ const FILTER_QUERIES = {
 // ASK FOR PERMISSION ONCE
 // ===============================
 function requestPermissionOnce() {
+  locationStatus.textContent = "Requesting location…";
+
   navigator.geolocation.getCurrentPosition(
     () => {
       hasPermission = true;
+
+      // Enable filters now that permission is granted
+      filterButtons.forEach(btn => btn.disabled = false);
+
       centerOnUser();
     },
     () => {
@@ -82,12 +92,12 @@ function centerOnUser() {
 // ===============================
 filterRow.addEventListener("click", (e) => {
   const btn = e.target.closest(".pill");
-  if (!btn) return;
+  if (!btn || btn.disabled) return;
 
   const type = btn.dataset.type;
   if (!FILTER_QUERIES[type]) return;
 
-  [...filterRow.querySelectorAll(".pill")].forEach((el) =>
+  filterButtons.forEach(el =>
     el.classList.toggle("active", el === btn)
   );
 
