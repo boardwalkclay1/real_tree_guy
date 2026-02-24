@@ -1,36 +1,28 @@
 // ===============================
-// REAL TREE MAP – ALWAYS USE FRESH LOCATION
+// REAL TREE MAP – PERMISSION ONCE, FRESH GPS ALWAYS
 // ===============================
 
-// DOM
-const filterRow = document.getElementById("filterRow");
-const mapFrame = document.getElementById("mapFrame");
-const locationStatus = document.getElementById("locationStatus");
-const activeFilterLabel = document.getElementById("activeFilterLabel");
-const openInMaps = document.getElementById("openInMaps");
-const clientAddressInput = document.getElementById("clientAddress");
-const directionsFromUserBtn = document.getElementById("directionsFromUser");
-const directionsFromClientBtn = document.getElementById("directionsFromClient");
+let hasPermission = false;
 
-// State
-let currentFilter = null;
+// Ask for permission ONCE
+function requestPermissionOnce() {
+  navigator.geolocation.getCurrentPosition(
+    () => {
+      hasPermission = true;
+      centerOnUser();
+    },
+    () => {
+      locationStatus.textContent = "Location denied. Enable it in browser settings.";
+    }
+  );
+}
 
-// Search phrases
-const FILTER_QUERIES = {
-  home_depot: "Home Depot",
-  lowes: "Lowe's",
-  ace: "Ace Hardware",
-  chainsaw: "chainsaw repair shop",
-  woodworking: "woodworking supply store",
-  wood_dump: "wood dump site",
-  sawmill: "sawmill"
-};
-
-// ===============================
-// GET LOCATION (fresh every time)
-// ===============================
+// Always get fresh GPS, but never trigger popup again
 function getFreshLocation(callback) {
-  locationStatus.textContent = "Getting location…";
+  if (!hasPermission) {
+    requestPermissionOnce();
+    return;
+  }
 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
@@ -38,12 +30,11 @@ function getFreshLocation(callback) {
       const lng = pos.coords.longitude;
 
       locationStatus.textContent = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-
       callback(lat, lng);
     },
     (err) => {
-      locationStatus.textContent = "Location denied. Enable it in browser settings.";
       console.log(err);
+      locationStatus.textContent = "Unable to get location.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
@@ -80,7 +71,7 @@ filterRow.addEventListener("click", (e) => {
 });
 
 // ===============================
-// UPDATE EMBED MAP (fresh GPS)
+// UPDATE MAP WITH FRESH GPS
 // ===============================
 function updateMapEmbed() {
   if (!currentFilter) return;
@@ -123,6 +114,6 @@ directionsFromClientBtn.addEventListener("click", () => {
 });
 
 // ===============================
-// INIT
+// INIT — Ask permission once
 // ===============================
-centerOnUser();
+requestPermissionOnce();
