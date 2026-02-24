@@ -1,21 +1,30 @@
-// Business profile expected in localStorage.business_profile
-// {
-//   "name": "Your Tree Service",
-//   "owner": "Your Name",
-//   "phone": "555-555-5555",
-//   "email": "you@business.com",
-//   "address": "123 Street, City, ST"
-// }
+import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.es.mjs";
 
-let biz = JSON.parse(localStorage.getItem("business_profile") || "{}");
-let contracts = JSON.parse(localStorage.getItem("tn_contracts") || "[]");
+const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
 
-function generateContractId() {
-  const year = new Date().getFullYear();
-  const count = contracts.length + 1;
-  return `TN-${year}-${String(count).padStart(5, "0")}`;
+// LOAD BUSINESS PROFILE FROM POCKETBASE
+let biz = {};
+
+async function loadBusinessProfile() {
+  try {
+    const record = await pb.collection("business_profile").getFirstListItem("");
+    biz = record;
+  } catch (err) {
+    console.error("Business profile missing:", err);
+    biz = {};
+  }
 }
 
+await loadBusinessProfile();
+
+// GENERATE CONTRACT ID
+function generateContractId() {
+  const year = new Date().getFullYear();
+  const random = Math.floor(Math.random() * 99999);
+  return `TN-${year}-${String(random).padStart(5, "0")}`;
+}
+
+// BUILD CONTRACT OBJECT
 function buildContractObject() {
   const id = generateContractId();
   const name = document.getElementById("clientName").value.trim();
@@ -84,6 +93,7 @@ Business Representative: ${biz.owner || ""}
   };
 }
 
+// PREVIEW
 function renderPreview() {
   const data = buildContractObject();
   document.getElementById("previewBox").textContent = data.contract;
@@ -94,6 +104,7 @@ document.getElementById("fill").onclick = () => {
   renderPreview();
 };
 
+// SEND EMAIL
 document.getElementById("send").onclick = () => {
   const data = renderPreview();
   if (!data.clientEmail) {
@@ -108,26 +119,36 @@ document.getElementById("send").onclick = () => {
   window.location.href = mailto;
 };
 
-document.getElementById("save").onclick = () => {
+// SAVE CONTRACT TO POCKETBASE
+document.getElementById("save").onclick = async () => {
   const data = renderPreview();
-  contracts.push(data);
-  localStorage.setItem("tn_contracts", JSON.stringify(contracts));
-  alert("Contract saved to archive.");
+
+  try {
+    await pb.collection("contracts").create(data);
+    alert("Contract saved to PocketBase.");
+  } catch (err) {
+    console.error("Save failed:", err);
+    alert("Error saving contract.");
+  }
 };
 
-document.getElementById("calendar").onclick = () => {
+// SAVE CALENDAR EVENT TO POCKETBASE
+document.getElementById("calendar").onclick = async () => {
   const data = renderPreview();
-  let events = JSON.parse(localStorage.getItem("tn_events") || "[]");
 
-  events.push({
-    id: Date.now(),
+  const event = {
     date: new Date().toISOString().split("T")[0],
     title: `Contract: ${data.id}`,
     type: "contract",
     contractId: data.id,
     notes: data.scope
-  });
+  };
 
-  localStorage.setItem("tn_events", JSON.stringify(events));
-  alert("Contract added to calendar.");
+  try {
+    await pb.collection("events").create(event);
+    alert("Contract added to calendar.");
+  } catch (err) {
+    console.error("Calendar save failed:", err);
+    alert("Error saving calendar event.");
+  }
 };
