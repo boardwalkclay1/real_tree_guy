@@ -8,75 +8,31 @@
 </head>
 
 <body>
-
-  <div class="map-shell">
+  <section class="shell">
 
     <div class="left-panel">
       <h2>Supply Finder</h2>
 
-      <div id="locationStatus">Requesting location…</div>
+      <div id="locationStatus" class="status">Requesting location…</div>
 
+      <label>Supply Filters</label>
       <div id="filterRow" class="pill-row">
-        <button class="pill" data-type="home depot">Home Depot</button>
-        <button class="pill" data-type="lowes">Lowe’s</button>
-        <button class="pill" data-type="ace hardware">Ace Hardware</button>
-        <button class="pill" data-type="chainsaw repair">Chainsaw Repair</button>
-        <button class="pill" data-type="woodworking store">Woodworking Stores</button>
-        <button class="pill" data-type="wood dump">Wood Dumps</button>
+        <button class="pill" data-type="Home Depot">Home Depot</button>
+        <button class="pill" data-type="Lowe's">Lowe's</button>
+        <button class="pill" data-type="Ace Hardware">Ace Hardware</button>
+        <button class="pill" data-type="chainsaw repair shop">Chainsaw Shops</button>
+        <button class="pill" data-type="woodworking supply store">Woodworking Stores</button>
+        <button class="pill" data-type="wood dump site">Wood Dump Sites</button>
         <button class="pill" data-type="sawmill">Sawmills</button>
         <button class="pill" data-type="gas station">Gas Stations</button>
       </div>
 
-      <div>Filter: <span id="activeFilterLabel">None</span></div>
-    </div>
+      <label>Client Address (optional)</label>
+      <input id="clientAddress" placeholder="123 Oak St, Yulee, FL">
 
-    <div class="map-wrap">
-      <iframe id="mapFrame" loading="lazy"></iframe>
-    </div>
-
-  </div>
-
-  <script>
-    const mapFrame = document.getElementById("mapFrame");
-    const filterRow = document.getElementById("filterRow");
-    const activeFilterLabel = document.getElementById("activeFilterLabel");
-
-    function getLocationOnce(cb) {
-      navigator.geolocation.getCurrentPosition(
-        pos => cb(pos.coords.latitude, pos.coords.longitude),
-        () => mapFrame.src = "https://www.google.com/maps?q=tree+service+supplies&output=embed",
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    }
-
-    function getLocationTwice(cb) {
-      getLocationOnce((lat1, lng1) => {
-        getLocationOnce((lat2, lng2) => cb(lat2, lng2));
-      });
-    }
-
-    // INITIAL LOAD
-    getLocationTwice((lat, lng) => {
-      mapFrame.src = `https://www.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
-    });
-
-    // FILTERS
-    filterRow.addEventListener("click", e => {
-      const btn = e.target.closest(".pill");
-      if (!btn) return;
-
-      const type = btn.dataset.type;
-      activeFilterLabel.textContent = btn.textContent;
-
-      getLocationTwice((lat, lng) => {
-        const q = `${type} near ${lat},${lng}`;
-        mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=13&output=embed`;
-      });
-    });
-  </script>
-
-</body>
-</html>
+      <button id="directionsFromUser" class="btn-primary">
+        Directions: Me → Supply
+      </button>
 
       <button id="directionsFromClient" class="btn-ghost">
         Directions: Client → Supply
@@ -87,7 +43,6 @@
       </div>
     </div>
 
-    <!-- RIGHT SIDE MAP -->
     <div class="map-wrap">
       <iframe
         id="mapFrame"
@@ -102,6 +57,86 @@
 
   </section>
 
-  <script src="real-tree-map.js" type="module"></script>
+  <script type="module">
+    const mapFrame = document.getElementById("mapFrame");
+    const locationStatus = document.getElementById("locationStatus");
+    const filterRow = document.getElementById("filterRow");
+    const activeFilterLabel = document.getElementById("activeFilterLabel");
+    const directionsFromUserBtn = document.getElementById("directionsFromUser");
+    const directionsFromClientBtn = document.getElementById("directionsFromClient");
+    const clientAddressInput = document.getElementById("clientAddress");
+    const openInMaps = document.getElementById("openInMaps");
+
+    function getLocationOnce(cb) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          cb(lat, lng);
+        },
+        () => {
+          locationStatus.textContent = "Location denied. Showing general map.";
+          mapFrame.src = "https://www.google.com/maps?q=tree+service+supplies&output=embed";
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    }
+
+    function getLocationTwice(cb) {
+      getLocationOnce(() => {
+        getLocationOnce((lat2, lng2) => {
+          locationStatus.textContent = `Location: ${lat2.toFixed(4)}, ${lng2.toFixed(4)}`;
+          cb(lat2, lng2);
+        });
+      });
+    }
+
+    // Initial center: location twice, then center on user
+    getLocationTwice((lat, lng) => {
+      mapFrame.src = `https://www.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
+      openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+    });
+
+    // Filters: location twice, then "TYPE near lat,lng"
+    filterRow.addEventListener("click", (e) => {
+      const btn = e.target.closest(".pill");
+      if (!btn) return;
+
+      const type = btn.dataset.type;
+      activeFilterLabel.textContent = type;
+
+      getLocationTwice((lat, lng) => {
+        const q = `${type} near ${lat},${lng}`;
+        const encoded = encodeURIComponent(q);
+        mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
+        openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
+      });
+    });
+
+    function buildDirectionsUrl(origin, destination) {
+      return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+    }
+
+    directionsFromUserBtn.addEventListener("click", () => {
+      const type = activeFilterLabel.textContent;
+      if (type === "None") return alert("Select a supply filter first.");
+
+      getLocationTwice((lat, lng) => {
+        const origin = `${lat},${lng}`;
+        window.open(buildDirectionsUrl(origin, type), "_blank");
+      });
+    });
+
+    directionsFromClientBtn.addEventListener("click", () => {
+      const client = clientAddressInput.value.trim();
+      if (!client) return alert("Enter a client address first.");
+
+      const type = activeFilterLabel.textContent;
+      if (type === "None") return alert("Select a supply filter first.");
+
+      window.open(buildDirectionsUrl(client, type), "_blank");
+    });
+  </script>
+
 </body>
 </html>
