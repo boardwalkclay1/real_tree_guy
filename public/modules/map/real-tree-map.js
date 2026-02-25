@@ -1,5 +1,6 @@
 // ===============================
-// REAL TREE MAP – PERMISSION ONCE + FRESH GPS BEFORE FILTER
+// REAL TREE MAP – FINAL VERSION
+// Public Google Embed + Fresh GPS + Permission Once
 // ===============================
 
 // DOM
@@ -16,19 +17,20 @@ const directionsFromClientBtn = document.getElementById("directionsFromClient");
 let currentFilter = null;
 let hasPermission = false;
 
-// Disable filters until GPS is ready
+// Disable filters until GPS permission is granted
 const filterButtons = [...filterRow.querySelectorAll(".pill")];
 filterButtons.forEach(btn => btn.disabled = true);
 
-// Search phrases
+// Search phrases (MUST match HTML data-type)
 const FILTER_QUERIES = {
-  home_depot: "Home Depot",
-  lowes: "Lowe's",
-  ace: "Ace Hardware",
-  chainsaw: "chainsaw repair shop",
-  woodworking: "woodworking supply store",
-  wood_dump: "wood dump site",
-  sawmill: "sawmill"
+  "home depot": "Home Depot",
+  "lowes": "Lowe's",
+  "ace hardware": "Ace Hardware",
+  "chainsaw repair": "chainsaw repair shop",
+  "woodworking store": "woodworking supply store",
+  "wood dump": "wood dump site",
+  "sawmill": "sawmill",
+  "gas station": "gas station"
 };
 
 // ===============================
@@ -69,8 +71,7 @@ function getFreshLocation(callback) {
       locationStatus.textContent = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       callback(lat, lng);
     },
-    (err) => {
-      console.log(err);
+    () => {
       locationStatus.textContent = "Unable to get location.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
@@ -95,14 +96,15 @@ filterRow.addEventListener("click", (e) => {
   if (!btn || btn.disabled) return;
 
   const type = btn.dataset.type;
-  if (!FILTER_QUERIES[type]) return;
+  const queryBase = FILTER_QUERIES[type];
+  if (!queryBase) return;
 
   filterButtons.forEach(el =>
     el.classList.toggle("active", el === btn)
   );
 
   currentFilter = type;
-  activeFilterLabel.textContent = FILTER_QUERIES[type];
+  activeFilterLabel.textContent = queryBase;
 
   updateMapEmbed();
 });
@@ -126,8 +128,8 @@ function updateMapEmbed() {
 // ===============================
 // DIRECTIONS
 // ===============================
-function buildDirectionsUrl(origin, queryBase) {
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(queryBase)}`;
+function buildDirectionsUrl(origin, destination) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
 }
 
 directionsFromUserBtn.addEventListener("click", () => {
