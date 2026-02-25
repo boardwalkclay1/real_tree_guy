@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Create Client Account – Real Tree Guy</title>
-  <link rel="stylesheet" href="../client.css">
+  <title>Create Client Account</title>
+  <link rel="stylesheet" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+
   <header class="rtg-header">
     <h1>Create Client Account</h1>
   </header>
 
   <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
-    <form id="clientSignupForm">
+    <form id="clientForm">
+
       <label>Email</label>
-      <input type="email" id="email" required>
+      <input id="email" type="email" required>
 
       <label>Password</label>
-      <input type="password" id="password" required>
+      <input id="password" type="password" required>
 
       <label>Full Name</label>
       <input id="name" required>
@@ -36,34 +38,16 @@
     </form>
   </main>
 
-  <script type="module">
-    const form = document.getElementById("clientSignupForm");
-
-    form.addEventListener("submit", async (e) => {
+  <script>
+    document.getElementById("clientForm").addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const payload = {
-        email: email.value.trim(),
-        password: password.value,
-        role: "client",
-        profile: {
-          displayName: name.value.trim(),
-          phone: phone.value.trim(),
-          city: city.value.trim(),
-          state: state.value.trim(),
-          treeRole: null
-        }
-      };
-
-      // TODO: replace with real PocketBase/API call
-      // Example pseudo-call:
-      // const res = await fetch("/api/auth/signup-client", { method:"POST", body:JSON.stringify(payload) });
-
+      localStorage.setItem("rtgUser", document.getElementById("name").value);
       localStorage.setItem("rtgUserRole", "client");
-      localStorage.setItem("rtgUserName", payload.profile.displayName);
 
-      window.location.href = "../client/dashboard.html";
+      window.location.href = "dashboard.html";
     });
   </script>
+
 </body>
 </html>
