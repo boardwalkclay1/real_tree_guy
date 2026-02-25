@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Post a Job – Client</title>
+  <link rel="stylesheet" href="../styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+  <header class="rtg-header">
+    <h1>Post a Job</h1>
+  </header>
+
+  <main class="card" style="max-width:700px;margin:40px auto;padding:20px;">
+    <form id="jobForm">
+
+      <label>Job Title</label>
+      <input id="title" required>
+
+      <label>Description</label>
+      <textarea id="description" required></textarea>
+
+      <label>Address</label>
+      <input id="address" required>
+
+      <label>City</label>
+      <input id="city" required>
+
+      <label>State</label>
+      <input id="state" required>
+
+      <button class="btn-primary" type="submit">Pay $20 & Post Job</button>
+    </form>
+  </main>
+
+  <script>
+    document.getElementById("jobForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // TODO: real payment
+      alert("Payment successful (placeholder). Job posted.");
+
+      window.location.href = "dashboard.html";
+    });
+  </script>
+
+</body>
+</html>
