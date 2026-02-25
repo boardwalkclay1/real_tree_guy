@@ -5,21 +5,80 @@
   <title>Unlock Tree Guy OS – $30</title>
   <link rel="stylesheet" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background: #0d0f0d;
+      color: #e8ffe8;
+      font-family: Arial, sans-serif;
+    }
+
+    .paywall-card {
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 30px;
+      background: rgba(20, 30, 20, 0.9);
+      border-radius: 18px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.6rem;
+      margin-bottom: 10px;
+      color: #caffca;
+    }
+
+    p.subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 25px;
+    }
+
+    ul {
+      margin-left: 20px;
+      line-height: 1.7;
+      font-size: 1.1rem;
+    }
+
+    /* Bubble-style button */
+    .bubble-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 25px;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #3fa63f, #2d7a2d);
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .bubble-btn:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #4fdc4f, #2d7a2d);
+    }
+
+    #paypal-button-container {
+      margin-top: 30px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <header class="rtg-header">
+  <div class="paywall-card">
     <h1>Unlock Tree Guy OS</h1>
-    <p>One‑time $30 access fee</p>
-  </header>
+    <p class="subtitle">One‑time $30 access fee</p>
 
-  <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
     <p style="font-size:1.2rem;margin-bottom:20px;">
-      This unlocks:
+      Unlock everything:
     </p>
 
-    <ul style="line-height:1.7;margin-left:20px;">
+    <ul>
       <li>Tree Guy Dashboard</li>
       <li>Real Tree Guy Online (social feed)</li>
       <li>Client leads & bidding</li>
@@ -27,19 +86,69 @@
       <li>Crew connections (climbers, groundsmen, salesmen)</li>
     </ul>
 
-    <button id="payBtn" class="btn-primary" style="margin-top:20px;">
-      Pay $30 & Continue
-    </button>
-  </main>
+    <div id="paypal-button-container"></div>
+  </div>
 
-  <script>
-    document.getElementById("payBtn").addEventListener("click", () => {
-      // TODO: Replace with real PayPal/Stripe checkout
-      alert("Payment successful (placeholder). Redirecting…");
+  <!-- PAYPAL SDK LOADED DYNAMICALLY BY JS BELOW -->
 
-      localStorage.setItem("rtgPaidTreeGuy", "true");
-      window.location.href = "create-account.html";
-    });
+  <script type="module">
+    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+
+    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+    const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
+
+    let currentUser = null;
+
+    init();
+    async function init() {
+      currentUser = pb.authStore.model;
+
+      if (!currentUser) {
+        window.location.href = "../treeguy/login.html";
+        return;
+      }
+
+      await loadPayPal();
+      renderPaywall();
+    }
+
+    async function loadPayPal() {
+      return new Promise(resolve => {
+        const script = document.createElement("script");
+        script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
+        script.onload = resolve;
+        document.body.appendChild(script);
+      });
+    }
+
+    function renderPaywall() {
+      paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: "30.00" } }]
+          });
+        },
+        onApprove: async (data, actions) => {
+          const details = await actions.order.capture();
+
+          // Record payment
+          await pb.collection("payments").create({
+            user: currentUser.id,
+            amount: 30,
+            type: "treeguy_access",
+            status: "completed",
+            paypalOrderId: details.id
+          });
+
+          // Unlock OS
+          await pb.collection("users").update(currentUser.id, {
+            hasPaidAccess: true
+          });
+
+          window.location.href = "create-account.html";
+        }
+      }).render("#paypal-button-container");
+    }
   </script>
 
 </body>
