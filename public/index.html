@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Real Tree Guy Online</title>
   <link rel="stylesheet" href="styles.css">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -135,14 +134,39 @@
     <p>Real Tree Guy Online • Built for the Ones Who Really Do the Work</p>
   </footer>
 
-  <!-- LOGIN CHECK SCRIPT -->
-  <script>
-    const loginStatus = document.getElementById("loginStatus");
-    const savedUser = localStorage.getItem("rtgUser");
+  <!-- FULL BACKEND + PAYMENT MODULE -->
+  <script type="module">
+    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
 
-    loginStatus.textContent = savedUser
-      ? "Welcome back, " + savedUser + "."
-      : "New here? Create an account to get started.";
+    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+    const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
+
+    let currentUser = null;
+
+    init();
+    async function init() {
+      await testConnection();
+      await checkAuthState();
+    }
+
+    async function testConnection() {
+      try {
+        const health = await pb.health.check();
+        document.getElementById("loginStatus").textContent = "Backend Connected.";
+      } catch {
+        document.getElementById("loginStatus").textContent = "Backend Connection Failed.";
+      }
+    }
+
+    async function checkAuthState() {
+      currentUser = pb.authStore.model;
+
+      if (!currentUser) return;
+
+      if (currentUser.role === "treeguy" && !currentUser.hasPaidAccess) {
+        window.location.href = "/treeguy/paywall.html";
+      }
+    }
   </script>
 
 </body>
