@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Client Account – Real Tree Guy</title>
+  <link rel="stylesheet" href="../client.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  <header class="rtg-header">
+    <h1>Create Client Account</h1>
+  </header>
+
+  <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
+    <form id="clientSignupForm">
+      <label>Email</label>
+      <input type="email" id="email" required>
+
+      <label>Password</label>
+      <input type="password" id="password" required>
+
+      <label>Full Name</label>
+      <input id="name" required>
+
+      <label>Phone</label>
+      <input id="phone" required>
+
+      <label>City</label>
+      <input id="city" required>
+
+      <label>State</label>
+      <input id="state" required>
+
+      <button class="btn-primary" type="submit">Create Client Profile</button>
+    </form>
+  </main>
+
+  <script type="module">
+    const form = document.getElementById("clientSignupForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        email: email.value.trim(),
+        password: password.value,
+        role: "client",
+        profile: {
+          displayName: name.value.trim(),
+          phone: phone.value.trim(),
+          city: city.value.trim(),
+          state: state.value.trim(),
+          treeRole: null
+        }
+      };
+
+      // TODO: replace with real PocketBase/API call
+      // Example pseudo-call:
+      // const res = await fetch("/api/auth/signup-client", { method:"POST", body:JSON.stringify(payload) });
+
+      localStorage.setItem("rtgUserRole", "client");
+      localStorage.setItem("rtgUserName", payload.profile.displayName);
+
+      window.location.href = "../client/dashboard.html";
+    });
+  </script>
+</body>
+</html>
