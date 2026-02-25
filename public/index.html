@@ -19,10 +19,10 @@
       The all‑in‑one operating system for real tree guys, climbers, groundsmen, salesmen, and clients.
     </p>
 
-    <!-- BIG BUTTON -->
-    <a href="dashboard.html"
+    <!-- OS BUTTON (LOCKED BY LOGIC) -->
+    <a id="enterOS"
        class="btn-primary"
-       style="margin-top:30px;font-size:1.6rem;padding:18px 28px;display:inline-block;">
+       style="margin-top:30px;font-size:1.6rem;padding:18px 28px;display:inline-block;cursor:pointer;">
       Enter Real Tree Guy OS
     </a>
 
@@ -76,7 +76,6 @@
         <li>Connect with climbers, groundsmen, and salesmen</li>
       </ul>
 
-      <!-- PAYMENT WALL -->
       <a class="btn-primary"
          href="treeguy/paywall.html"
          style="font-size:1.2rem;">
@@ -134,38 +133,66 @@
     <p>Real Tree Guy Online • Built for the Ones Who Really Do the Work</p>
   </footer>
 
-  <!-- FULL BACKEND + PAYMENT MODULE -->
+  <!-- BACKEND + OS ACCESS LOCK -->
   <script type="module">
     import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
 
     const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
-    const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
-
     let currentUser = null;
 
     init();
     async function init() {
-      await testConnection();
-      await checkAuthState();
+      await checkConnection();
+      await checkAuth();
+      setupOSButton();
     }
 
-    async function testConnection() {
+    async function checkConnection() {
       try {
-        const health = await pb.health.check();
+        await pb.health.check();
         document.getElementById("loginStatus").textContent = "Backend Connected.";
       } catch {
         document.getElementById("loginStatus").textContent = "Backend Connection Failed.";
       }
     }
 
-    async function checkAuthState() {
+    async function checkAuth() {
       currentUser = pb.authStore.model;
 
-      if (!currentUser) return;
-
-      if (currentUser.role === "treeguy" && !currentUser.hasPaidAccess) {
-        window.location.href = "/treeguy/paywall.html";
+      if (!currentUser) {
+        document.getElementById("loginStatus").textContent = "Not logged in.";
+        return;
       }
+
+      document.getElementById("loginStatus").textContent =
+        "Welcome back, " + currentUser.email;
+    }
+
+    function setupOSButton() {
+      const btn = document.getElementById("enterOS");
+
+      btn.addEventListener("click", () => {
+        // Not logged in → login page
+        if (!currentUser) {
+          window.location.href = "/treeguy/login.html";
+          return;
+        }
+
+        // Client → always allowed
+        if (currentUser.role === "client") {
+          window.location.href = "/dashboard.html";
+          return;
+        }
+
+        // Tree Guy → must pay first
+        if (currentUser.role === "treeguy") {
+          if (currentUser.hasPaidAccess) {
+            window.location.href = "/dashboard.html";
+          } else {
+            window.location.href = "/treeguy/paywall.html";
+          }
+        }
+      });
     }
   </script>
 
