@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Create Tree Guy Account – Real Tree Guy</title>
-  <link rel="stylesheet" href="../treeguy.css">
+  <title>Create Tree Guy Account</title>
+  <link rel="stylesheet" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+
   <header class="rtg-header">
     <h1>Create Tree Guy Account</h1>
   </header>
 
   <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
-    <form id="treeguySignupForm">
+    <form id="treeguyForm">
+
       <label>Email</label>
-      <input type="email" id="email" required>
+      <input id="email" type="email" required>
 
       <label>Password</label>
-      <input type="password" id="password" required>
+      <input id="password" type="password" required>
 
       <label>Business / Crew Name</label>
       <input id="name" required>
@@ -34,45 +36,33 @@
 
       <label>Your Role</label>
       <div class="role-row">
-        <label><input type="radio" name="treeRole" value="climber" required> Climber</label>
-        <label><input type="radio" name="treeRole" value="groundsman"> Groundsman</label>
-        <label><input type="radio" name="treeRole" value="salesman"> Salesman</label>
+        <label><input type="radio" name="role" value="climber" required> Climber</label>
+        <label><input type="radio" name="role" value="groundsman"> Groundsman</label>
+        <label><input type="radio" name="role" value="salesman"> Salesman</label>
       </div>
 
-      <button class="btn-primary" type="submit">Create Tree Guy Profile</button>
+      <button class="btn-primary" type="submit">Create Profile</button>
     </form>
   </main>
 
-  <script type="module">
-    const form = document.getElementById("treeguySignupForm");
+  <script>
+    if (!localStorage.getItem("rtgPaidTreeGuy")) {
+      alert("You must pay the $30 access fee first.");
+      window.location.href = "paywall.html";
+    }
 
-    form.addEventListener("submit", async (e) => {
+    document.getElementById("treeguyForm").addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const treeRole = document.querySelector("input[name='treeRole']:checked").value;
+      const role = document.querySelector("input[name='role']:checked").value;
 
-      const payload = {
-        email: email.value.trim(),
-        password: password.value,
-        role: "treeguy",
-        profile: {
-          displayName: name.value.trim(),
-          phone: phone.value.trim(),
-          city: city.value.trim(),
-          state: state.value.trim(),
-          treeRole
-        }
-      };
-
-      // TODO: real API call
-      // await fetch("/api/auth/signup-treeguy", { method:"POST", body:JSON.stringify(payload) });
-
+      localStorage.setItem("rtgUser", document.getElementById("name").value);
       localStorage.setItem("rtgUserRole", "treeguy");
-      localStorage.setItem("rtgUserName", payload.profile.displayName);
-      localStorage.setItem("rtgTreeRole", treeRole);
+      localStorage.setItem("rtgTreeRole", role);
 
-      window.location.href = "../treeguy/dashboard.html";
+      window.location.href = "login.html";
     });
   </script>
+
 </body>
 </html>
