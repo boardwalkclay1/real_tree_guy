@@ -81,7 +81,7 @@
       <button class="btn-ghost" data-type="gas station">Gas Stations</button>
     </div>
 
-    <!-- PUBLIC GOOGLE MAP EMBED (NO API KEY) -->
+    <!-- PUBLIC GOOGLE MAP EMBED -->
     <div style="width:100%;height:400px;border-radius:14px;overflow:hidden;border:2px solid #2e6b33;">
       <iframe
         id="rtgMap"
@@ -104,37 +104,38 @@
     <p>Real Tree Guy • Modular Static App</p>
   </footer>
 
+  <!-- NEW: BULLETPROOF GPS SCRIPT -->
   <script>
-    // Grab user location BEFORE filters are used
-    let userLat = null;
-    let userLng = null;
+    function getLocation(callback) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          callback(lat, lng);
+        },
+        () => {
+          document.getElementById("rtgMap").src =
+            "https://www.google.com/maps?q=tree+service+supplies&output=embed";
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    }
 
-    navigator.geolocation.getCurrentPosition((pos) => {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
-
-      // Default map view centered on user
+    // INITIAL LOAD — ALWAYS FRESH GPS
+    getLocation((lat, lng) => {
       document.getElementById("rtgMap").src =
-        `https://www.google.com/maps?q=${userLat},${userLng}&z=13&output=embed`;
-
-    }, () => {
-      // Fallback if denied
-      document.getElementById("rtgMap").src =
-        "https://www.google.com/maps?q=tree+service+supplies&output=embed";
+        `https://www.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
     });
 
-    // FILTER BUTTONS
+    // FILTERS — ALWAYS FRESH GPS BEFORE UPDATING
     document.querySelectorAll("#rtg-filters button").forEach(btn => {
       btn.addEventListener("click", () => {
         const type = btn.dataset.type;
 
-        if (userLat && userLng) {
+        getLocation((lat, lng) => {
           document.getElementById("rtgMap").src =
-            `https://www.google.com/maps?q=${type}+near+${userLat},${userLng}&z=13&output=embed`;
-        } else {
-          document.getElementById("rtgMap").src =
-            `https://www.google.com/maps?q=${type}&output=embed`;
-        }
+            `https://www.google.com/maps?q=${encodeURIComponent(type)}+near+${lat},${lng}&z=13&output=embed`;
+        });
       });
     });
   </script>
