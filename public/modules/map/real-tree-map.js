@@ -1,6 +1,6 @@
 // ===============================
 // REAL TREE MAP – FINAL VERSION
-// Public Google Embed + Fresh GPS + Permission Once
+// Public Google Embed + Fresh GPS Every Time
 // ===============================
 
 // DOM
@@ -14,12 +14,8 @@ const directionsFromUserBtn = document.getElementById("directionsFromUser");
 const directionsFromClientBtn = document.getElementById("directionsFromClient");
 
 // State
-let currentFilter = null;
-let hasPermission = false;
-
-// Disable filters until GPS permission is granted
-const filterButtons = [...filterRow.querySelectorAll(".pill")];
-filterButtons.forEach(btn => btn.disabled = true);
+let userLat = null;
+let userLng = null;
 
 // Search phrases (MUST match HTML data-type)
 const FILTER_QUERIES = {
@@ -34,125 +30,74 @@ const FILTER_QUERIES = {
 };
 
 // ===============================
-// ASK FOR PERMISSION ONCE
+// ALWAYS GET FRESH GPS
 // ===============================
-function requestPermissionOnce() {
-  locationStatus.textContent = "Requesting location…";
-
-  navigator.geolocation.getCurrentPosition(
-    () => {
-      hasPermission = true;
-
-      // Enable filters now that permission is granted
-      filterButtons.forEach(btn => btn.disabled = false);
-
-      centerOnUser();
-    },
-    () => {
-      locationStatus.textContent = "Location denied. Enable it in browser settings.";
-    }
-  );
-}
-
-// ===============================
-// ALWAYS GET FRESH GPS (NO POPUP)
-// ===============================
-function getFreshLocation(callback) {
-  if (!hasPermission) {
-    requestPermissionOnce();
-    return;
-  }
-
+function getLocation(callback) {
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
 
-      locationStatus.textContent = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      callback(lat, lng);
+      locationStatus.textContent = `Location: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`;
+
+      callback(userLat, userLng);
     },
     () => {
-      locationStatus.textContent = "Unable to get location.";
+      locationStatus.textContent = "Location denied. Showing general map.";
+      mapFrame.src = "https://www.google.com/maps?q=tree+service+supplies&output=embed";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
 }
 
 // ===============================
-// CENTER MAP ON USER
+// INITIAL MAP LOAD
 // ===============================
-function centerOnUser() {
-  getFreshLocation((lat, lng) => {
-    mapFrame.src = `https://www.google.com/maps?q=${lat},${lng}&z=14&output=embed`;
-    openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-  });
-}
+getLocation((lat, lng) => {
+  mapFrame.src = `https://www.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
+});
 
 // ===============================
 // FILTER HANDLING
 // ===============================
-filterRow.addEventListener("click", (e) => {
-  const btn = e.target.closest(".pill");
-  if (!btn || btn.disabled) return;
+document.querySelectorAll(".pill").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const type = btn.dataset.type;
+    const queryBase = FILTER_QUERIES[type];
+    if (!queryBase) return;
 
-  const type = btn.dataset.type;
-  const queryBase = FILTER_QUERIES[type];
-  if (!queryBase) return;
+    activeFilterLabel.textContent = queryBase;
 
-  filterButtons.forEach(el =>
-    el.classList.toggle("active", el === btn)
-  );
-
-  currentFilter = type;
-  activeFilterLabel.textContent = queryBase;
-
-  updateMapEmbed();
+    // ALWAYS get fresh GPS before updating map
+    getLocation((lat, lng) => {
+      const encoded = encodeURIComponent(`${queryBase} near ${lat},${lng}`);
+      mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
+      openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
+    });
+  });
 });
 
 // ===============================
-// UPDATE MAP WITH FRESH GPS BEFORE SHOWING PLACES
+// DIRECTIONS: ME → SUPPLY
 // ===============================
-function updateMapEmbed() {
-  if (!currentFilter) return;
-
-  getFreshLocation((lat, lng) => {
-    const queryBase = FILTER_QUERIES[currentFilter];
-    const q = `${queryBase} near ${lat},${lng}`;
-    const encoded = encodeURIComponent(q);
-
-    mapFrame.src = `https://www.google.com/maps?q=${encoded}&z=13&output=embed`;
-    openInMaps.href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
-  });
-}
-
-// ===============================
-// DIRECTIONS
-// ===============================
-function buildDirectionsUrl(origin, destination) {
-  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
-}
-
 directionsFromUserBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a supply filter first.");
+  const type = activeFilterLabel.textContent;
+  if (type === "None") return alert("Select a supply filter first.");
 
-  getFreshLocation((lat, lng) => {
-    const origin = `${lat},${lng}`;
-    const dest = FILTER_QUERIES[currentFilter];
-    window.open(buildDirectionsUrl(origin, dest), "_blank");
+  getLocation((lat, lng) => {
+    window.open(`https://www.google.com/maps/dir/${lat},${lng}/${type}`, "_blank");
   });
 });
 
+// ===============================
+// DIRECTIONS: CLIENT → SUPPLY
+// ===============================
 directionsFromClientBtn.addEventListener("click", () => {
-  if (!currentFilter) return alert("Select a supply filter first.");
+  const client = clientAddressInput.value.trim();
+  if (!client) return alert("Enter a client address first.");
 
-  const clientAddress = clientAddressInput.value.trim();
-  if (!clientAddress) return alert("Enter a client address first.");
+  const type = activeFilterLabel.textContent;
+  if (type === "None") return alert("Select a supply filter first.");
 
-  const dest = FILTER_QUERIES[currentFilter];
-  window.open(buildDirectionsUrl(clientAddress, dest), "_blank");
+  window.open(`https://www.google.com/maps/dir/${client}/${type}`, "_blank");
 });
-
-// ===============================
-// INIT — ASK PERMISSION ONCE
-// ===============================
-requestPermissionOnce();
