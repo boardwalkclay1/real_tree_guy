@@ -75,26 +75,48 @@
 
     </div>
 
-    <!-- MAP PREVIEW SECTION AT BOTTOM -->
-    <section class="rtg-map-preview">
-      <h2>Real Tree Map Preview</h2>
-      <p>Quick supply scan near you. Tap full screen for full Real Tree Map tools.</p>
-
-      <div class="rtg-map-preview-frame">
-        <iframe
-          src="modules/map/real-tree-map.html"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
-      </div>
-
-      <a class="rtg-map-fullscreen-btn" href="modules/map/real-tree-map.html">
-        Open Full Screen Real Tree Map
-      </a>
-    </section>
-
   </main>
 
+  <!-- MAP PREVIEW SECTION -->
+  <section class="card" style="max-width:1100px;margin:40px auto;padding:20px;">
+    <h2 style="font-size:1.8rem;margin-bottom:10px;color:#caffca;">Real Tree Map Preview</h2>
+    <p style="margin-bottom:20px;">
+      Live supply scan near you. Use filters and explore the area directly from the dashboard.
+      Tap full screen for the complete Real Tree Map tools.
+    </p>
+
+    <!-- FILTERS (future-ready) -->
+    <div style="margin-bottom:15px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-ghost">Home Depot</button>
+      <button class="btn-ghost">Lowe’s</button>
+      <button class="btn-ghost">Ace Hardware</button>
+      <button class="btn-ghost">Sawmills</button>
+      <button class="btn-ghost">Wood Dumps</button>
+      <button class="btn-ghost">Chainsaw Repair</button>
+      <button class="btn-ghost">Woodworking Stores</button>
+    </div>
+
+    <!-- REAL GOOGLE MAP EMBED -->
+    <div style="width:100%;height:400px;border-radius:14px;overflow:hidden;border:2px solid #2e6b33;">
+      <iframe
+        width="100%"
+        height="100%"
+        style="border:0;"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed/v1/search?key=YOUR_GOOGLE_MAPS_API_KEY&q=tree+service+supplies+near+me">
+      </iframe>
+    </div>
+
+    <a href="modules/map/real-tree-map.html"
+       class="btn-primary"
+       style="margin-top:20px;display:inline-block;">
+      Open Full Screen Real Tree Map
+    </a>
+  </section>
+
+  <!-- FOOTER -->
   <footer class="rtg-footer">
     <p>Real Tree Guy • Modular Static App</p>
   </footer>
