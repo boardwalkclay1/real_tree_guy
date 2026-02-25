@@ -5,7 +5,6 @@
   <title>Real Tree Guy Online</title>
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Mobile-first scaling -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -28,7 +27,6 @@
       Enter Real Tree Guy OS
     </a>
 
-    <!-- LOGIN DETECTION (Tree Guy) -->
     <div id="loginStatus" style="margin-top:20px;font-size:1rem;opacity:0.9;">
       Checking your account…
     </div>
@@ -73,25 +71,27 @@
 
       <ul style="margin:15px 0 20px 20px;line-height:1.6;font-size:1.1rem;">
         <li>Create your Tree Guy account</li>
+        <li>Choose your role: Climber, Groundsman, or Salesman</li>
         <li>Access contracts, flyers, calendar, and map tools</li>
         <li>Bid on client jobs</li>
         <li>Connect with climbers, groundsmen, and salesmen</li>
       </ul>
 
+      <!-- PAYMENT WALL -->
       <a class="btn-primary"
-         href="treeguy/create-account.html"
+         href="treeguy/paywall.html"
          style="font-size:1.2rem;">
-        Create Tree Guy Account
+        Unlock Tree Guy OS – $30 One‑Time
       </a>
 
       <a class="btn-ghost"
-         href="dashboard.html"
+         href="treeguy/login.html"
          style="margin-top:10px;display:block;font-size:1.1rem;">
         Already Have an Account
       </a>
 
       <p style="margin-top:15px;font-size:0.9rem;opacity:0.8;">
-        *One‑time OS access fee applies after account creation.
+        *One‑time OS access fee required before creating your Tree Guy profile.
       </p>
     </section>
 
@@ -106,58 +106,25 @@
     <div style="font-size:1.2rem;line-height:1.7;">
 
       <h3 style="color:#a8ffb0;margin-top:20px;">📄 Ready‑Made Contracts</h3>
-      <p>
-        Professional, legally structured contracts built specifically for tree work.  
-        Auto‑filled with your business info. Save your insurance documents.  
-        Send contracts instantly to clients.
-      </p>
+      <p>Professional, legally structured contracts built specifically for tree work.</p>
 
       <h3 style="color:#a8ffb0;margin-top:20px;">📸 Photo Measurement Engine</h3>
-      <p>
-        Gauge tree height, width, lean, canopy spread, and fall direction  
-        using nothing but a photo.  
-        This is our one‑of‑a‑kind measurement engine — built for real tree guys.
-      </p>
+      <p>Gauge tree height, width, lean, canopy spread, and fall direction using a photo.</p>
 
       <h3 style="color:#a8ffb0;margin-top:20px;">🗺️ Real Tree Map with Auto Filters</h3>
-      <p>
-        Instantly find Home Depot, Lowe’s, Ace Hardware, sawmills, wood dumps,  
-        chainsaw repair shops, and woodworking stores — all filtered automatically  
-        around your live GPS location.
-      </p>
+      <p>Find supplies instantly around your live GPS location.</p>
 
       <h3 style="color:#a8ffb0;margin-top:20px;">🧑‍🤝‍🧑 Crew Connections</h3>
-      <p>
-        Connect climbers, groundsmen, and salesmen.  
-        Build crews. Share jobs. Grow together.
-      </p>
+      <p>Connect climbers, groundsmen, and salesmen nationwide.</p>
 
-      <h3 style="color:#a8ffb0;margin-top:20px;">🧾 Customers & Jobs Module</h3>
-      <p>
-        Store client info, job descriptions, quotes, addresses, and notes.  
-        Everything organized. Everything searchable.
-      </p>
+      <h3 style="color:#a8ffb0;margin-top:20px;">🌐 Real Tree Guy Online</h3>
+      <p>A social feed for tree guys to post videos, comment, and network.</p>
 
-      <h3 style="color:#a8ffb0;margin-top:20px;">🗓️ Calendar & Reminders</h3>
-      <p>
-        Schedule jobs, callbacks, estimates, and crew assignments.  
-        Never forget a client again.
-      </p>
-
-      <h3 style="color:#a8ffb0;margin-top:20px;">🎨 Cards & Flyers Studio</h3>
-      <p>
-        Build professional flyers, door hangers, and business cards.  
-        Upload your logo, set your colors, add offers, and print or share instantly.
-      </p>
-
-      <h3 style="color:#a8ffb0;margin-top:20px;">🌐 Real Tree Guy Marketplace</h3>
-      <p>
-        Clients post jobs. Tree guys bid. Salesmen earn.  
-        This OS is the future of the tree industry.
-      </p>
+      <h3 style="color:#a8ffb0;margin-top:20px;">🌳 Marketplace & Auctions</h3>
+      <p>Clients post jobs. Tree guys bid. Salesmen earn. Auctions run up to 10 days.</p>
 
       <p style="margin-top:25px;font-size:1rem;opacity:0.8;text-align:center;">
-        *OS access fee and lead fees processed securely through PayPal.
+        *Payments processed securely through PayPal.
       </p>
 
     </div>
@@ -168,18 +135,14 @@
     <p>Real Tree Guy Online • Built for the Ones Who Really Do the Work</p>
   </footer>
 
-  <!-- LOGIN CHECK SCRIPT (PocketBase-ready) -->
+  <!-- LOGIN CHECK SCRIPT -->
   <script>
-    // Placeholder for PocketBase login detection
     const loginStatus = document.getElementById("loginStatus");
-
     const savedUser = localStorage.getItem("rtgUser");
 
-    if (savedUser) {
-      loginStatus.textContent = "Welcome back, " + savedUser + ".";
-    } else {
-      loginStatus.textContent = "New here? Create an account to get started.";
-    }
+    loginStatus.textContent = savedUser
+      ? "Welcome back, " + savedUser + "."
+      : "New here? Create an account to get started.";
   </script>
 
 </body>
