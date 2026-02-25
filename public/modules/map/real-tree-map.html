@@ -59,59 +59,6 @@
 
   </section>
 
-  <script type="module">
-    let userLat = null;
-    let userLng = null;
-
-    const mapFrame = document.getElementById("mapFrame");
-    const locationStatus = document.getElementById("locationStatus");
-    const activeFilterLabel = document.getElementById("activeFilterLabel");
-
-    // 1. GET USER LOCATION FIRST
-    navigator.geolocation.getCurrentPosition((pos) => {
-      userLat = pos.coords.latitude;
-      userLng = pos.coords.longitude;
-
-      locationStatus.textContent = "Location found.";
-
-      // Default map centered on user
-      mapFrame.src = `https://www.google.com/maps?q=${userLat},${userLng}&z=13&output=embed`;
-
-    }, () => {
-      locationStatus.textContent = "Location denied. Showing general map.";
-      mapFrame.src = "https://www.google.com/maps?q=tree+service+supplies&output=embed";
-    });
-
-    // 2. FILTER BUTTONS
-    document.querySelectorAll(".pill").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const type = btn.dataset.type;
-        activeFilterLabel.textContent = btn.textContent;
-
-        if (userLat && userLng) {
-          mapFrame.src =
-            `https://www.google.com/maps?q=${type}+near+${userLat},${userLng}&z=13&output=embed`;
-        } else {
-          mapFrame.src =
-            `https://www.google.com/maps?q=${type}&output=embed`;
-        }
-      });
-    });
-
-    // 3. DIRECTIONS BUTTONS
-    document.getElementById("directionsFromUser").addEventListener("click", () => {
-      if (!userLat || !userLng) return alert("Location not available yet.");
-      const type = activeFilterLabel.textContent;
-      window.open(`https://www.google.com/maps/dir/${userLat},${userLng}/${type}`, "_blank");
-    });
-
-    document.getElementById("directionsFromClient").addEventListener("click", () => {
-      const client = document.getElementById("clientAddress").value.trim();
-      if (!client) return alert("Enter a client address first.");
-      const type = activeFilterLabel.textContent;
-      window.open(`https://www.google.com/maps/dir/${client}/${type}`, "_blank");
-    });
-  </script>
-
+  <script src="real-tree-map.js" type="module"></script>
 </body>
 </html>
