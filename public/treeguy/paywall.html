@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Unlock Tree Guy OS – $30</title>
+  <link rel="stylesheet" href="../styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+  <header class="rtg-header">
+    <h1>Unlock Tree Guy OS</h1>
+    <p>One‑time $30 access fee</p>
+  </header>
+
+  <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
+    <p style="font-size:1.2rem;margin-bottom:20px;">
+      This unlocks:
+    </p>
+
+    <ul style="line-height:1.7;margin-left:20px;">
+      <li>Tree Guy Dashboard</li>
+      <li>Real Tree Guy Online (social feed)</li>
+      <li>Client leads & bidding</li>
+      <li>Contracts, Flyers, Calendar, Map tools</li>
+      <li>Crew connections (climbers, groundsmen, salesmen)</li>
+    </ul>
+
+    <button id="payBtn" class="btn-primary" style="margin-top:20px;">
+      Pay $30 & Continue
+    </button>
+  </main>
+
+  <script>
+    document.getElementById("payBtn").addEventListener("click", () => {
+      // TODO: Replace with real PayPal/Stripe checkout
+      alert("Payment successful (placeholder). Redirecting…");
+
+      localStorage.setItem("rtgPaidTreeGuy", "true");
+      window.location.href = "create-account.html";
+    });
+  </script>
+
+</body>
+</html>
