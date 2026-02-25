@@ -5,15 +5,89 @@
   <title>Tree Guy Login</title>
   <link rel="stylesheet" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      background: #0d0f0d;
+      color: #e8ffe8;
+      font-family: Arial, sans-serif;
+    }
+
+    .login-card {
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 30px;
+      background: rgba(20, 30, 20, 0.9);
+      border-radius: 18px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.4rem;
+      margin-bottom: 20px;
+      color: #caffca;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-size: 1.1rem;
+    }
+
+    /* Bubble-style inputs */
+    input {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+      border-radius: 50px;
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e8ffe8;
+      font-size: 1.1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    /* Bubble button */
+    .bubble-btn {
+      width: 100%;
+      padding: 16px;
+      margin-top: 25px;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #3fa63f, #2d7a2d);
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .bubble-btn:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #4fdc4f, #2d7a2d);
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ff8f8f;
+      text-align: center;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 
 <body>
 
-  <header class="rtg-header">
+  <div class="login-card">
     <h1>Tree Guy Login</h1>
-  </header>
 
-  <main class="card" style="max-width:500px;margin:40px auto;padding:20px;">
     <form id="loginForm">
       <label>Email</label>
       <input id="email" type="email" required>
@@ -21,16 +95,46 @@
       <label>Password</label>
       <input id="password" type="password" required>
 
-      <button class="btn-primary" type="submit">Login</button>
-    </form>
-  </main>
+      <button class="bubble-btn" type="submit">Login</button>
 
-  <script>
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      <div id="errorMsg" class="error"></div>
+    </form>
+  </div>
+
+  <script type="module">
+    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+
+    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+
+    const form = document.getElementById("loginForm");
+    const errorMsg = document.getElementById("errorMsg");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // TODO: real auth
-      window.location.href = "../dashboard.html";
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        // Authenticate with PocketBase
+        const auth = await pb.collection("users").authWithPassword(email, password);
+
+        // Save user info locally
+        localStorage.setItem("rtgUserId", auth.record.id);
+        localStorage.setItem("rtgRole", auth.record.role);
+
+        // Enforce Tree Guy payment
+        if (auth.record.role === "treeguy" && !auth.record.hasPaidAccess) {
+          window.location.href = "paywall.html";
+          return;
+        }
+
+        // Redirect to dashboard
+        window.location.href = "../dashboard.html";
+
+      } catch (err) {
+        errorMsg.textContent = "Invalid login. Check your email or password.";
+      }
     });
   </script>
 
