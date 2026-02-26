@@ -43,27 +43,22 @@
       font-size: 1.1rem;
     }
 
-    /* Bubble-style button */
-    .bubble-btn {
-      width: 100%;
-      padding: 16px;
-      margin-top: 25px;
-      font-size: 1.3rem;
-      border: none;
-      border-radius: 50px;
-      background: linear-gradient(135deg, #3fa63f, #2d7a2d);
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .bubble-btn:hover {
-      transform: scale(1.03);
-      background: linear-gradient(135deg, #4fdc4f, #2d7a2d);
-    }
-
     #paypal-button-container {
       margin-top: 30px;
+    }
+
+    .info {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      opacity: 0.85;
+      text-align: center;
+    }
+
+    .error {
+      margin-top: 15px;
+      color: #ff8f8f;
+      text-align: center;
+      font-size: 0.95rem;
     }
   </style>
 </head>
@@ -87,9 +82,9 @@
     </ul>
 
     <div id="paypal-button-container"></div>
+    <div id="statusMsg" class="info"></div>
+    <div id="errorMsg" class="error"></div>
   </div>
-
-  <!-- PAYPAL SDK LOADED DYNAMICALLY BY JS BELOW -->
 
   <script type="module">
     import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
@@ -97,26 +92,60 @@
     const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
     const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
 
+    const statusMsg = document.getElementById("statusMsg");
+    const errorMsg = document.getElementById("errorMsg");
     let currentUser = null;
 
     init();
+
     async function init() {
-      currentUser = pb.authStore.model;
+      try {
+        // Ensure backend reachable
+        await pb.health.check();
 
-      if (!currentUser) {
-        window.location.href = "../treeguy/login.html";
-        return;
+        // Ensure user is logged in
+        currentUser = pb.authStore.model;
+        if (!currentUser) {
+          statusMsg.textContent = "Please log in first.";
+          window.location.href = "login.html";
+          return;
+        }
+
+        // If not a treeguy, send away
+        if (currentUser.role !== "treeguy") {
+          statusMsg.textContent = "Only Tree Guy accounts can unlock this OS.";
+          window.location.href = "../index.html";
+          return;
+        }
+
+        // If already paid, skip paywall
+        if (currentUser.hasPaidAccess) {
+          statusMsg.textContent = "Access already unlocked. Redirecting to profile setup…";
+          window.location.href = "create-account.html";
+          return;
+        }
+
+        statusMsg.textContent = "Secure payment powered by PayPal.";
+        await loadPayPal();
+        renderPaywall();
+      } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "Unable to connect to backend. Try again later.";
       }
-
-      await loadPayPal();
-      renderPaywall();
     }
 
-    async function loadPayPal() {
-      return new Promise(resolve => {
+    function loadPayPal() {
+      return new Promise((resolve, reject) => {
+        // Avoid double-loading
+        if (window.paypal) {
+          resolve();
+          return;
+        }
+
         const script = document.createElement("script");
         script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
         script.onload = resolve;
+        script.onerror = () => reject(new Error("PayPal SDK failed to load"));
         document.body.appendChild(script);
       });
     }
@@ -129,23 +158,36 @@
           });
         },
         onApprove: async (data, actions) => {
-          const details = await actions.order.capture();
+          try {
+            const details = await actions.order.capture();
 
-          // Record payment
-          await pb.collection("payments").create({
-            user: currentUser.id,
-            amount: 30,
-            type: "treeguy_access",
-            status: "completed",
-            paypalOrderId: details.id
-          });
+            // Record payment
+            await pb.collection("payments").create({
+              user: currentUser.id,
+              amount: 30,
+              type: "treeguy_access",
+              status: "completed",
+              paypalOrderId: details.id
+            });
 
-          // Unlock OS
-          await pb.collection("users").update(currentUser.id, {
-            hasPaidAccess: true
-          });
+            // Unlock OS on user record
+            const updated = await pb.collection("users").update(currentUser.id, {
+              hasPaidAccess: true
+            });
 
-          window.location.href = "create-account.html";
+            // Sync authStore model
+            pb.authStore.save(pb.authStore.token, updated);
+
+            statusMsg.textContent = "Payment successful. Redirecting to profile setup…";
+            window.location.href = "create-account.html";
+          } catch (err) {
+            console.error(err);
+            errorMsg.textContent = "Payment captured, but something went wrong saving your access. Contact support.";
+          }
+        },
+        onError: (err) => {
+          console.error(err);
+          errorMsg.textContent = "Payment could not be completed. Try again.";
         }
       }).render("#paypal-button-container");
     }
@@ -153,3 +195,4 @@
 
 </body>
 </html>
+
