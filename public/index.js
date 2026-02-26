@@ -1,4 +1,4 @@
-import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
 // REAL BACKEND
 const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
