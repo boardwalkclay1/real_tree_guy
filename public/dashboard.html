@@ -97,7 +97,7 @@
 
     .rtg-map-frame-wrap {
       width: 100%;
-      height: 55vh;
+      height: 60vh;
       border-radius: 14px;
       overflow: hidden;
       border: 2px solid #2e6b33;
@@ -125,11 +125,7 @@
       }
 
       .rtg-map-frame-wrap {
-        height: 60vh;
-      }
-
-      .rtg-map-card {
-        margin: 20px auto 40px;
+        height: 70vh;
       }
     }
   </style>
@@ -140,9 +136,7 @@
   <!-- TOP BAR WITH HAMBURGER + RTG ONLINE LINK -->
   <div class="rtg-topbar">
     <div class="rtg-burger" id="rtgBurger">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span></span><span></span><span></span>
     </div>
     <div class="rtg-topbar-title">REAL TREE GUY OS</div>
     <a href="/index.html" class="rtg-topbar-link">RTG Online</a>
@@ -167,45 +161,19 @@
     <p class="rtg-subtitle">Modular Static OS for Tree Work</p>
   </header>
 
+  <!-- TREE UI -->
   <main class="tree-menu">
     <div class="tree">
       <div class="canopy"></div>
       <div class="trunk"></div>
 
-      <div class="branch b1">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/profile/profile.html" class="branch-btn">Profile</a>
-      </div>
-
-      <div class="branch b2">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/customers/customers.html" class="branch-btn">Customers & Jobs</a>
-      </div>
-
-      <div class="branch b3">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/measurement/measurement.html" class="branch-btn">Tree Measurement</a>
-      </div>
-
-      <div class="branch b4">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/contracts/contracts.html" class="branch-btn">Contracts</a>
-      </div>
-
-      <div class="branch b5">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/calendar/calendar.html" class="branch-btn">Calendar</a>
-      </div>
-
-      <div class="branch b6">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/flyers/flyers.html" class="branch-btn">Cards & Flyers</a>
-      </div>
-
-      <div class="branch b7">
-        <div class="branch-bar"></div><div class="branch-bush"></div>
-        <a href="modules/map/real-tree-map.html" class="branch-btn">Real Tree Map</a>
-      </div>
+      <div class="branch b1"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/profile/profile.html" class="branch-btn">Profile</a></div>
+      <div class="branch b2"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/customers/customers.html" class="branch-btn">Customers & Jobs</a></div>
+      <div class="branch b3"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/measurement/measurement.html" class="branch-btn">Tree Measurement</a></div>
+      <div class="branch b4"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/contracts/contracts.html" class="branch-btn">Contracts</a></div>
+      <div class="branch b5"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/calendar/calendar.html" class="branch-btn">Calendar</a></div>
+      <div class="branch b6"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/flyers/flyers.html" class="branch-btn">Cards & Flyers</a></div>
+      <div class="branch b7"><div class="branch-bar"></div><div class="branch-bush"></div><a href="modules/map/real-tree-map.html" class="branch-btn">Real Tree Map</a></div>
     </div>
   </main>
 
@@ -248,70 +216,8 @@
     <p>Real Tree Guy • Modular Static App</p>
   </footer>
 
-  <script>
-    // HAMBURGER MENU
-    const burger = document.getElementById("rtgBurger");
-    const sidemenu = document.getElementById("rtgSidemenu");
-
-    burger.addEventListener("click", () => {
-      sidemenu.classList.toggle("open");
-    });
-
-    // MAP LOGIC
-    const dashMap = document.getElementById("rtgMap");
-    const dashFilterButtons = document.querySelectorAll("#rtg-filters button");
-    const radiusEl = document.getElementById("rtgRadius");
-
-    const DEFAULT_ZOOM = 14;
-
-    function setRadiusText(zoom) {
-      // rough approximation of radius in miles by zoom level
-      let miles = 5;
-      if (zoom >= 15) miles = 2;
-      if (zoom >= 16) miles = 1;
-      radiusEl.textContent = `Searching within ~${miles} miles of your location.`;
-    }
-
-    function updateMapWithType(type) {
-      // Ask for location EVERY time a filter is clicked
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const q = `${type} near ${lat},${lng}`;
-          const zoom = DEFAULT_ZOOM;
-
-          dashMap.src =
-            `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=${zoom}&output=embed`;
-
-          setRadiusText(zoom);
-        },
-        () => {
-          // If user denies location, still keep it local-ish using "near me"
-          const q = `${type} near me`;
-          const zoom = 13;
-
-          dashMap.src =
-            `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=${zoom}&output=embed`;
-
-          radiusEl.textContent =
-            "Location denied. Showing results near you based on your device's map region.";
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    }
-
-    // Initial load: try to center on user with a generic tree supply search
-    updateMapWithType("tree service supplies");
-
-    // Filters: always re-ask for location and update map
-    dashFilterButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const type = btn.dataset.type;
-        updateMapWithType(type);
-      });
-    });
-  </script>
+  <!-- DASHBOARD JS -->
+  <script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
