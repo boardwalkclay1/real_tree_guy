@@ -9,13 +9,30 @@
   box-sizing: border-box;
 }
 
-/* GLOBAL BODY */
+/* ============================================================
+   GLOBAL BODY — FULL SCREEN BACKGROUND (DESKTOP + MOBILE)
+   ============================================================ */
+
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
-  background: linear-gradient(180deg, #14522a, #0d3a1d, #0a2d16);
+
+  /* FULLSCREEN BACKGROUND IMAGE */
+  background: #0d0f0d url("https://raw.githubusercontent.com/boardwalkclay1/real_tree_guy/main/public/assets/icons/rtg-192.png")
+    center center / cover no-repeat;
+
+  /* MOBILE-SAFE SCROLL (iOS ignores fixed) */
+  background-attachment: scroll;
+
   color: #e8ffe8;
   min-height: 100vh;
   line-height: 1.5;
+}
+
+/* OPTIONAL: DESKTOP FIXED BACKGROUND */
+@media (min-width: 768px) {
+  body {
+    background-attachment: fixed;
+  }
 }
 
 /* ============================================================
@@ -277,7 +294,7 @@ body {
 .b4 .branch-btn,
 .b6 .branch-btn {
   right: -10px;
-  top: -20px;
+ top: -20px;
 }
 
 .b7 .branch-btn {
