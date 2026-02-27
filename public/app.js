@@ -1,22 +1,13 @@
 <script type="module">
   import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-  // =========================
-  // CORE CONFIG
-  // =========================
   const PB_URL = "https://realtreeguy-production.up.railway.app";
   const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
   const OWNER_EMAIL = "boardwalkclay1@gmail.com";
 
-  // =========================
-  // POCKETBASE CLIENT
-  // =========================
   const pb = new PocketBase(PB_URL);
   let currentUser = null;
 
-  // =========================
-  // INIT (OPTIONAL PER PAGE)
-  // =========================
   init();
   async function init() {
     await testConnection();
@@ -25,11 +16,9 @@
 
   async function testConnection() {
     try {
-      const health = await pb.health.check();
-      console.log("PocketBase Connected:", health);
+      await pb.health.check();
       updateStatus("Backend Connected.");
     } catch (err) {
-      console.error("PocketBase Connection Error:", err);
       updateStatus("Backend Connection Failed.");
     }
   }
@@ -37,7 +26,6 @@
   function syncAuthModel() {
     currentUser = pb.authStore.model;
     if (currentUser) {
-      console.log("Authenticated as:", currentUser.email);
       updateStatus("Welcome back, " + currentUser.email);
     } else {
       updateStatus("New here? Create an account to get started.");
@@ -50,47 +38,44 @@
   }
 
   // =========================
-  // OWNER / ROLE / ACCESS LOGIC
+  // ROLE LOGIC
   // =========================
-  function isOwner(user = currentUser) {
-    return !!user && user.email === OWNER_EMAIL;
+  function isOwner(u = currentUser) {
+    return u && u.email === OWNER_EMAIL;
   }
 
-  function isClient(user = currentUser) {
-    return !!user && user.role === "client";
+  function isClient(u = currentUser) {
+    return u && u.role === "client";
   }
 
-  function isTreeGuy(user = currentUser) {
-    return !!user && user.role === "treeguy";
+  function isTreeGuy(u = currentUser) {
+    return u && u.role === "treeguy";
   }
 
-  function hasTreeGuyAccess(user = currentUser) {
-    return isOwner(user) || (isTreeGuy(user) && user.hasPaidAccess);
+  function hasTreeGuyAccess(u = currentUser) {
+    return isOwner(u) || (isTreeGuy(u) && u.hasPaidAccess);
   }
 
-  function requireAuth(redirectTo = "/treeguy/login.html") {
+  // =========================
+  // FIXED REDIRECTS (NO LEADING SLASHES)
+  // =========================
+  function requireAuth(redirectTo = "treeguy/login.html") {
     syncAuthModel();
-    if (!currentUser) {
-      window.location.href = redirectTo;
-    }
+    if (!currentUser) window.location.href = redirectTo;
   }
 
-  function requireClient(redirectTo = "/") {
+  function requireClient(redirectTo = "index.html") {
     requireAuth();
-    if (!isClient()) {
-      window.location.href = redirectTo;
-    }
+    if (!isClient()) window.location.href = redirectTo;
   }
 
-  function requireTreeGuyPaid(redirectTo = "/treeguy/paywall.html") {
+  function requireTreeGuyPaid(redirectTo = "treeguy/paywall.html") {
     requireAuth();
-    if (!hasTreeGuyAccess()) {
-      window.location.href = redirectTo;
-    }
+    if (!hasTreeGuyAccess()) window.location.href = redirectTo;
   }
 
   // =========================
-  // PAYPAL SDK LOADER
+  // PAYPAL LOADER
   // =========================
   async function loadPayPal() {
     if (window.paypal) return;
@@ -105,20 +90,18 @@
   }
 
   // =========================
-  // TREE GUY $30 OS UNLOCK
+  // TREE GUY PAYWALL
   // =========================
   async function renderTreeGuyPaywall(containerSelector = "#paypal-button-container") {
     requireAuth();
 
     if (isOwner()) {
-      console.log("Owner bypass: Tree Guy OS unlocked.");
-      window.location.href = "/treeguy/create-account.html";
+      window.location.href = "treeguy/create-account.html";
       return;
     }
 
     if (hasTreeGuyAccess()) {
-      console.log("Already has Tree Guy access.");
-      window.location.href = "/treeguy/create-account.html";
+      window.location.href = "treeguy/create-account.html";
       return;
     }
 
@@ -149,17 +132,16 @@
         syncAuthModel();
 
         updateStatus("Tree Guy OS unlocked. Redirecting…");
-        window.location.href = "/treeguy/create-account.html";
+        window.location.href = "treeguy/create-account.html";
       },
-      onError: (err) => {
-        console.error("Tree Guy Paywall Error:", err);
+      onError: () => {
         updateStatus("Payment failed. Try again.");
       }
     }).render(containerSelector);
   }
 
   // =========================
-  // CLIENT JOB PAYMENT (20 / 40)
+  // CLIENT JOB PAYMENT
   // =========================
   async function renderClientJobPayment(mode = "standard", containerSelector = "#paypal-job-button", jobData = {}) {
     requireClient();
@@ -193,25 +175,19 @@
         });
 
         updateStatus("Job posted. Redirecting…");
-        window.location.href = "/client/dashboard.html";
+        window.location.href = "client/dashboard.html";
       },
-      onError: (err) => {
-        console.error("Client Job Payment Error:", err);
+      onError: () => {
         updateStatus("Payment failed. Try again.");
       }
     }).render(containerSelector);
   }
 
-  // =========================
-  // GLOBAL EXPORT (WINDOW.RTG)
-  // =========================
   window.RTG = {
     pb,
     get currentUser() {
       return pb.authStore.model;
     },
-
-    // Auth / roles
     syncAuthModel,
     requireAuth,
     requireClient,
@@ -220,12 +196,8 @@
     isClient,
     isTreeGuy,
     hasTreeGuyAccess,
-
-    // Payments
     renderTreeGuyPaywall,
     renderClientJobPayment,
-
-    // Utils
     updateStatus
   };
 </script>
