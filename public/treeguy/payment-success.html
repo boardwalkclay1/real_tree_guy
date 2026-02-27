@@ -6,8 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body { background:#0d0f0d; color:#e8ffe8; font-family:Arial,sans-serif; text-align:center; padding:40px; }
-    .card { max-width:500px; margin:auto; padding:30px; background:rgba(20,30,20,0.9); border-radius:18px; box-shadow:0 0 25px rgba(0,0,0,0.6); }
+    body {
+      background:#0d0f0d;
+      color:#e8ffe8;
+      font-family:Arial,sans-serif;
+      text-align:center;
+      padding:40px;
+    }
+    .card {
+      max-width:500px;
+      margin:auto;
+      padding:30px;
+      background:rgba(20,30,20,0.9);
+      border-radius:18px;
+      box-shadow:0 0 25px rgba(0,0,0,0.6);
+    }
     h1 { font-size:2.2rem; color:#caffca; }
   </style>
 </head>
@@ -21,44 +34,8 @@
     <p id="error" style="color:#ff8f8f;"></p>
   </div>
 
-  <script type="module">
-    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
-
-    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
-    const statusEl = document.getElementById("status");
-    const errorEl = document.getElementById("error");
-
-    async function unlock() {
-      try {
-        await pb.health.check();
-
-        const user = pb.authStore.model;
-        if (!user) return window.location.href = "login.html";
-
-        await pb.collection("payments").create({
-          user: user.id,
-          amount: 30,
-          type: "treeguy_access",
-          status: "paypal_success_redirect"
-        });
-
-        const updated = await pb.collection("users").update(user.id, {
-          hasPaidAccess: true
-        });
-
-        pb.authStore.save(pb.authStore.token, updated);
-
-        statusEl.textContent = "Access unlocked! Redirecting…";
-
-        setTimeout(() => window.location.href = "create-account.html", 1200);
-
-      } catch (err) {
-        errorEl.textContent = "Error unlocking your access.";
-      }
-    }
-
-    unlock();
-  </script>
+  <!-- Load external JS -->
+  <script type="module" src="payment-success.js"></script>
 
 </body>
 </html>
