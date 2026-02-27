@@ -1,7 +1,7 @@
 import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-// CONNECT TO POCKETBASE
-const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+// CONNECT TO POCKETBASE (UPDATED)
+const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 
 // HAMBURGER MENU
 const burger = document.getElementById("rtgBurger");
@@ -46,7 +46,7 @@ function updateMapWithType(type) {
         `https://www.google.com/maps?q=${encodeURIComponent(q)}&z=${zoom}&output=embed`;
 
       radiusEl.textContent =
-        "Location denied. Showing results near you based on your device's map region.";
+        "Location denied. Showing results near your device's map region.";
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
