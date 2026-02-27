@@ -1,7 +1,7 @@
 import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-// REAL BACKEND
-const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+// REAL BACKEND (UPDATED)
+const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 
 // UI ELEMENTS
 const statusEl = document.getElementById("loginStatus");
