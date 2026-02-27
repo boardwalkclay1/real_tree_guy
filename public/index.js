@@ -10,12 +10,15 @@ const enterBtn = document.getElementById("enterOS");
 // OWNER EMAIL
 const OWNER = "boardwalkclay1@gmail.com";
 
-// ABSOLUTE FRONTEND URLS
-const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
-const OWNER_DASHBOARD = "https://realtreeguy.com/dashboard.html";
-const CLIENT_DASHBOARD = "https://realtreeguy.com/client/dashboard.html";
-const TREEGUY_DASHBOARD = "https://realtreeguy.com/treeguy/dashboard.html";
-const TREEGUY_PAYWALL = "https://realtreeguy.com/treeguy/paywall.html";
+// CORRECT FRONTEND DOMAIN
+const FRONTEND = "https://realtreeguy-production.up.railway.app";
+
+// ABSOLUTE FRONTEND URLS (FIXED)
+const LOGIN_URL = `${FRONTEND}/treeguy/login.html`;
+const OWNER_DASHBOARD = `${FRONTEND}/dashboard.html`;
+const CLIENT_DASHBOARD = `${FRONTEND}/client/dashboard.html`;
+const TREEGUY_DASHBOARD = `${FRONTEND}/treeguy/dashboard.html`;
+const TREEGUY_PAYWALL = `${FRONTEND}/treeguy/paywall.html`;
 
 init();
 
