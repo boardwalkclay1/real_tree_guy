@@ -14,6 +14,8 @@
   </header>
 
   <main class="card" style="max-width:600px;margin:40px auto;padding:20px;">
+    <div id="status" style="margin-bottom:15px;color:#444;"></div>
+
     <form id="treeguyForm">
 
       <label>Email</label>
@@ -45,24 +47,7 @@
     </form>
   </main>
 
-  <script>
-    if (!localStorage.getItem("rtgPaidTreeGuy")) {
-      alert("You must pay the $30 access fee first.");
-      window.location.href = "paywall.html";
-    }
-
-    document.getElementById("treeguyForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const role = document.querySelector("input[name='role']:checked").value;
-
-      localStorage.setItem("rtgUser", document.getElementById("name").value);
-      localStorage.setItem("rtgUserRole", "treeguy");
-      localStorage.setItem("rtgTreeRole", role);
-
-      window.location.href = "login.html";
-    });
-  </script>
+  <script type="module" src="./create-account.js"></script>
 
 </body>
 </html>
