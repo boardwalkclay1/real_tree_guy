@@ -53,11 +53,15 @@
   </div>
 
   <script type="module">
-    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+    // CORRECT BACKEND
+    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
+
     const statusMsg = document.getElementById("statusMsg");
     const errorMsg = document.getElementById("errorMsg");
+
+    const OWNER = "boardwalkclay1@gmail.com";
 
     init();
 
@@ -68,12 +72,30 @@
         const user = pb.authStore.model;
         if (!user) return window.location.href = "login.html";
 
-        if (user.role !== "treeguy") return window.location.href = "../index.html";
+        // OWNER BYPASS
+        if (user.email === OWNER) {
+          statusMsg.textContent = "Owner bypass active. Redirecting…";
+          return window.location.href = "create-account.html";
+        }
 
-        if (user.hasPaidAccess) return window.location.href = "create-account.html";
+        // ONLY TREE GUYS CAN BE HERE
+        if (user.role !== "treeguy") {
+          return window.location.href = "../index.html";
+        }
 
-        statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
-      } catch {
+        // ALREADY PAID
+        if (user.hasPaidAccess) {
+          return window.location.href = "create-account.html";
+        }
+
+        // PAYMENT CANCELED DETECTION
+        if (window.location.search.includes("cancel")) {
+          statusMsg.textContent = "Payment canceled. You can retry below.";
+        } else {
+          statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
+        }
+
+      } catch (err) {
         errorMsg.textContent = "Unable to connect to backend.";
       }
     }
