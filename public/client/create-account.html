@@ -6,6 +6,12 @@
   <link rel="stylesheet" href="../styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- FIXED FAVICON -->
+  <link rel="icon" type="image/png" href="../assets/icons/rtg-192.png">
+
+  <!-- FIXED OG URL -->
+  <meta property="og:url" content="https://realtreeguy-production.up.railway.app/client/create-account.html">
+
   <style>
     body {
       background: #0d0f0d;
@@ -36,7 +42,6 @@
       font-size: 1.1rem;
     }
 
-    /* Bubble-style inputs */
     input {
       width: 100%;
       padding: 14px;
@@ -55,7 +60,6 @@
       transform: scale(1.02);
     }
 
-    /* Bubble button */
     .bubble-btn {
       width: 100%;
       padding: 16px;
@@ -115,9 +119,9 @@
   </div>
 
   <script type="module">
-    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 
     const form = document.getElementById("clientForm");
     const errorMsg = document.getElementById("errorMsg");
@@ -133,7 +137,6 @@
       const state = document.getElementById("state").value.trim();
 
       try {
-        // Create client user in PocketBase
         await pb.collection("users").create({
           email,
           password,
@@ -145,10 +148,8 @@
           state
         });
 
-        // Auto-login
         await pb.collection("users").authWithPassword(email, password);
 
-        // Redirect to client dashboard
         window.location.href = "dashboard.html";
       } catch (err) {
         errorMsg.textContent = "Error creating account. Check your info and try again.";
