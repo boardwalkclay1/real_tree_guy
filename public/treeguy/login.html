@@ -36,7 +36,6 @@
       font-size: 1.1rem;
     }
 
-    /* Bubble-style inputs */
     input {
       width: 100%;
       padding: 14px;
@@ -55,7 +54,6 @@
       transform: scale(1.02);
     }
 
-    /* Bubble button */
     .bubble-btn {
       width: 100%;
       padding: 16px;
@@ -102,12 +100,15 @@
   </div>
 
   <script type="module">
-    import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-    const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+    // CORRECT BACKEND
+    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 
     const form = document.getElementById("loginForm");
     const errorMsg = document.getElementById("errorMsg");
+
+    const OWNER = "boardwalkclay1@gmail.com";
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -119,18 +120,33 @@
         // Authenticate with PocketBase
         const auth = await pb.collection("users").authWithPassword(email, password);
 
-        // Save user info locally
-        localStorage.setItem("rtgUserId", auth.record.id);
-        localStorage.setItem("rtgRole", auth.record.role);
+        const user = auth.record;
 
-        // Enforce Tree Guy payment
-        if (auth.record.role === "treeguy" && !auth.record.hasPaidAccess) {
-          window.location.href = "paywall.html";
+        // OWNER BYPASS
+        if (user.email === OWNER) {
+          window.location.href = "../dashboard.html";
           return;
         }
 
-        // Redirect to dashboard
-        window.location.href = "../dashboard.html";
+        // CLIENT LOGIN
+        if (user.role === "client") {
+          window.location.href = "../client/dashboard.html";
+          return;
+        }
+
+        // TREE GUY LOGIN
+        if (user.role === "treeguy") {
+          if (!user.hasPaidAccess) {
+            window.location.href = "paywall.html";
+            return;
+          }
+
+          window.location.href = "../treeguy/dashboard.html";
+          return;
+        }
+
+        // Unknown role fallback
+        errorMsg.textContent = "Your account role is not recognized.";
 
       } catch (err) {
         errorMsg.textContent = "Invalid login. Check your email or password.";
