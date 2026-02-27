@@ -63,6 +63,10 @@
 
     const OWNER = "boardwalkclay1@gmail.com";
 
+    const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
+    const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
+    const HOME_URL = "https://realtreeguy.com/index.html";
+
     init();
 
     async function init() {
@@ -70,22 +74,22 @@
         await pb.health.check();
 
         const user = pb.authStore.model;
-        if (!user) return window.location.href = "login.html";
+        if (!user) return window.location.href = LOGIN_URL;
 
         // OWNER BYPASS
         if (user.email === OWNER) {
           statusMsg.textContent = "Owner bypass active. Redirecting…";
-          return window.location.href = "create-account.html";
+          return window.location.href = CREATE_URL;
         }
 
         // ONLY TREE GUYS CAN BE HERE
         if (user.role !== "treeguy") {
-          return window.location.href = "../index.html";
+          return window.location.href = HOME_URL;
         }
 
         // ALREADY PAID
         if (user.hasPaidAccess) {
-          return window.location.href = "create-account.html";
+          return window.location.href = CREATE_URL;
         }
 
         // PAYMENT CANCELED DETECTION
