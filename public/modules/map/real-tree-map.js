@@ -1,9 +1,37 @@
-// ===============================
-// REAL TREE MAP – FINAL VERSION
-// Public Google Embed + Fresh GPS Every Time
-// ===============================
+import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
+// CONNECT TO POCKETBASE (UPDATED)
+const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
+
+// OWNER EMAIL
+const OWNER = "boardwalkclay1@gmail.com";
+
+// ===============================
+// AUTH CHECK
+// ===============================
+initAuth();
+
+async function initAuth() {
+  const user = pb.authStore.model;
+
+  if (!user) {
+    window.location.href = "/treeguy/login.html";
+    return;
+  }
+
+  // OWNER BYPASS
+  if (user.email === OWNER) return;
+
+  // ONLY TREE GUYS CAN USE REAL TREE MAP
+  if (user.role !== "treeguy") {
+    alert("Only Tree Guys can access the Real Tree Map.");
+    window.location.href = "/index.html";
+  }
+}
+
+// ===============================
 // DOM
+// ===============================
 const filterRow = document.getElementById("filterRow");
 const mapFrame = document.getElementById("mapFrame");
 const locationStatus = document.getElementById("locationStatus");
