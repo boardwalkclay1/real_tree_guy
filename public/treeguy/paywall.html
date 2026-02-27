@@ -43,63 +43,41 @@
       font-size: 1.1rem;
     }
 
-    .pay-section {
-      margin-top: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
     .qr-wrapper {
-      padding: 12px;
-      border-radius: 16px;
-      background: radial-gradient(circle at top, #1f3b1f, #050805);
-      box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
     }
 
-    #paypal-qr {
+    .qr-wrapper img {
       width: 220px;
       height: 220px;
-      border-radius: 12px;
-      display: block;
+      border-radius: 16px;
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
     }
 
     .btn-row {
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 10px;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 25px;
     }
 
-    .btn {
-      padding: 10px 18px;
+    .confirm-btn {
+      padding: 12px 22px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 600;
+      background: #1f8f3a;
+      color: #e8ffe8;
       letter-spacing: 0.03em;
     }
 
-    .btn-primary {
-      background: #1f8f3a;
-      color: #e8ffe8;
-    }
-
-    .btn-primary:hover {
+    .confirm-btn:hover {
       background: #27a746;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: #caffca;
-      border: 1px solid #3a5f3a;
-    }
-
-    .btn-ghost:hover {
-      background: rgba(58, 95, 58, 0.2);
     }
 
     .info {
@@ -136,19 +114,26 @@
       <li>Crew connections (climbers, groundsmen, salesmen)</li>
     </ul>
 
-    <div class="pay-section">
-      <div class="qr-wrapper">
-        <img id="paypal-qr" alt="PayPal QR Code to unlock Tree Guy OS">
-      </div>
+    <!-- QR CODE -->
+    <div class="qr-wrapper">
+      <img src="/assets/RTG-qrcode.png" alt="PayPal QR Code">
+    </div>
 
-      <div class="btn-row">
-        <button id="openPaypalBtn" class="btn btn-primary">
-          Open PayPal to Pay $30
-        </button>
-        <button id="confirmPaidBtn" class="btn btn-ghost">
-          I Completed the Payment
-        </button>
-      </div>
+    <!-- PAYPAL BUTTON YOU PROVIDED -->
+    <div style="margin-top:25px; text-align:center;">
+      <style>.pp-DSRQ56T7C8XZN{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}</style>
+      <form action="https://www.paypal.com/ncp/payment/DSRQ56T7C8XZN" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+        <input class="pp-DSRQ56T7C8XZN" type="submit" value="Buy Now" />
+        <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
+        <section style="font-size: 0.75rem;"> Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:0.875rem;vertical-align:middle;"/></section>
+      </form>
+    </div>
+
+    <!-- CONFIRM BUTTON -->
+    <div class="btn-row">
+      <button id="confirmPaidBtn" class="confirm-btn">
+        I Completed the Payment
+      </button>
     </div>
 
     <div id="statusMsg" class="info"></div>
@@ -160,13 +145,8 @@
 
     const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
 
-    // Your actual PayPal NCP payment link
-    const PAYPAL_LINK = "https://www.paypal.com/ncp/payment/AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
-
     const statusMsg = document.getElementById("statusMsg");
     const errorMsg = document.getElementById("errorMsg");
-    const qrImg = document.getElementById("paypal-qr");
-    const openPaypalBtn = document.getElementById("openPaypalBtn");
     const confirmPaidBtn = document.getElementById("confirmPaidBtn");
 
     let currentUser = null;
@@ -175,10 +155,8 @@
 
     async function init() {
       try {
-        // Backend health
         await pb.health.check();
 
-        // Require login
         currentUser = pb.authStore.model;
         if (!currentUser) {
           statusMsg.textContent = "Please log in first.";
@@ -186,53 +164,37 @@
           return;
         }
 
-        // Only treeguy accounts
         if (currentUser.role !== "treeguy") {
           statusMsg.textContent = "Only Tree Guy accounts can unlock this OS.";
           window.location.href = "../index.html";
           return;
         }
 
-        // Already unlocked
         if (currentUser.hasPaidAccess) {
-          statusMsg.textContent = "Access already unlocked. Redirecting to profile setup…";
+          statusMsg.textContent = "Access already unlocked. Redirecting…";
           window.location.href = "create-account.html";
           return;
         }
 
-        // Build QR code for the PayPal link
-        const qrUrl =
-          "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" +
-          encodeURIComponent(PAYPAL_LINK);
-        qrImg.src = qrUrl;
-
-        statusMsg.textContent = "Scan the QR code or tap the button to pay securely with PayPal.";
+        statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
       } catch (err) {
         console.error(err);
-        errorMsg.textContent = "Unable to connect to backend. Try again later.";
+        errorMsg.textContent = "Unable to connect to backend.";
       }
     }
 
-    // Open PayPal in a new tab
-    openPaypalBtn.addEventListener("click", () => {
-      window.open(PAYPAL_LINK, "_blank", "noopener");
-    });
-
-    // User confirms they completed payment
     confirmPaidBtn.addEventListener("click", async () => {
       errorMsg.textContent = "";
-      statusMsg.textContent = "Verifying and unlocking your access…";
+      statusMsg.textContent = "Unlocking your access…";
 
       try {
-        // Re-check auth
         currentUser = pb.authStore.model;
         if (!currentUser) {
-          statusMsg.textContent = "Session expired. Please log in again.";
+          statusMsg.textContent = "Session expired. Log in again.";
           window.location.href = "login.html";
           return;
         }
 
-        // Create a payment record (soft verification – tied to this user)
         await pb.collection("payments").create({
           user: currentUser.id,
           amount: 30,
@@ -241,21 +203,20 @@
           note: "User confirmed payment via PayPal NCP link"
         });
 
-        // Mark user as having permanent access
         const updated = await pb.collection("users").update(currentUser.id, {
           hasPaidAccess: true
         });
 
-        // Sync authStore
         pb.authStore.save(pb.authStore.token, updated);
 
-        statusMsg.textContent = "Access unlocked. Redirecting to profile setup…";
+        statusMsg.textContent = "Access unlocked. Redirecting…";
         setTimeout(() => {
           window.location.href = "create-account.html";
         }, 1200);
+
       } catch (err) {
         console.error(err);
-        errorMsg.textContent = "Something went wrong saving your access. If you paid, contact support and we’ll fix it.";
+        errorMsg.textContent = "Error saving access. If you paid, contact support.";
         statusMsg.textContent = "";
       }
     });
