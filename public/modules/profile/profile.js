@@ -1,6 +1,7 @@
-import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.es.mjs";
+import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
-const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
+// CONNECT TO POCKETBASE (UPDATED)
+const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 
 // The single business profile record (we'll fetch or create it)
 let profileRecord = null;
