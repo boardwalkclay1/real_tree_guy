@@ -1,10 +1,10 @@
 <script type="module">
-  import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
+  import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
   // =========================
   // CORE CONFIG
   // =========================
-  const PB_URL = "https://pocketbase-production-f2f5.up.railway.app";
+  const PB_URL = "https://realtreeguy-production.up.railway.app";
   const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
   const OWNER_EMAIL = "boardwalkclay1@gmail.com";
 
@@ -110,7 +110,6 @@
   async function renderTreeGuyPaywall(containerSelector = "#paypal-button-container") {
     requireAuth();
 
-    // Owner bypass: no payment, direct access
     if (isOwner()) {
       console.log("Owner bypass: Tree Guy OS unlocked.");
       window.location.href = "/treeguy/create-account.html";
@@ -134,7 +133,6 @@
       onApprove: async (data, actions) => {
         const details = await actions.order.capture();
 
-        // Record payment
         await pb.collection("payments").create({
           user: currentUser.id,
           amount: 30,
@@ -143,12 +141,10 @@
           paypalOrderId: details.id
         });
 
-        // Unlock Tree Guy OS
         const updated = await pb.collection("users").update(currentUser.id, {
           hasPaidAccess: true
         });
 
-        // Sync authStore
         pb.authStore.save(pb.authStore.token, updated);
         syncAuthModel();
 
@@ -181,7 +177,6 @@
       onApprove: async (data, actions) => {
         const details = await actions.order.capture();
 
-        // Record payment
         await pb.collection("payments").create({
           user: currentUser.id,
           amount: Number(amount),
@@ -190,7 +185,6 @@
           paypalOrderId: details.id
         });
 
-        // Create job record (merge jobData)
         await pb.collection("jobs").create({
           client: currentUser.id,
           mode,
