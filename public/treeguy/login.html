@@ -99,60 +99,8 @@
     </form>
   </div>
 
-  <script type="module">
-    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
-
-    // CORRECT BACKEND
-    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
-
-    const form = document.getElementById("loginForm");
-    const errorMsg = document.getElementById("errorMsg");
-
-    const OWNER = "boardwalkclay1@gmail.com";
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      try {
-        // Authenticate with PocketBase
-        const auth = await pb.collection("users").authWithPassword(email, password);
-
-        const user = auth.record;
-
-        // OWNER BYPASS
-        if (user.email === OWNER) {
-          window.location.href = "../dashboard.html";
-          return;
-        }
-
-        // CLIENT LOGIN
-        if (user.role === "client") {
-          window.location.href = "../client/dashboard.html";
-          return;
-        }
-
-        // TREE GUY LOGIN
-        if (user.role === "treeguy") {
-          if (!user.hasPaidAccess) {
-            window.location.href = "paywall.html";
-            return;
-          }
-
-          window.location.href = "../treeguy/dashboard.html";
-          return;
-        }
-
-        // Unknown role fallback
-        errorMsg.textContent = "Your account role is not recognized.";
-
-      } catch (err) {
-        errorMsg.textContent = "Invalid login. Check your email or password.";
-      }
-    });
-  </script>
+  <!-- Load external JS -->
+  <script type="module" src="login.js"></script>
 
 </body>
 </html>
