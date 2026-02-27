@@ -1,4 +1,3 @@
-// paywall.js (FINAL, CLEAN, FIXED)
 import PocketBase from "https://esm.sh/pocketbase@0.21.1";
 
 const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
@@ -8,9 +7,10 @@ const errorMsg = document.getElementById("errorMsg");
 
 const OWNER = "boardwalkclay1@gmail.com";
 
-const LOGIN_URL = "login.html";
-const CREATE_URL = "create-account.html";
-const HOME_URL = "../index.html";
+// Absolute frontend URLs
+const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
+const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
+const HOME_URL = "https://realtreeguy.com/index.html";
 
 init();
 
