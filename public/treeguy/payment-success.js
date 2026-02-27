@@ -7,9 +7,9 @@ const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
 const statusEl = document.getElementById("status");
 const errorEl = document.getElementById("error");
 
-// Paths relative to /public/treeguy/
-const LOGIN_URL = "login.html";
-const CREATE_URL = "create-account.html";
+// Absolute frontend URLs
+const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
+const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
 
 unlock();
 
