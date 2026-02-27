@@ -1,9 +1,42 @@
 // ===============================
-// REAL TREE GUY – CARDS & FLYERS STUDIO
-// Live Preview Engine
+// REAL TREE GUY OS — CARDS & FLYERS STUDIO
+// PocketBase Connected + Auth Enforced + Full Preview Engine
 // ===============================
 
+import PocketBase from "https://esm.sh/pocketbase@0.21.1";
+
+// CONNECT TO POCKETBASE
+const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
+
+// OWNER EMAIL
+const OWNER = "boardwalkclay1@gmail.com";
+
+// ===============================
+// AUTH INIT
+// ===============================
+initAuth();
+
+async function initAuth() {
+  const user = pb.authStore.model;
+
+  if (!user) {
+    window.location.href = "/treeguy/login.html";
+    return;
+  }
+
+  // OWNER BYPASS
+  if (user.email === OWNER) return;
+
+  // ONLY TREE GUYS CAN USE FLYER STUDIO
+  if (user.role !== "treeguy") {
+    alert("Only Tree Guys can access the Cards & Flyers Studio.");
+    window.location.href = "/index.html";
+  }
+}
+
+// ===============================
 // DOM HOOKS
+// ===============================
 const modeCardBtn = document.getElementById("modeCard");
 const modeFlyerBtn = document.getElementById("modeFlyer");
 const modeDoorHangerBtn = document.getElementById("modeDoorHanger");
@@ -136,32 +169,30 @@ function handleImageUpload(inputEl, callback) {
 // PREVIEW UPDATE
 // ===============================
 function updatePreview() {
-  // Text
   previewHeadline.textContent = headlineInput.value || "Your Headline Here";
   previewBody.textContent = bodyInput.value || "Describe your services, what makes you different, and why they should call you.";
   previewOffer.textContent = offerInput.value || "Special Offer or Call to Action";
 
-  // Contact line (placeholder for now)
   previewContact.textContent = "Call / Text: (555) 555‑5555 • RealTreeGuy.com";
 
-  // Colors
   preview.style.backgroundColor = bgColorInput.value;
   preview.style.color = textColorInput.value;
   previewOffer.style.color = accentColorInput.value;
 
-  // Font
   preview.style.fontFamily = fontSelect.value;
 
-  // Background strength
   const strength = parseInt(bgStrength.value, 10) / 100;
   previewBg.style.opacity = strength;
 }
 
 // ===============================
-// ACTIONS
+// SAVE DESIGN TO POCKETBASE
 // ===============================
-saveDesignBtn.addEventListener("click", () => {
+saveDesignBtn.addEventListener("click", async () => {
+  const user = pb.authStore.model;
+
   const design = {
+    owner: user.id,
     mode: modeCardBtn.classList.contains("active")
       ? "card"
       : modeFlyerBtn.classList.contains("active")
@@ -177,17 +208,22 @@ saveDesignBtn.addEventListener("click", () => {
     font: fontSelect.value
   };
 
-  // For now, just store in localStorage
-  localStorage.setItem("rtg_flyer_design", JSON.stringify(design));
-  alert("Design saved locally. (Future: save to Real Tree Guy OS profile)");
+  try {
+    await pb.collection("flyer_designs").create(design);
+    alert("Design saved to your Real Tree Guy OS profile.");
+  } catch (err) {
+    console.error(err);
+    alert("Error saving design. Check PocketBase rules.");
+  }
 });
 
-printFlyerBtn.addEventListener("click", () => {
-  window.print();
-});
+// ===============================
+// ACTION BUTTONS
+// ===============================
+printFlyerBtn.addEventListener("click", () => window.print());
 
 emailFlyerBtn.addEventListener("click", () => {
-  alert("Email feature coming soon. (Hook into Real Tree Guy OS email module.)");
+  alert("Email feature coming soon.");
 });
 
 shareFlyerBtn.addEventListener("click", async () => {
@@ -202,16 +238,12 @@ shareFlyerBtn.addEventListener("click", async () => {
       console.log(e);
     }
   } else {
-    alert("Sharing not supported on this device. Copy the URL or screenshot the flyer.");
+    alert("Sharing not supported on this device.");
   }
 });
 
 fullscreenFlyerBtn.addEventListener("click", () => {
-  if (preview.requestFullscreen) {
-    preview.requestFullscreen();
-  } else {
-    alert("Fullscreen not supported here. Try desktop or a modern mobile browser.");
-  }
+  if (preview.requestFullscreen) preview.requestFullscreen();
 });
 
 // ===============================
