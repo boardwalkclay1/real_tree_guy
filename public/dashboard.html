@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>REAL TREE GUY – Dashboard</title>
+
+  <!-- FIXED FAVICON -->
+  <link rel="icon" type="image/png" href="assets/icons/rtg-192.png">
+
   <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -83,12 +87,10 @@
       color: #6aff6a;
     }
 
-    /* PUSH HEADER DOWN BELOW TOPBAR */
     .rtg-header {
       margin-top: 60px;
     }
 
-    /* MAP SECTION */
     .rtg-map-card {
       max-width: 1100px;
       margin: 40px auto 60px;
@@ -133,27 +135,29 @@
 
 <body>
 
-  <!-- TOP BAR WITH HAMBURGER + RTG ONLINE LINK -->
+  <!-- TOP BAR -->
   <div class="rtg-topbar">
     <div class="rtg-burger" id="rtgBurger">
       <span></span><span></span><span></span>
     </div>
     <div class="rtg-topbar-title">REAL TREE GUY OS</div>
-    <a href="/index.html" class="rtg-topbar-link">RTG Online</a>
+
+    <!-- FIXED -->
+    <a href="index.html" class="rtg-topbar-link">RTG Online</a>
   </div>
 
   <!-- SIDE MENU -->
   <nav class="rtg-sidemenu" id="rtgSidemenu">
-    <a href="/index.html">🏠 RTG Online Home</a>
-    <a href="/treeguy/dashboard.html">🌳 Tree Guy Dashboard</a>
-    <a href="/client/dashboard.html">👤 Client Dashboard</a>
-    <a href="/modules/profile/profile.html">Profile</a>
-    <a href="/modules/customers/customers.html">Customers & Jobs</a>
-    <a href="/modules/measurement/measurement.html">Tree Measurement</a>
-    <a href="/modules/contracts/contracts.html">Contracts</a>
-    <a href="/modules/calendar/calendar.html">Calendar</a>
-    <a href="/modules/flyers/flyers.html">Cards & Flyers</a>
-    <a href="/modules/map/real-tree-map.html">Real Tree Map (Full Screen)</a>
+    <a href="index.html">🏠 RTG Online Home</a>
+    <a href="treeguy/dashboard.html">🌳 Tree Guy Dashboard</a>
+    <a href="client/dashboard.html">👤 Client Dashboard</a>
+    <a href="modules/profile/profile.html">Profile</a>
+    <a href="modules/customers/customers.html">Customers & Jobs</a>
+    <a href="modules/measurement/measurement.html">Tree Measurement</a>
+    <a href="modules/contracts/contracts.html">Contracts</a>
+    <a href="modules/calendar/calendar.html">Calendar</a>
+    <a href="modules/flyers/flyers.html">Cards & Flyers</a>
+    <a href="modules/map/real-tree-map.html">Real Tree Map (Full Screen)</a>
   </nav>
 
   <header class="rtg-header">
@@ -216,7 +220,6 @@
     <p>Real Tree Guy • Modular Static App</p>
   </footer>
 
-  <!-- DASHBOARD JS -->
   <script type="module" src="dashboard.js"></script>
 
 </body>
