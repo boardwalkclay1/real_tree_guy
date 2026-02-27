@@ -10,10 +10,10 @@ const errorMsg = document.getElementById("errorMsg");
 // Constants
 const OWNER = "boardwalkclay1@gmail.com";
 
-// Paths relative to /public/treeguy/
-const PAYWALL_URL = "paywall.html";
-const DASHBOARD_URL = "dashboard.html";
-const CLIENT_DASHBOARD_URL = "../client/dashboard.html";
+// Absolute frontend URLs
+const PAYWALL_URL = "https://realtreeguy.com/treeguy/paywall.html";
+const DASHBOARD_URL = "https://realtreeguy.com/treeguy/dashboard.html";
+const CLIENT_DASHBOARD_URL = "https://realtreeguy.com/client/dashboard.html";
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
