@@ -10,7 +10,13 @@ const enterBtn = document.getElementById("enterOS");
 // OWNER EMAIL
 const OWNER = "boardwalkclay1@gmail.com";
 
-// INIT
+// ABSOLUTE FRONTEND URLS
+const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
+const OWNER_DASHBOARD = "https://realtreeguy.com/dashboard.html";
+const CLIENT_DASHBOARD = "https://realtreeguy.com/client/dashboard.html";
+const TREEGUY_DASHBOARD = "https://realtreeguy.com/treeguy/dashboard.html";
+const TREEGUY_PAYWALL = "https://realtreeguy.com/treeguy/paywall.html";
+
 init();
 
 async function init() {
@@ -48,28 +54,28 @@ function setupEnterButton() {
 
     // Not logged in
     if (!user) {
-      window.location.href = "/treeguy/login.html";
+      window.location.href = LOGIN_URL;
       return;
     }
 
     // OWNER BYPASS
     if (user.email === OWNER) {
-      window.location.href = "/dashboard.html";
+      window.location.href = OWNER_DASHBOARD;
       return;
     }
 
     // CLIENT
     if (user.role === "client") {
-      window.location.href = "/client/dashboard.html";
+      window.location.href = CLIENT_DASHBOARD;
       return;
     }
 
     // TREE GUY
     if (user.role === "treeguy") {
       if (user.hasPaidAccess) {
-        window.location.href = "/treeguy/dashboard.html";
+        window.location.href = TREEGUY_DASHBOARD;
       } else {
-        window.location.href = "/treeguy/paywall.html";
+        window.location.href = TREEGUY_PAYWALL;
       }
     }
   });
