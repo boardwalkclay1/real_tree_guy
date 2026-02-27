@@ -52,58 +52,8 @@
     <div id="errorMsg" class="error"></div>
   </div>
 
-  <script type="module">
-    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
-
-    // CORRECT BACKEND
-    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
-
-    const statusMsg = document.getElementById("statusMsg");
-    const errorMsg = document.getElementById("errorMsg");
-
-    const OWNER = "boardwalkclay1@gmail.com";
-
-    const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
-    const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
-    const HOME_URL = "https://realtreeguy.com/index.html";
-
-    init();
-
-    async function init() {
-      try {
-        await pb.health.check();
-
-        const user = pb.authStore.model;
-        if (!user) return window.location.href = LOGIN_URL;
-
-        // OWNER BYPASS
-        if (user.email === OWNER) {
-          statusMsg.textContent = "Owner bypass active. Redirecting…";
-          return window.location.href = CREATE_URL;
-        }
-
-        // ONLY TREE GUYS CAN BE HERE
-        if (user.role !== "treeguy") {
-          return window.location.href = HOME_URL;
-        }
-
-        // ALREADY PAID
-        if (user.hasPaidAccess) {
-          return window.location.href = CREATE_URL;
-        }
-
-        // PAYMENT CANCELED DETECTION
-        if (window.location.search.includes("cancel")) {
-          statusMsg.textContent = "Payment canceled. You can retry below.";
-        } else {
-          statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
-        }
-
-      } catch (err) {
-        errorMsg.textContent = "Unable to connect to backend.";
-      }
-    }
-  </script>
+  <!-- Load the JS file -->
+  <script type="module" src="paywall.js"></script>
 
 </body>
 </html>
