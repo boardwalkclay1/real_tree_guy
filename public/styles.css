@@ -311,3 +311,19 @@ footer {
   color: #c8f5c8;
   opacity: 0.9;
 }
+/* DESKTOP — full cinematic background */
+body {
+  background: #0d0f0d url("https://raw.githubusercontent.com/boardwalkclay1/real_tree_guy/main/public/assets/icons/rtg-192.png")
+    center center / cover no-repeat;
+  background-attachment: fixed;
+}
+
+/* MOBILE — scale image properly */
+@media (max-width: 768px) {
+  body {
+    background: #0d0f0d url("https://raw.githubusercontent.com/boardwalkclay1/real_tree_guy/main/public/assets/icons/rtg-192.png")
+      center top / contain no-repeat;
+    background-attachment: scroll;
+  }
+}
+
