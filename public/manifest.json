@@ -11,6 +11,18 @@
 
   "icons": [
     {
+      "src": "/assets/icons/rtg-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/rtg-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+
+    {
       "src": "/assets/icons/rtg-logo-72.png",
       "sizes": "72x72",
       "type": "image/png"
@@ -36,11 +48,6 @@
       "type": "image/png"
     },
     {
-      "src": "/assets/icons/rtg-logo-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
       "src": "/assets/icons/rtg-logo-384.png",
       "sizes": "384x384",
       "type": "image/png"
@@ -49,20 +56,6 @@
       "src": "/assets/icons/rtg-logo-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-
-    /* MASKABLE ICONS FOR FULL‑BLEED PHONE DISPLAY */
-    {
-      "src": "/assets/icons/rtg-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/assets/icons/rtg-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ],
 
