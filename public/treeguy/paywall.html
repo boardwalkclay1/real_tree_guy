@@ -7,68 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    body {
-      background: #0d0f0d;
-      color: #e8ffe8;
-      font-family: Arial, sans-serif;
-    }
-
-    .paywall-card {
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 30px;
-      background: rgba(20, 30, 20, 0.9);
-      border-radius: 18px;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(6px);
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 2.6rem;
-      margin-bottom: 10px;
-      color: #caffca;
-    }
-
-    p.subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 25px;
-    }
-
-    ul {
-      margin-left: 20px;
-      line-height: 1.7;
-      font-size: 1.1rem;
-    }
-
-    .qr-wrapper {
-      margin-top: 25px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .qr-wrapper img {
-      width: 220px;
-      height: 220px;
-      border-radius: 16px;
-      box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
-    }
-
-    .info {
-      margin-top: 15px;
-      font-size: 0.95rem;
-      opacity: 0.85;
-      text-align: center;
-    }
-
-    .error {
-      margin-top: 15px;
-      color: #ff8f8f;
-      text-align: center;
-      font-size: 0.95rem;
-    }
+    body { background:#0d0f0d; color:#e8ffe8; font-family:Arial,sans-serif; }
+    .paywall-card { max-width:600px; margin:60px auto; padding:30px; background:rgba(20,30,20,0.9); border-radius:18px; box-shadow:0 0 25px rgba(0,0,0,0.6); }
+    h1 { text-align:center; font-size:2.6rem; color:#caffca; }
+    p.subtitle { text-align:center; font-size:1.2rem; opacity:0.9; }
+    ul { margin-left:20px; line-height:1.7; font-size:1.1rem; }
+    .qr-wrapper { margin-top:25px; display:flex; justify-content:center; }
+    .qr-wrapper img { width:220px; height:220px; border-radius:16px; box-shadow:0 0 18px rgba(0,0,0,0.7); }
+    .info { margin-top:15px; text-align:center; opacity:0.85; }
+    .error { margin-top:15px; color:#ff8f8f; text-align:center; }
   </style>
 </head>
 
@@ -78,30 +25,26 @@
     <h1>Unlock Tree Guy OS</h1>
     <p class="subtitle">One‑time $30 access fee</p>
 
-    <p style="font-size:1.2rem;margin-bottom:20px;">
-      Unlock everything:
-    </p>
+    <p style="font-size:1.2rem;margin-bottom:20px;">Unlock everything:</p>
 
     <ul>
       <li>Tree Guy Dashboard</li>
-      <li>Real Tree Guy Online (social feed)</li>
+      <li>Real Tree Guy Online</li>
       <li>Client leads & bidding</li>
       <li>Contracts, Flyers, Calendar, Map tools</li>
-      <li>Crew connections (climbers, groundsmen, salesmen)</li>
+      <li>Crew connections</li>
     </ul>
 
-    <!-- QR CODE -->
     <div class="qr-wrapper">
-      <img src="/assets/RTG-qrcode.png" alt="PayPal QR Code">
+      <img src="../assets/RTG-qrcode.png" alt="PayPal QR Code">
     </div>
 
-    <!-- PAYPAL BUTTON -->
     <div style="margin-top:25px; text-align:center;">
-      <style>.pp-DSRQ56T7C8XZN{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;line-height:1.25rem;cursor:pointer;}</style>
-      <form action="https://www.paypal.com/ncp/payment/DSRQ56T7C8XZN" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+      <style>.pp-DSRQ56T7C8XZN{text-align:center;border:none;border-radius:0.25rem;min-width:11.625rem;padding:0 2rem;height:2.625rem;font-weight:bold;background-color:#FFD140;color:#000000;font-family:"Helvetica Neue",Arial,sans-serif;font-size:1rem;cursor:pointer;}</style>
+      <form action="https://www.paypal.com/ncp/payment/DSRQ56T7C8XZN" method="post" target="_blank" style="display:inline-grid;gap:0.5rem;">
         <input class="pp-DSRQ56T7C8XZN" type="submit" value="Buy Now" />
         <img src="https://www.paypalobjects.com/images/Debit_Credit_APM.svg" alt="cards" />
-        <section style="font-size: 0.75rem;"> Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:0.875rem;vertical-align:middle;"/></section>
+        <section style="font-size:0.75rem;">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" style="height:0.875rem;"/></section>
       </form>
     </div>
 
@@ -113,11 +56,8 @@
     import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.esm.js";
 
     const pb = new PocketBase("https://pocketbase-production-f2f5.up.railway.app");
-
     const statusMsg = document.getElementById("statusMsg");
     const errorMsg = document.getElementById("errorMsg");
-
-    let currentUser = null;
 
     init();
 
@@ -125,28 +65,15 @@
       try {
         await pb.health.check();
 
-        currentUser = pb.authStore.model;
-        if (!currentUser) {
-          statusMsg.textContent = "Please log in first.";
-          window.location.href = "login.html";
-          return;
-        }
+        const user = pb.authStore.model;
+        if (!user) return window.location.href = "login.html";
 
-        if (currentUser.role !== "treeguy") {
-          statusMsg.textContent = "Only Tree Guy accounts can unlock this OS.";
-          window.location.href = "../index.html";
-          return;
-        }
+        if (user.role !== "treeguy") return window.location.href = "../index.html";
 
-        if (currentUser.hasPaidAccess) {
-          statusMsg.textContent = "Access already unlocked. Redirecting…";
-          window.location.href = "create-account.html";
-          return;
-        }
+        if (user.hasPaidAccess) return window.location.href = "create-account.html";
 
         statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
-      } catch (err) {
-        console.error(err);
+      } catch {
         errorMsg.textContent = "Unable to connect to backend.";
       }
     }
