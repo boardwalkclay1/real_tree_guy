@@ -6,7 +6,7 @@ const pb = new PocketBase(PB_URL);
 // =========================
 // PAGE GUARD
 // =========================
-RTG.requireTreeGuyPaid("/treeguy/paywall.html");
+RTG.requireTreeGuyPaid("https://realtreeguy.com/treeguy/paywall.html");
 
 // =========================
 // ELEMENTS
@@ -44,7 +44,7 @@ form.addEventListener("submit", async (e) => {
       password,
       passwordConfirm: password,
       role: "treeguy",
-      hasPaidAccess: true, // already paid at paywall
+      hasPaidAccess: true,
       businessName,
       phone,
       city,
@@ -60,7 +60,7 @@ form.addEventListener("submit", async (e) => {
     setStatus("Account created! Redirecting…", "green");
 
     setTimeout(() => {
-      window.location.href = "/treeguy/dashboard.html";
+      window.location.href = "https://realtreeguy.com/treeguy/dashboard.html";
     }, 800);
 
   } catch (err) {
