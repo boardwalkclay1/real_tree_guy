@@ -1,48 +1,77 @@
-import PocketBase from "https://esm.sh/pocketbase@0.21.1";
+<script type="module">
+  const API = window.API_URL;
 
-// Backend API only
-const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
+  const statusEl = document.getElementById("status");
+  const errorEl = document.getElementById("error");
 
-// DOM
-const statusEl = document.getElementById("status");
-const errorEl = document.getElementById("error");
+  const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
+  const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
 
-// Absolute frontend URLs
-const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
-const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
-
-unlock();
-
-async function unlock() {
-  try {
-    await pb.health.check();
-
-    const user = pb.authStore.model;
-    if (!user) return (window.location.href = LOGIN_URL);
-
-    // Record the payment
-    await pb.collection("payments").create({
-      user: user.id,
-      amount: 30,
-      type: "treeguy_access",
-      status: "paypal_success_redirect"
-    });
-
-    // Unlock access
-    const updated = await pb.collection("users").update(user.id, {
-      hasPaidAccess: true
-    });
-
-    // Save updated auth state
-    pb.authStore.save(pb.authStore.token, updated);
-
-    statusEl.textContent = "Access unlocked! Redirecting…";
-
-    setTimeout(() => {
-      window.location.href = CREATE_URL;
-    }, 1200);
-
-  } catch (err) {
-    errorEl.textContent = "Error unlocking your access.";
+  // =========================
+  // AUTH HELPERS
+  // =========================
+  function getToken() {
+    return localStorage.getItem("token");
   }
-}
+
+  async function getUser() {
+    const token = getToken();
+    if (!token) return null;
+
+    try {
+      const res = await fetch(`${API}/api/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) return null;
+      return res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  // =========================
+  // UNLOCK ACCESS
+  // =========================
+  unlock();
+
+  async function unlock() {
+    try {
+      const user = await getUser();
+
+      // Not logged in
+      if (!user) {
+        window.location.href = LOGIN_URL;
+        return;
+      }
+
+      // Record payment + unlock access in backend
+      const res = await fetch(`${API}/api/payments/unlock-treeguy`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({
+          amount: 30,
+          type: "treeguy_access",
+          status: "paypal_success_redirect"
+        })
+      });
+
+      if (!res.ok) {
+        errorEl.textContent = "Error unlocking your access.";
+        return;
+      }
+
+      statusEl.textContent = "Access unlocked! Redirecting…";
+
+      setTimeout(() => {
+        window.location.href = CREATE_URL;
+      }, 1200);
+
+    } catch (err) {
+      errorEl.textContent = "Error unlocking your access.";
+    }
+  }
+</script>
