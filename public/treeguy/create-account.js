@@ -1,38 +1,37 @@
-<script type="module">
-  const API = window.API_URL;
+const API = window.API_URL;
 
-  // =========================
-  // PAGE GUARD
-  // =========================
-  async function requireTreeGuyPaid(redirect) {
-    const token = localStorage.getItem("token");
-    if (!token) {
+// =========================
+// PAGE GUARD
+// =========================
+async function requireTreeGuyPaid(redirect) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = redirect;
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
       window.location.href = redirect;
       return;
     }
 
-    try {
-      const res = await fetch(`${API}/api/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    const user = await res.json();
 
-      if (!res.ok) {
-        window.location.href = redirect;
-        return;
-      }
+    if (user.email === "boardwalkclay1@gmail.com") return;
+    if (user.role !== "treeguy") window.location.href = redirect;
+    if (!user.hasPaidAccess) window.location.href = redirect;
 
-      const user = await res.json();
-
-      if (user.email === "boardwalkclay1@gmail.com") return;
-      if (user.role !== "treeguy") window.location.href = redirect;
-      if (!user.hasPaidAccess) window.location.href = redirect;
-
-    } catch {
-      window.location.href = redirect;
-    }
+  } catch {
+    window.location.href = redirect;
   }
+}
 
-  await requireTreeGuyPaid("https://realtreeguy.com/treeguy/paywall.html");
+await requireTreeGuyPaid("/treeguy/paywall.html");
 
   // =========================
   // ELEMENTS
@@ -92,7 +91,7 @@
       setStatus("Account created! Redirecting…", "green");
 
       setTimeout(() => {
-        window.location.href = "https://realtreeguy.com/treeguy/dashboard.html";
+        window.location.href = "/treeguy/dashboard.html";
       }, 800);
 
     } catch (err) {
@@ -100,4 +99,4 @@
       setStatus("Error creating account. Try again.", "red");
     }
   });
-</script>
+

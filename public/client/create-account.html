@@ -118,10 +118,9 @@
     </form>
   </div>
 
+  <script>window.API_URL = "";</script>
   <script type="module">
-    import PocketBase from "https://esm.sh/pocketbase@0.21.1";
-
-    const pb = new PocketBase("https://realtreeguy-production.up.railway.app");
+    const API = window.API_URL;
 
     const form = document.getElementById("clientForm");
     const errorMsg = document.getElementById("errorMsg");
@@ -137,22 +136,27 @@
       const state = document.getElementById("state").value.trim();
 
       try {
-        await pb.collection("users").create({
-          email,
-          password,
-          passwordConfirm: password,
-          role: "client",
-          name,
-          phone,
-          city,
-          state
+        const res = await fetch(`${API}/api/register/client`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name, phone, city, state })
         });
 
-        await pb.collection("users").authWithPassword(email, password);
+        if (!res.ok) {
+          let errMsg = "Error creating account. Check your info and try again.";
+          try {
+            const data = await res.json();
+            if (data.error) errMsg = data.error;
+          } catch (_) { /* ignore JSON parse errors */ }
+          errorMsg.textContent = errMsg;
+          return;
+        }
 
-        window.location.href = "dashboard.html";
+        const data = await res.json();
+        localStorage.setItem("token", data.token);
+        window.location.href = "/client/dashboard.html";
       } catch (err) {
-        errorMsg.textContent = "Error creating account. Check your info and try again.";
+        errorMsg.textContent = "Error creating account. Try again.";
       }
     });
   </script>

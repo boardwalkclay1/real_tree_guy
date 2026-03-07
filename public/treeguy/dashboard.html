@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tree Guy Dashboard – Real Tree Guy OS</title>
+  <link rel="icon" type="image/png" href="../assets/icons/rtg-192.png">
+  <link rel="stylesheet" href="../styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    .rtg-topbar {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 10000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(0,0,0,0.55);
+      border-bottom: 2px solid #2e6b33;
+      backdrop-filter: blur(10px);
+    }
+    .rtg-topbar-title { font-size: 1.2rem; font-weight: 800; color: #caffca; }
+    .rtg-topbar-link { font-size: 0.95rem; color: #a8f5a8; text-decoration: none; font-weight: 600; }
+    .rtg-burger { width: 32px; height: 24px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+    .rtg-burger span { display: block; height: 3px; border-radius: 999px; background: #caffca; }
+    .rtg-sidemenu {
+      position: fixed; top: 0; left: -260px; width: 240px; height: 100vh;
+      background: rgba(0,0,0,0.9); border-right: 2px solid #2e6b33;
+      padding: 60px 16px 20px; box-shadow: 4px 0 18px rgba(0,0,0,0.7);
+      transition: left 0.25s ease; z-index: 9999;
+    }
+    .rtg-sidemenu.open { left: 0; }
+    .rtg-sidemenu a { display: block; margin-bottom: 14px; color: #d8ffd8; text-decoration: none; font-weight: 600; font-size: 0.98rem; }
+    .rtg-sidemenu a:hover { color: #6aff6a; }
+    .rtg-header { margin-top: 70px; text-align: center; padding: 20px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .dash-card { background: rgba(20,40,20,0.85); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid #2e6b33; box-shadow: 0 0 14px rgba(0,0,0,0.4); }
+    .dash-card a { display: block; margin-top: 14px; padding: 12px; background: linear-gradient(135deg,#3fa63f,#2d7a2d); color: #fff; border-radius: 999px; text-decoration: none; font-weight: bold; font-size: 1rem; }
+    .dash-card a:hover { background: linear-gradient(135deg,#5fd65f,#2d7a2d); }
+    .dash-card h3 { font-size: 1.3rem; color: #caffca; margin-bottom: 6px; }
+    .dash-card p { font-size: 0.95rem; opacity: 0.85; }
+    .welcome-bar { text-align: center; font-size: 1.1rem; color: #a8ffa8; margin-top: 10px; }
+    .logout-btn { margin: 10px 0; padding: 8px 20px; background: transparent; border: 1px solid #a8ffa8; border-radius: 999px; color: #a8ffa8; cursor: pointer; font-size: 0.9rem; }
+    .logout-btn:hover { background: rgba(255,255,255,0.08); }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="rtg-topbar">
+    <div class="rtg-burger" id="rtgBurger">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="rtg-topbar-title">REAL TREE GUY OS</div>
+    <a href="../index.html" class="rtg-topbar-link">RTG Online</a>
+  </div>
+
+  <!-- SIDE MENU -->
+  <nav class="rtg-sidemenu" id="rtgSidemenu">
+    <a href="../index.html">🏠 RTG Online Home</a>
+    <a href="../modules/profile/profile.html">👤 Profile</a>
+    <a href="../modules/customers/customers.html">🌳 Customers &amp; Jobs</a>
+    <a href="../modules/measurement/measurement.html">📐 Tree Measurement</a>
+    <a href="../modules/contracts/contracts.html">📄 Contracts</a>
+    <a href="../modules/calendar/calendar.html">📅 Calendar</a>
+    <a href="../modules/flyers/flyers.html">🖼 Cards &amp; Flyers</a>
+    <a href="../modules/map/real-tree-map.html">🗺 Real Tree Map</a>
+  </nav>
+
+  <header class="rtg-header">
+    <h1 class="rtg-title">REAL TREE GUY OS</h1>
+    <p class="rtg-subtitle">Your Professional Tree Work Operating System</p>
+    <div class="welcome-bar" id="welcomeBar">Loading…</div>
+    <button class="logout-btn" id="logoutBtn">Log Out</button>
+  </header>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid">
+    <div class="dash-card">
+      <h3>👤 Profile</h3>
+      <p>Manage your business info, bio, and service area.</p>
+      <a href="../modules/profile/profile.html">Open Profile</a>
+    </div>
+    <div class="dash-card">
+      <h3>🌳 Customers &amp; Jobs</h3>
+      <p>View client leads, bids, and active jobs.</p>
+      <a href="../modules/customers/customers.html">View Jobs</a>
+    </div>
+    <div class="dash-card">
+      <h3>📐 Tree Measurement</h3>
+      <p>Use our precision measurement tools for estimates.</p>
+      <a href="../modules/measurement/measurement.html">Open Tool</a>
+    </div>
+    <div class="dash-card">
+      <h3>📄 Contracts</h3>
+      <p>Generate and manage job contracts.</p>
+      <a href="../modules/contracts/contracts.html">Open Contracts</a>
+    </div>
+    <div class="dash-card">
+      <h3>📅 Calendar</h3>
+      <p>Schedule and track your tree work appointments.</p>
+      <a href="../modules/calendar/calendar.html">Open Calendar</a>
+    </div>
+    <div class="dash-card">
+      <h3>🖼 Cards &amp; Flyers</h3>
+      <p>Create professional marketing materials.</p>
+      <a href="../modules/flyers/flyers.html">Create Flyers</a>
+    </div>
+    <div class="dash-card">
+      <h3>🗺 Real Tree Map</h3>
+      <p>Find nearby suppliers, dumps, and hardware stores.</p>
+      <a href="../modules/map/real-tree-map.html">Open Map</a>
+    </div>
+  </div>
+
+  <footer class="rtg-footer">
+    <p>Real Tree Guy • Built for the Ones Who Really Do the Work</p>
+  </footer>
+
+  <script>window.API_URL = "";</script>
+  <script type="module">
+    const API = window.API_URL;
+
+    function getToken() { return localStorage.getItem("token"); }
+
+    async function getUser() {
+      const token = getToken();
+      if (!token) return null;
+      try {
+        const res = await fetch(`${API}/api/me`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) return null;
+        return res.json();
+      } catch { return null; }
+    }
+
+    // Burger menu
+    document.getElementById("rtgBurger").addEventListener("click", () => {
+      document.getElementById("rtgSidemenu").classList.toggle("open");
+    });
+
+    // Auth check
+    const user = await getUser();
+    if (!user) {
+      window.location.href = "/treeguy/login.html";
+    } else {
+      document.getElementById("welcomeBar").textContent = `Welcome, ${user.email}`;
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "/treeguy/login.html";
+    });
+  </script>
+
+</body>
+</html>

@@ -1,11 +1,10 @@
-<script type="module">
-  const API = window.API_URL;
+const API = window.API_URL;
 
-  const statusEl = document.getElementById("status");
-  const errorEl = document.getElementById("error");
+const statusEl = document.getElementById("status");
+const errorEl = document.getElementById("error");
 
-  const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
-  const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
+const LOGIN_URL = "/treeguy/login.html";
+const CREATE_URL = "/treeguy/create-account.html";
 
   // =========================
   // AUTH HELPERS
@@ -74,4 +73,4 @@
       errorEl.textContent = "Error unlocking your access.";
     }
   }
-</script>
+
