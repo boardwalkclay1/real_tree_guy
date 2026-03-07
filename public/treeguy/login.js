@@ -1,17 +1,16 @@
-<script type="module">
-  const API = window.API_URL;
+const API = window.API_URL;
 
-  // DOM
-  const form = document.getElementById("loginForm");
-  const errorMsg = document.getElementById("errorMsg");
+// DOM
+const form = document.getElementById("loginForm");
+const errorMsg = document.getElementById("errorMsg");
 
-  // OWNER EMAIL
-  const OWNER = "boardwalkclay1@gmail.com";
+// OWNER EMAIL
+const OWNER = "boardwalkclay1@gmail.com";
 
-  // ABSOLUTE FRONTEND URLS
-  const PAYWALL_URL = "https://realtreeguy.com/treeguy/paywall.html";
-  const DASHBOARD_URL = "https://realtreeguy.com/treeguy/dashboard.html";
-  const CLIENT_DASHBOARD_URL = "https://realtreeguy.com/client/dashboard.html";
+// ABSOLUTE FRONTEND URLS
+const PAYWALL_URL = "/treeguy/paywall.html";
+const DASHBOARD_URL = "/treeguy/dashboard.html";
+const CLIENT_DASHBOARD_URL = "/client/dashboard.html";
 
   // =========================
   // LOGIN HANDLER
@@ -72,4 +71,4 @@
       errorMsg.textContent = "Login failed. Try again.";
     }
   });
-</script>
+

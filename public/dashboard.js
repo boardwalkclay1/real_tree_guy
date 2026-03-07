@@ -1,8 +1,7 @@
-<script type="module">
-  // =========================
-  // API + AUTH
-  // =========================
-  const API = window.API_URL;
+// =========================
+// API + AUTH
+// =========================
+const API = window.API_URL;
 
   function getToken() {
     return localStorage.getItem("token");
@@ -97,4 +96,4 @@
       updateMapWithType(type);
     });
   });
-</script>
+

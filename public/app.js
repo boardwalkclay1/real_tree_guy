@@ -1,7 +1,6 @@
-<script type="module">
-  const API = window.API_URL; 
-  const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
-  const OWNER_EMAIL = "boardwalkclay1@gmail.com";
+const API = window.API_URL;
+const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
+const OWNER_EMAIL = "boardwalkclay1@gmail.com";
 
   // =========================
   // AUTH + USER
@@ -164,4 +163,3 @@
     updateStatus,
     setToken
   };
-</script>

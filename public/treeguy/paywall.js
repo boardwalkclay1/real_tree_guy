@@ -1,15 +1,14 @@
-<script type="module">
-  const API = window.API_URL;
+const API = window.API_URL;
 
-  const statusMsg = document.getElementById("statusMsg");
-  const errorMsg = document.getElementById("errorMsg");
+const statusMsg = document.getElementById("statusMsg");
+const errorMsg = document.getElementById("errorMsg");
 
-  const OWNER = "boardwalkclay1@gmail.com";
+const OWNER = "boardwalkclay1@gmail.com";
 
-  // Absolute frontend URLs
-  const LOGIN_URL = "https://realtreeguy.com/treeguy/login.html";
-  const CREATE_URL = "https://realtreeguy.com/treeguy/create-account.html";
-  const HOME_URL = "https://realtreeguy.com/index.html";
+// Absolute frontend URLs
+const LOGIN_URL = "/treeguy/login.html";
+const CREATE_URL = "/treeguy/create-account.html";
+const HOME_URL = "/index.html";
 
   // =========================
   // AUTH HELPERS
@@ -79,4 +78,4 @@
       errorMsg.textContent = "Unable to connect to backend.";
     }
   }
-</script>
+

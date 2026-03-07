@@ -1,20 +1,16 @@
-<script type="module">
-  const API = window.API_URL; 
-  const OWNER = "boardwalkclay1@gmail.com";
+const API = window.API_URL;
+const OWNER = "boardwalkclay1@gmail.com";
 
-  // UI
-  const statusEl = document.getElementById("loginStatus");
-  const enterBtn = document.getElementById("enterOS");
+// UI
+const statusEl = document.getElementById("loginStatus");
+const enterBtn = document.getElementById("enterOS");
 
-  // FRONTEND ROOT
-  const FRONTEND = "https://realtreeguy-production.up.railway.app";
-
-  // ABSOLUTE ROUTES
-  const LOGIN_URL = `${FRONTEND}/treeguy/login.html`;
-  const OWNER_DASHBOARD = `${FRONTEND}/dashboard.html`;
-  const CLIENT_DASHBOARD = `${FRONTEND}/client/dashboard.html`;
-  const TREEGUY_DASHBOARD = `${FRONTEND}/treeguy/dashboard.html`;
-  const TREEGUY_PAYWALL = `${FRONTEND}/treeguy/paywall.html`;
+// ABSOLUTE ROUTES
+const LOGIN_URL = "/treeguy/login.html";
+const OWNER_DASHBOARD = "/dashboard.html";
+const CLIENT_DASHBOARD = "/client/dashboard.html";
+const TREEGUY_DASHBOARD = "/treeguy/dashboard.html";
+const TREEGUY_PAYWALL = "/treeguy/paywall.html";
 
   // =========================
   // AUTH HELPERS
@@ -116,4 +112,4 @@
       }
     });
   }
-</script>
+
