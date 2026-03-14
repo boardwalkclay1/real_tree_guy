@@ -17,19 +17,27 @@ form.addEventListener("submit", async (e) => {
 
   const user = await getUser(email);
 
-  if (!user || user.password !== password) {
+  // USER NOT FOUND
+  if (!user) {
+    errorMsg.textContent = "Invalid login. Check your email or password.";
+    return;
+  }
+
+  // OWNER BYPASS — NO PASSWORD REQUIRED
+  if (user.email === OWNER) {
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    window.location.href = DASHBOARD_URL;
+    return;
+  }
+
+  // NORMAL USERS MUST MATCH PASSWORD
+  if (user.password !== password) {
     errorMsg.textContent = "Invalid login. Check your email or password.";
     return;
   }
 
   // Save session
   localStorage.setItem("currentUser", JSON.stringify(user));
-
-  // OWNER BYPASS
-  if (user.email === OWNER) {
-    window.location.href = DASHBOARD_URL;
-    return;
-  }
 
   // CLIENT LOGIN
   if (user.role === "client") {
