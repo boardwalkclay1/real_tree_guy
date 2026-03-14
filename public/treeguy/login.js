@@ -1,74 +1,66 @@
-const API = window.API_URL;
+// =========================
+// STATIC AUTH (GitHub Pages)
+// =========================
+
+// OWNER EMAIL
+const OWNER = "boardwalkclay1@gmail.com";
 
 // DOM
 const form = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
 
-// OWNER EMAIL
-const OWNER = "boardwalkclay1@gmail.com";
-
-// ABSOLUTE FRONTEND URLS
+// FRONTEND ROUTES
 const PAYWALL_URL = "/treeguy/paywall.html";
 const DASHBOARD_URL = "/treeguy/dashboard.html";
 const CLIENT_DASHBOARD_URL = "/client/dashboard.html";
 
-  // =========================
-  // LOGIN HANDLER
-  // =========================
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+// Load users from localStorage
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users") || "[]");
+}
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+// =========================
+// LOGIN HANDLER
+// =========================
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    try {
-      // POST to Node backend
-      const res = await fetch(`${API}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-      if (!res.ok) {
-        errorMsg.textContent = "Invalid login. Check your email or password.";
-        return;
-      }
+  const users = getUsers();
+  const user = users.find(u => u.email === email && u.password === password);
 
-      const data = await res.json();
+  if (!user) {
+    errorMsg.textContent = "Invalid login. Check your email or password.";
+    return;
+  }
 
-      // Save JWT
-      localStorage.setItem("token", data.token);
+  // Save session
+  localStorage.setItem("currentUser", JSON.stringify(user));
 
-      const user = data.user;
+  // OWNER BYPASS
+  if (user.email === OWNER) {
+    window.location.href = DASHBOARD_URL;
+    return;
+  }
 
-      // OWNER BYPASS
-      if (user.email === OWNER) {
-        window.location.href = DASHBOARD_URL;
-        return;
-      }
+  // CLIENT LOGIN
+  if (user.role === "client") {
+    window.location.href = CLIENT_DASHBOARD_URL;
+    return;
+  }
 
-      // CLIENT LOGIN
-      if (user.role === "client") {
-        window.location.href = CLIENT_DASHBOARD_URL;
-        return;
-      }
-
-      // TREE GUY LOGIN
-      if (user.role === "treeguy") {
-        if (!user.hasPaidAccess) {
-          window.location.href = PAYWALL_URL;
-          return;
-        }
-
-        window.location.href = DASHBOARD_URL;
-        return;
-      }
-
-      // Unknown role fallback
-      errorMsg.textContent = "Your account role is not recognized.";
-
-    } catch (err) {
-      errorMsg.textContent = "Login failed. Try again.";
+  // TREE GUY LOGIN
+  if (user.role === "treeguy") {
+    if (!user.hasPaidAccess) {
+      window.location.href = PAYWALL_URL;
+      return;
     }
-  });
 
+    window.location.href = DASHBOARD_URL;
+    return;
+  }
+
+  errorMsg.textContent = "Your account role is not recognized.";
+});
