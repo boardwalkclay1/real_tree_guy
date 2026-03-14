@@ -1,6 +1,11 @@
 import { getUser } from "../db.js";
 
-const OWNER = "boardwalkclay1@gmail.com";
+// =========================
+// INSERT YOUR EMAIL + PASSWORD HERE
+// =========================
+const OWNER_EMAIL = "boardwalkclay1@gmail.com";   // <-- YOUR EMAIL
+const OWNER_PASSWORD = "Always/6";                // <-- YOUR PASSWORD
+// =================================================
 
 const form = document.getElementById("loginForm");
 const errorMsg = document.getElementById("errorMsg");
@@ -15,23 +20,28 @@ form.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  const user = await getUser(email);
+  // =========================
+  // OWNER FORCE ENTRY
+  // =========================
+  if (email === OWNER_EMAIL && password === OWNER_PASSWORD) {
+    const ownerUser = {
+      email: OWNER_EMAIL,
+      password: OWNER_PASSWORD,
+      role: "treeguy",
+      hasPaidAccess: true
+    };
 
-  // USER NOT FOUND
-  if (!user) {
-    errorMsg.textContent = "Invalid login. Check your email or password.";
-    return;
-  }
-
-  // OWNER BYPASS — NO PASSWORD REQUIRED
-  if (user.email === OWNER) {
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("currentUser", JSON.stringify(ownerUser));
     window.location.href = DASHBOARD_URL;
     return;
   }
 
-  // NORMAL USERS MUST MATCH PASSWORD
-  if (user.password !== password) {
+  // =========================
+  // NORMAL USER LOGIN
+  // =========================
+  const user = await getUser(email);
+
+  if (!user || user.password !== password) {
     errorMsg.textContent = "Invalid login. Check your email or password.";
     return;
   }
