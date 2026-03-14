@@ -1,4 +1,6 @@
-const API = window.API_URL;
+// paywall.js — Static GitHub Pages + IndexedDB Auth
+
+import { getUser, saveUser } from "../db.js";
 
 const statusMsg = document.getElementById("statusMsg");
 const errorMsg = document.getElementById("errorMsg");
@@ -10,72 +12,54 @@ const LOGIN_URL = "/treeguy/login.html";
 const CREATE_URL = "/treeguy/create-account.html";
 const HOME_URL = "/index.html";
 
-  // =========================
-  // AUTH HELPERS
-  // =========================
-  function getToken() {
-    return localStorage.getItem("token");
-  }
+// =========================
+// INIT
+// =========================
+init();
 
-  async function getUser() {
-    const token = getToken();
-    if (!token) return null;
-
-    try {
-      const res = await fetch(`${API}/api/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.ok) return null;
-      return res.json();
-    } catch {
-      return null;
+async function init() {
+  try {
+    // Load session
+    const session = JSON.parse(localStorage.getItem("currentUser"));
+    if (!session) {
+      window.location.href = LOGIN_URL;
+      return;
     }
-  }
 
-  // =========================
-  // INIT
-  // =========================
-  init();
-
-  async function init() {
-    try {
-      const user = await getUser();
-
-      // Not logged in
-      if (!user) {
-        window.location.href = LOGIN_URL;
-        return;
-      }
-
-      // OWNER BYPASS
-      if (user.email === OWNER) {
-        statusMsg.textContent = "Owner bypass active. Redirecting…";
-        window.location.href = CREATE_URL;
-        return;
-      }
-
-      // NOT A TREE GUY → send home
-      if (user.role !== "treeguy") {
-        window.location.href = HOME_URL;
-        return;
-      }
-
-      // ALREADY PAID → send to create account
-      if (user.hasPaidAccess) {
-        window.location.href = CREATE_URL;
-        return;
-      }
-
-      // Payment canceled
-      if (window.location.search.includes("cancel")) {
-        statusMsg.textContent = "Payment canceled. You can retry below.";
-      } else {
-        statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
-      }
-
-    } catch (err) {
-      errorMsg.textContent = "Unable to connect to backend.";
+    // Load full user record from IndexedDB
+    const user = await getUser(session.email);
+    if (!user) {
+      window.location.href = LOGIN_URL;
+      return;
     }
-  }
 
+    // OWNER BYPASS
+    if (user.email === OWNER) {
+      statusMsg.textContent = "Owner bypass active. Redirecting…";
+      window.location.href = CREATE_URL;
+      return;
+    }
+
+    // NOT A TREE GUY → send home
+    if (user.role !== "treeguy") {
+      window.location.href = HOME_URL;
+      return;
+    }
+
+    // ALREADY PAID → send to create account
+    if (user.hasPaidAccess) {
+      window.location.href = CREATE_URL;
+      return;
+    }
+
+    // Payment canceled
+    if (window.location.search.includes("cancel")) {
+      statusMsg.textContent = "Payment canceled. You can retry below.";
+    } else {
+      statusMsg.textContent = "Scan the QR code or tap Buy Now to pay.";
+    }
+
+  } catch (err) {
+    errorMsg.textContent = "Unable to load your account.";
+  }
+}
