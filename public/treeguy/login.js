@@ -29,21 +29,33 @@ form.addEventListener("submit", (e) => {
   const password = document.getElementById("password").value.trim();
 
   const users = getUsers();
-  const user = users.find(u => u.email === email && u.password === password);
+  const user = users.find(u => u.email === email);
 
+  // USER NOT FOUND
   if (!user) {
+    errorMsg.textContent = "Invalid login. Check your email or password.";
+    return;
+  }
+
+  // =========================
+  // OWNER BYPASS — NO PASSWORD REQUIRED
+  // =========================
+  if (user.email === OWNER) {
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    window.location.href = DASHBOARD_URL;
+    return;
+  }
+
+  // =========================
+  // NORMAL USERS REQUIRE PASSWORD
+  // =========================
+  if (user.password !== password) {
     errorMsg.textContent = "Invalid login. Check your email or password.";
     return;
   }
 
   // Save session
   localStorage.setItem("currentUser", JSON.stringify(user));
-
-  // OWNER BYPASS
-  if (user.email === OWNER) {
-    window.location.href = DASHBOARD_URL;
-    return;
-  }
 
   // CLIENT LOGIN
   if (user.role === "client") {
