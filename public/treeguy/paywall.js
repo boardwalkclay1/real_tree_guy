@@ -21,6 +21,17 @@ async function init() {
   try {
     // Load session
     const session = JSON.parse(localStorage.getItem("currentUser"));
+
+    // =========================
+    // OWNER ALWAYS GETS IN — EVEN IF SESSION IS BROKEN
+    // =========================
+    if (session && session.email === OWNER) {
+      statusMsg.textContent = "Owner bypass active. Redirecting…";
+      window.location.href = CREATE_URL;
+      return;
+    }
+
+    // If no session and not owner → login
     if (!session) {
       window.location.href = LOGIN_URL;
       return;
@@ -28,12 +39,21 @@ async function init() {
 
     // Load full user record from IndexedDB
     const user = await getUser(session.email);
+
+    // If IndexedDB fails but session email is owner → still bypass
+    if (!user && session.email === OWNER) {
+      statusMsg.textContent = "Owner bypass active. Redirecting…";
+      window.location.href = CREATE_URL;
+      return;
+    }
+
+    // If user missing and not owner → login
     if (!user) {
       window.location.href = LOGIN_URL;
       return;
     }
 
-    // OWNER BYPASS
+    // OWNER BYPASS (normal path)
     if (user.email === OWNER) {
       statusMsg.textContent = "Owner bypass active. Redirecting…";
       window.location.href = CREATE_URL;
@@ -60,6 +80,13 @@ async function init() {
     }
 
   } catch (err) {
+    // FINAL OWNER SAFETY NET
+    const session = JSON.parse(localStorage.getItem("currentUser"));
+    if (session && session.email === OWNER) {
+      window.location.href = CREATE_URL;
+      return;
+    }
+
     errorMsg.textContent = "Unable to load your account.";
   }
 }
