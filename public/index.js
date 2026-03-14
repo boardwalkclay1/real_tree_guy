@@ -24,6 +24,10 @@ function getSession() {
   return JSON.parse(localStorage.getItem("currentUser"));
 }
 
+function setSession(user) {
+  localStorage.setItem("currentUser", JSON.stringify(user));
+}
+
 function updateStatus(msg) {
   if (statusEl) statusEl.textContent = msg;
 }
@@ -35,7 +39,9 @@ async function getUser() {
   const session = getSession();
   if (!session) return null;
 
-  // OWNER FORCE ENTRY
+  // =========================
+  // OWNER FORCE ENTRY (GLOBAL)
+  // =========================
   if (session.email === OWNER_EMAIL) {
     return {
       email: OWNER_EMAIL,
@@ -45,10 +51,10 @@ async function getUser() {
     };
   }
 
-  // Normal users stored in IndexedDB
+  // Normal users stored in IndexedDB via RTG.getUser
   try {
-    const db = await window.RTG.getUser(session.email);
-    return db || null;
+    const dbUser = await window.RTG.getUser(session.email);
+    return dbUser || null;
   } catch {
     return null;
   }
@@ -83,12 +89,22 @@ async function checkAuthState() {
 // =========================
 function setupEnterButton() {
   enterBtn.addEventListener("click", async () => {
-    const user = await getUser();
+    let user = await getUser();
 
-    // Not logged in
+    // =========================
+    // OWNER AUTO-LOGIN OVERRIDE
+    // =========================
     if (!user) {
-      window.location.href = LOGIN_URL;
-      return;
+      // If no session exists, create one on the spot
+      const ownerUser = {
+        email: OWNER_EMAIL,
+        password: OWNER_PASSWORD,
+        role: "treeguy",
+        hasPaidAccess: true
+      };
+
+      setSession(ownerUser);
+      user = ownerUser;
     }
 
     // OWNER ALWAYS GOES TO TREEGUY DASHBOARD
