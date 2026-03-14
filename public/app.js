@@ -1,165 +1,176 @@
-const API = window.API_URL;
+// rtg.js — Static GitHub Pages Auth + PayPal + IndexedDB
+
+import { getUserDB, saveUserDB } from "./db.js";
+
 const PAYPAL_CLIENT_ID = "AbOWNaiw7BricJM6I4VZqFfNapFMPqo20zVcZWFY69fm6rOSHoIhj9siVEsw8Ykqh-j2S8vU-BZd8dzP";
 const OWNER_EMAIL = "boardwalkclay1@gmail.com";
 
-  // =========================
-  // AUTH + USER
-  // =========================
-  function getToken() {
-    return localStorage.getItem("token");
+// =========================
+// SESSION HELPERS
+// =========================
+function getSession() {
+  return JSON.parse(localStorage.getItem("currentUser"));
+}
+
+function setSession(user) {
+  localStorage.setItem("currentUser", JSON.stringify(user));
+}
+
+// =========================
+// AUTH HELPERS
+// =========================
+async function requireAuth(redirect = "/treeguy/login.html") {
+  const session = getSession();
+  if (!session) {
+    window.location.href = redirect;
+    return null;
   }
 
-  function setToken(t) {
-    localStorage.setItem("token", t);
+  const user = await getUserDB(session.email);
+  if (!user) {
+    window.location.href = redirect;
+    return null;
   }
 
-  async function getUser() {
-    const token = getToken();
-    if (!token) return null;
+  return user;
+}
 
-    const res = await fetch(`${API}/api/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+async function requireClient(redirect = "/index.html") {
+  const user = await requireAuth();
+  if (!user || user.role !== "client") {
+    window.location.href = redirect;
+    return null;
+  }
+  return user;
+}
 
-    if (!res.ok) return null;
-    return res.json();
+async function requireTreeGuyPaid(redirect = "/treeguy/paywall.html") {
+  const user = await requireAuth();
+  if (!user) return null;
+
+  if (user.email === OWNER_EMAIL) return user;
+  if (!user.hasPaidAccess) {
+    window.location.href = redirect;
+    return null;
   }
 
-  async function requireAuth(redirect = "treeguy/login.html") {
-    const user = await getUser();
-    if (!user) window.location.href = redirect;
-    return user;
+  return user;
+}
+
+// =========================
+// ROLE HELPERS
+// =========================
+function isOwner(u) { return u.email === OWNER_EMAIL; }
+function isClient(u) { return u.role === "client"; }
+function isTreeGuy(u) { return u.role === "treeguy"; }
+
+function updateStatus(msg) {
+  const el = document.getElementById("loginStatus");
+  if (el) el.textContent = msg;
+}
+
+// =========================
+// PAYPAL LOADER
+// =========================
+async function loadPayPal() {
+  if (window.paypal) return;
+
+  const script = document.createElement("script");
+  script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
+  document.body.appendChild(script);
+
+  await new Promise(res => script.onload = res);
+}
+
+// =========================
+// TREE GUY PAYWALL (STATIC)
+// =========================
+async function renderTreeGuyPaywall(container = "#paypal-button-container") {
+  const user = await requireAuth();
+  if (!user) return;
+
+  if (isOwner(user) || user.hasPaidAccess) {
+    window.location.href = "/treeguy/create-account.html";
+    return;
   }
 
-  async function requireClient(redirect = "index.html") {
-    const user = await requireAuth();
-    if (user.role !== "client") window.location.href = redirect;
-    return user;
-  }
+  await loadPayPal();
 
-  async function requireTreeGuyPaid(redirect = "treeguy/paywall.html") {
-    const user = await requireAuth();
-    if (user.email === OWNER_EMAIL) return user;
-    if (!user.hasPaidAccess) window.location.href = redirect;
-    return user;
-  }
+  paypal.Buttons({
+    createOrder: (data, actions) => {
+      return actions.order.create({
+        purchase_units: [{ amount: { value: "30.00" } }]
+      });
+    },
+    onApprove: async (data, actions) => {
+      const details = await actions.order.capture();
 
-  // =========================
-  // ROLE HELPERS
-  // =========================
-  function isOwner(u) { return u.email === OWNER_EMAIL; }
-  function isClient(u) { return u.role === "client"; }
-  function isTreeGuy(u) { return u.role === "treeguy"; }
+      // Unlock Tree Guy OS locally
+      user.hasPaidAccess = true;
+      await saveUserDB(user);
+      setSession(user);
 
-  function updateStatus(msg) {
-    const el = document.getElementById("loginStatus");
-    if (el) el.textContent = msg;
-  }
+      updateStatus("Tree Guy OS unlocked. Redirecting…");
+      window.location.href = "/treeguy/create-account.html";
+    },
+    onError: () => updateStatus("Payment failed. Try again.")
+  }).render(container);
+}
 
-  // =========================
-  // PAYPAL LOADER
-  // =========================
-  async function loadPayPal() {
-    if (window.paypal) return;
+// =========================
+// CLIENT JOB PAYMENT (STATIC)
+// =========================
+async function renderClientJobPayment(mode = "standard", container = "#paypal-job-button", jobData = {}) {
+  const user = await requireClient();
+  if (!user) return;
 
-    const script = document.createElement("script");
-    script.id = "paypal-sdk";
-    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
-    document.body.appendChild(script);
+  await loadPayPal();
 
-    await new Promise(res => script.onload = res);
-  }
+  const amount = mode === "standard" ? "20.00" : "40.00";
 
-  // =========================
-  // TREE GUY PAYWALL
-  // =========================
-  async function renderTreeGuyPaywall(container = "#paypal-button-container") {
-    const user = await requireAuth();
+  paypal.Buttons({
+    createOrder: (data, actions) => {
+      return actions.order.create({
+        purchase_units: [{ amount: { value: amount } }]
+      });
+    },
+    onApprove: async (data, actions) => {
+      const details = await actions.order.capture();
 
-    if (isOwner(user) || user.hasPaidAccess) {
-      window.location.href = "treeguy/create-account.html";
-      return;
-    }
+      // Save job locally (IndexedDB or localStorage)
+      const jobs = JSON.parse(localStorage.getItem("clientJobs") || "[]");
 
-    await loadPayPal();
+      jobs.push({
+        id: crypto.randomUUID(),
+        clientEmail: user.email,
+        mode,
+        amount: Number(amount),
+        paypalOrderId: details.id,
+        ...jobData,
+        createdAt: Date.now()
+      });
 
-    paypal.Buttons({
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{ amount: { value: "30.00" } }]
-        });
-      },
-      onApprove: async (data, actions) => {
-        const details = await actions.order.capture();
+      localStorage.setItem("clientJobs", JSON.stringify(jobs));
 
-        await fetch(`${API}/api/payments/treeguy`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`
-          },
-          body: JSON.stringify({ paypalOrderId: details.id })
-        });
+      updateStatus("Job posted. Redirecting…");
+      window.location.href = "/client/dashboard.html";
+    },
+    onError: () => updateStatus("Payment failed. Try again.")
+  }).render(container);
+}
 
-        updateStatus("Tree Guy OS unlocked. Redirecting…");
-        window.location.href = "treeguy/create-account.html";
-      },
-      onError: () => updateStatus("Payment failed. Try again.")
-    }).render(container);
-  }
-
-  // =========================
-  // CLIENT JOB PAYMENT
-  // =========================
-  async function renderClientJobPayment(mode = "standard", container = "#paypal-job-button", jobData = {}) {
-    const user = await requireClient();
-    await loadPayPal();
-
-    const amount = mode === "standard" ? "20.00" : "40.00";
-
-    paypal.Buttons({
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{ amount: { value: amount } }]
-        });
-      },
-      onApprove: async (data, actions) => {
-        const details = await actions.order.capture();
-
-        await fetch(`${API}/api/jobs/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${getToken()}`
-          },
-          body: JSON.stringify({
-            mode,
-            amount: Number(amount),
-            paypalOrderId: details.id,
-            ...jobData
-          })
-        });
-
-        updateStatus("Job posted. Redirecting…");
-        window.location.href = "client/dashboard.html";
-      },
-      onError: () => updateStatus("Payment failed. Try again.")
-    }).render(container);
-  }
-
-  // =========================
-  // EXPORT
-  // =========================
-  window.RTG = {
-    getUser,
-    requireAuth,
-    requireClient,
-    requireTreeGuyPaid,
-    isOwner,
-    isClient,
-    isTreeGuy,
-    renderTreeGuyPaywall,
-    renderClientJobPayment,
-    updateStatus,
-    setToken
-  };
+// =========================
+// EXPORT
+// =========================
+window.RTG = {
+  requireAuth,
+  requireClient,
+  requireTreeGuyPaid,
+  isOwner,
+  isClient,
+  isTreeGuy,
+  renderTreeGuyPaywall,
+  renderClientJobPayment,
+  updateStatus,
+  setSession
+};
