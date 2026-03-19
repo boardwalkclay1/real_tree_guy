@@ -4,14 +4,25 @@
   <meta charset="UTF-8">
   <title>REAL TREE GUY – Dashboard</title>
 
-  <!-- FIXED FAVICON -->
   <link rel="icon" type="image/png" href="assets/icons/rtg-192.png">
-
   <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    /* HAMBURGER + SIDE MENU */
+    body {
+      background: #0d0f0d url("public/assets/icons/rtg-dash.png")
+        center center / cover no-repeat;
+      background-attachment: fixed;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background: #0d0f0d url("public/assets/icons/rtg-dash.png")
+          center top / contain no-repeat;
+        background-attachment: scroll;
+      }
+    }
+
     .rtg-topbar {
       position: fixed;
       top: 0;
@@ -135,18 +146,14 @@
 
 <body>
 
-  <!-- TOP BAR -->
   <div class="rtg-topbar">
     <div class="rtg-burger" id="rtgBurger">
       <span></span><span></span><span></span>
     </div>
     <div class="rtg-topbar-title">REAL TREE GUY OS</div>
-
-    <!-- FIXED -->
     <a href="index.html" class="rtg-topbar-link">RTG Online</a>
   </div>
 
-  <!-- SIDE MENU -->
   <nav class="rtg-sidemenu" id="rtgSidemenu">
     <a href="index.html">🏠 RTG Online Home</a>
     <a href="treeguy/dashboard.html">🌳 Tree Guy Dashboard</a>
@@ -165,7 +172,6 @@
     <p class="rtg-subtitle">Modular Static OS for Tree Work</p>
   </header>
 
-  <!-- TREE UI -->
   <main class="tree-menu">
     <div class="tree">
       <div class="canopy"></div>
@@ -181,7 +187,6 @@
     </div>
   </main>
 
-  <!-- MAP SECTION -->
   <section class="card rtg-map-card">
     <h2 style="font-size:1.8rem;margin-bottom:10px;color:#caffca;">Real Tree Map</h2>
 
